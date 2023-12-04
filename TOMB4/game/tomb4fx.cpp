@@ -121,11 +121,6 @@ LIGHTNING_STRUCT* TriggerLightning(PHD_VECTOR* s, PHD_VECTOR* d, char variation,
 
 long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
 {
-	long* bone;
-	short* extra_rotation;
-	long bit, poppush;
-	short fx_number;
-
 	auto* item = &items[item_number];
 	auto* obj = &objects[item->object_number];
 	auto* frame = GetBestFrame(item);
@@ -136,19 +131,15 @@ long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
 	auto* rotation = frame + 9;
 	gar_RotYXZsuperpack(&rotation, 0);
 
-	if (item->data == NULL)
-		extra_rotation = no_rotation;
-	else
-		extra_rotation = (short*)item->data;
-
-	bone = &bones[obj->bone_index];
-	bit = 1;
+	auto* extra_rotation = item->data == NULL ? no_rotation : (short*)item->data;
+	auto* bone = &bones[obj->bone_index];
+	long bit = 1;
 
 	if ((mesh_bits & 1) && (item->mesh_bits & 1))
 	{
 		if ((Flags & EDF_CREATE_EFFECT) || !(GetRandomControl() & 3))
 		{
-			fx_number = CreateEffect(item->room_number);
+			auto fx_number = CreateEffect(item->room_number);
 			if (fx_number != NO_ITEM)
 			{
 				auto* fx = &effects[fx_number];
@@ -185,7 +176,7 @@ long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
 
 	for (int i = 1; i < obj->nmeshes; i++, bone += 4)
 	{
-		poppush = bone[0];
+		auto poppush = bone[0];
 		if (poppush & BF_POP)
 			phd_PopMatrix();
 		if (poppush & BF_PUSH)
@@ -216,7 +207,7 @@ long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
 		bit <<= 1;
 		if ((bit & mesh_bits) && (bit & item->mesh_bits) && ((Flags & EDF_CREATE_EFFECT) || !(GetRandomControl() & 3)))
 		{
-			fx_number = CreateEffect(item->room_number);
+			auto fx_number = CreateEffect(item->room_number);
 			if (fx_number != NO_ITEM)
 			{
 				auto* fx = &effects[fx_number];

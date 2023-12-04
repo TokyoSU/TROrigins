@@ -52,7 +52,7 @@ void ControlSmokeEmitter(short item_number)
 
 	if (item->object_number == STEAM_EMITTER && room[item->room_number].flags & ROOM_UNDERWATER)
 	{
-		if (item->item_flags[0] || !(GetRandomControl() & 0x1F) || item->trigger_flags == 1)
+		if (item->item_flags[0] || !(GetRandomControl() & 0x1F) || item->ocb == 1)
 		{
 			if (!(GetRandomControl() & 3) || item->item_flags[1])
 			{
@@ -60,7 +60,7 @@ void ControlSmokeEmitter(short item_number)
 				pos.y_pos = item->pos.y_pos - (GetRandomControl() & 0x1F) - 16;
 				pos.z_pos = (GetRandomControl() & 0x3F) + item->pos.z_pos - 32;
 
-				if (item->trigger_flags == 1)
+				if (item->ocb == 1)
 					CreateBubble(&pos, item->room_number, 15, 15);
 				else
 					CreateBubble(&pos, item->room_number, 8, 7);
@@ -80,7 +80,7 @@ void ControlSmokeEmitter(short item_number)
 		return;
 	}
 
-	if (item->object_number == STEAM_EMITTER && item->trigger_flags & 8)
+	if (item->object_number == STEAM_EMITTER && item->ocb & 8)
 	{
 		if (item->item_flags[0])
 		{
@@ -153,7 +153,7 @@ void ControlSmokeEmitter(short item_number)
 			if (item->item_flags[1])
 				item->item_flags[1]--;
 			else
-				item->item_flags[0] = item->trigger_flags >> 4;
+				item->item_flags[0] = item->ocb >> 4;
 		}
 
 		if (!normal)
@@ -1813,7 +1813,7 @@ void TriggerSuperJetFlame(ITEM_INFO* item, long yvel, long deadly)
 	sptr->sSize = sptr->dSize >> 1;
 	sptr->Size = sptr->dSize >> 1;
 
-	if ((-item->trigger_flags & 7) == 1)
+	if ((-item->ocb & 7) == 1)
 	{
 		sptr->Gravity = -16 - (GetRandomControl() & 0x1F);
 		sptr->Xvel = (GetRandomControl() & 0xFF) - 128;

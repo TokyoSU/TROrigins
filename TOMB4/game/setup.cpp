@@ -2021,7 +2021,7 @@ void GetAIPickups()
 					aiObj->room_number == item->room_number && aiObj->object_number < AI_PATROL2)
 				{
 					item->ai_bits |= 1 << (aiObj->object_number - AI_GUARD);
-					item->item_flags[3] = aiObj->trigger_flags;
+					item->item_flags[3] = aiObj->ocb;
 					aiObj->room_number = 255;
 				}
 			}

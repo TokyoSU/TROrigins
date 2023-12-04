@@ -490,7 +490,7 @@ void SaveLevelData(long FullSave)
 				if (item->timer)
 					packed |= 0x800;
 
-				if (item->trigger_flags)
+				if (item->ocb)
 					packed |= 0x1000;
 
 				if (obj->save_hitpoints && item->hit_points != obj->hit_points)
@@ -587,7 +587,7 @@ void SaveLevelData(long FullSave)
 						WriteSG(&item->timer, sizeof(short));
 
 					if (packed & 0x1000)
-						WriteSG(&item->trigger_flags, sizeof(short));
+						WriteSG(&item->ocb, sizeof(short));
 
 					if (obj->intelligent)
 						WriteSG(&item->carried_item, sizeof(short));
@@ -604,7 +604,7 @@ void SaveLevelData(long FullSave)
 						WriteSG(&creature->ai_target.room_number, sizeof(short));
 						WriteSG(&creature->ai_target.box_number, sizeof(ushort));
 						WriteSG(&creature->ai_target.flags, sizeof(short));
-						WriteSG(&creature->ai_target.trigger_flags, sizeof(short));
+						WriteSG(&creature->ai_target.ocb, sizeof(short));
 						WriteSG(&creature->ai_target.pos, sizeof(PHD_3DPOS));
 
 						lflags = creature->LOT.can_jump;
@@ -978,7 +978,7 @@ void RestoreLevelData(long FullSave)
 					ReadSG(&item->timer, sizeof(short));
 
 				if (packed & 0x1000)
-					ReadSG(&item->trigger_flags, sizeof(short));
+					ReadSG(&item->ocb, sizeof(short));
 
 				if (obj->intelligent)
 					ReadSG(&item->carried_item, sizeof(short));
@@ -1014,7 +1014,7 @@ void RestoreLevelData(long FullSave)
 						ReadSG(&creature->ai_target.room_number, sizeof(short));
 						ReadSG(&creature->ai_target.box_number, sizeof(ushort));
 						ReadSG(&creature->ai_target.flags, sizeof(short));
-						ReadSG(&creature->ai_target.trigger_flags, sizeof(short));
+						ReadSG(&creature->ai_target.ocb, sizeof(short));
 						ReadSG(&creature->ai_target.pos, sizeof(PHD_3DPOS));
 						ReadSG(&lflags, sizeof(char));
 						creature->LOT.can_jump = (lflags & 1) == 1;

@@ -1134,7 +1134,7 @@ bool LoadItems()
 		item->shade = *(short*)FileData;
 		FileData += sizeof(short);
 
-		item->trigger_flags = *(short*)FileData;
+		item->ocb = *(short*)FileData;
 		FileData += sizeof(short);
 
 		item->flags = *(short*)FileData;

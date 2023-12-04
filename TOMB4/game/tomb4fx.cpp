@@ -121,27 +121,22 @@ LIGHTNING_STRUCT* TriggerLightning(PHD_VECTOR* s, PHD_VECTOR* d, char variation,
 
 long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
 {
-	ITEM_INFO* item;
-	OBJECT_INFO* obj;
-	FX_INFO* fx;
 	long* bone;
-	short* rotation;
-	short* frame;
 	short* extra_rotation;
 	long bit, poppush;
 	short fx_number;
 
-	item = &items[item_number];
-	obj = &objects[item->object_number];
-	frame = GetBestFrame(item);
+	auto* item = &items[item_number];
+	auto* obj = &objects[item->object_number];
+	auto* frame = GetBestFrame(item);
 	phd_PushUnitMatrix();
 	phd_SetTrans(0, 0, 0);
 	phd_RotYXZ(item->pos.y_rot, item->pos.x_rot, item->pos.z_rot);
 	phd_TranslateRel(frame[6], frame[7], frame[8]);
-	rotation = frame + 9;
+	auto* rotation = frame + 9;
 	gar_RotYXZsuperpack(&rotation, 0);
 
-	if (!item->data)
+	if (item->data == NULL)
 		extra_rotation = no_rotation;
 	else
 		extra_rotation = (short*)item->data;
@@ -149,15 +144,14 @@ long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
 	bone = &bones[obj->bone_index];
 	bit = 1;
 
-	if (mesh_bits & 1 && item->mesh_bits & 1)
+	if ((mesh_bits & 1) && (item->mesh_bits & 1))
 	{
-		if (Flags & 0x100 || !(GetRandomControl() & 3))
+		if ((Flags & EDF_CREATE_EFFECT) || !(GetRandomControl() & 3))
 		{
 			fx_number = CreateEffect(item->room_number);
-
 			if (fx_number != NO_ITEM)
 			{
-				fx = &effects[fx_number];
+				auto* fx = &effects[fx_number];
 				fx->pos.x_pos = item->pos.x_pos + (long)mMXPtr[M03];
 				fx->pos.y_pos = item->pos.y_pos + (long)mMXPtr[M13];
 				fx->pos.z_pos = item->pos.z_pos + (long)mMXPtr[M23];
@@ -165,16 +159,16 @@ long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
 				fx->pos.y_rot = (short)(GetRandomControl() << 1);
 				fx->pos.x_rot = 0;
 
-				if (Flags & 0x10)
+				if (Flags & EDF_NOSPEED)
 					fx->speed = 0;
-				else if (Flags & 0x20)
+				else if (Flags & EDF_MORESPEED)
 					fx->speed = (short)(GetRandomControl() >> 12);
 				else
 					fx->speed = (short)(GetRandomControl() >> 8);
 
-				if (Flags & 0x40)
+				if (Flags & EDF_NOFALLSPEED)
 					fx->fallspeed = 0;
-				else if (Flags & 0x80)
+				else if (Flags & EDF_MOREFALLSPEED)
 					fx->fallspeed = (short)(-(GetRandomControl() >> 12));
 				else
 					fx->fallspeed = (short)(-(GetRandomControl() >> 8));
@@ -192,31 +186,27 @@ long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
 	for (int i = 1; i < obj->nmeshes; i++, bone += 4)
 	{
 		poppush = bone[0];
-
-		if (poppush & 1)
+		if (poppush & BF_POP)
 			phd_PopMatrix();
-
-		if (poppush & 2)
+		if (poppush & BF_PUSH)
 			phd_PushMatrix();
 
 		phd_TranslateRel(bone[1], bone[2], bone[3]);
 		gar_RotYXZsuperpack(&rotation, 0);
 
-		if (poppush & 28)
+		if (poppush & BF_ALL)
 		{
-			if (poppush & 8)
+			if (poppush & BF_Y)
 			{
 				phd_RotY(*extra_rotation);
 				extra_rotation++;
 			}
-
-			if (poppush & 4)
+			if (poppush & BF_X)
 			{
 				phd_RotX(*extra_rotation);
 				extra_rotation++;
 			}
-
-			if (poppush & 16)
+			if (poppush & BF_Z)
 			{
 				phd_RotZ(*extra_rotation);
 				extra_rotation++;
@@ -224,14 +214,12 @@ long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
 		}
 
 		bit <<= 1;
-
-		if (bit & mesh_bits && bit & item->mesh_bits && (Flags & 0x100 || !(GetRandomControl() & 3)))
+		if ((bit & mesh_bits) && (bit & item->mesh_bits) && ((Flags & EDF_CREATE_EFFECT) || !(GetRandomControl() & 3)))
 		{
 			fx_number = CreateEffect(item->room_number);
-
 			if (fx_number != NO_ITEM)
 			{
-				fx = &effects[fx_number];
+				auto* fx = &effects[fx_number];
 				fx->pos.x_pos = item->pos.x_pos + (long)mMXPtr[M03];
 				fx->pos.y_pos = item->pos.y_pos + (long)mMXPtr[M13];
 				fx->pos.z_pos = item->pos.z_pos + (long)mMXPtr[M23];
@@ -239,16 +227,16 @@ long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
 				fx->pos.y_rot = (short)(GetRandomControl() << 1);
 				fx->pos.x_rot = 0;
 
-				if (Flags & 0x10)
+				if (Flags & EDF_NOSPEED)
 					fx->speed = 0;
-				else if (Flags & 0x20)
+				else if (Flags & EDF_MORESPEED)
 					fx->speed = (short)(GetRandomControl() >> 12);
 				else
 					fx->speed = (short)(GetRandomControl() >> 8);
 
-				if (Flags & 0x40)
+				if (Flags & EDF_NOFALLSPEED)
 					fx->fallspeed = 0;
-				else if (Flags & 0x80)
+				else if (Flags & EDF_MOREFALLSPEED)
 					fx->fallspeed = (short)(-(GetRandomControl() >> 12));
 				else
 					fx->fallspeed = (short)(-(GetRandomControl() >> 8));
@@ -258,7 +246,6 @@ long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
 				fx->shade = 0x4210;
 				fx->flag2 = Flags;
 			}
-
 			item->mesh_bits -= bit;
 		}
 	}

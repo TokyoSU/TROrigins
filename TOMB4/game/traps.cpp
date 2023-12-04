@@ -92,15 +92,15 @@ void FlameEmitterControl(short item_number)
 
 	if (!TriggerActive(item))
 	{
-		if (item->trigger_flags >= 0)
-			LibraryTab[item->trigger_flags] = 0;
+		if (item->ocb >= 0)
+			LibraryTab[item->ocb] = 0;
 
 		return;
 	}
 
-	if (item->trigger_flags < 0)
+	if (item->ocb < 0)
 	{
-		if ((-item->trigger_flags & 7) == 2 || (-item->trigger_flags & 7) == 7)
+		if ((-item->ocb & 7) == 2 || (-item->ocb & 7) == 7)
 		{
 			SoundEffect(SFX_FLAME_EMITTER, &item->pos, 0);
 			TriggerSuperJetFlame(item, -256 - (3072 * GlobalCounter & 0x1C00), GlobalCounter & 1);
@@ -128,8 +128,8 @@ void FlameEmitterControl(short item_number)
 
 				if (!item->item_flags[3])
 				{
-					if (-item->trigger_flags >> 3)
-						item->item_flags[0] = (GetRandomControl() & 0x1F) + 30 * (-item->trigger_flags >> 3);
+					if (-item->ocb >> 3)
+						item->item_flags[0] = (GetRandomControl() & 0x1F) + 30 * (-item->ocb >> 3);
 					else
 						item->item_flags[0] = (GetRandomControl() & 0x3F) + 60;
 				}
@@ -163,7 +163,7 @@ void FlameEmitterControl(short item_number)
 	}
 	else
 	{
-		LibraryTab[item->trigger_flags] = 1;
+		LibraryTab[item->ocb] = 1;
 		AddFire(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 2, item->room_number, 0);
 		TriggerDynamic(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 16 - (GetRandomControl() & 1),
 			(GetRandomControl() & 0x3F) + 192, (GetRandomControl() & 0x1F) + 96, 0);
@@ -241,10 +241,10 @@ void ControlTwoBlockPlatform(short item_number)
 	if (!TriggerActive(item))
 		return;
 
-	if (item->trigger_flags)
+	if (item->ocb)
 	{
-		if (item->pos.y_pos > item->item_flags[0] - (long(item->trigger_flags & 0xFFFFFFF0) << 4))
-			item->pos.y_pos -= item->trigger_flags & 0xF;
+		if (item->pos.y_pos > item->item_flags[0] - (long(item->ocb & 0xFFFFFFF0) << 4))
+			item->pos.y_pos -= item->ocb & 0xF;
 
 		room_number = item->room_number;
 		item->floor = GetHeight(GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number),
@@ -333,7 +333,7 @@ void DrawScaledSpike(ITEM_INFO* item)
 
 	if (item->object_number != TEETH_SPIKES || item->item_flags[1])
 	{
-		if ((item->object_number == RAISING_BLOCK1 || item->object_number == RAISING_BLOCK2) && item->trigger_flags && !item->item_flags[0])
+		if ((item->object_number == RAISING_BLOCK1 || item->object_number == RAISING_BLOCK2) && item->ocb && !item->item_flags[0])
 		{
 			for (lp = 1; lp < 8; lp++)
 			{
@@ -412,11 +412,11 @@ void ControlSlicerDicer(short item_number)
 	item = &items[item_number];
 	SoundEffect(SFX_METAL_SCRAPE_LOOP, &item->pos, SFX_DEFAULT);
 	SoundEffect(SFX_METAL_SCRAPE_LOOP1, &item->pos, SFX_DEFAULT);
-	distance = 4608 * phd_cos(item->trigger_flags) >> 14;
+	distance = 4608 * phd_cos(item->ocb) >> 14;
 	item->pos.x_pos = 256 * item->item_flags[0] + (phd_sin(item->pos.y_rot) * distance >> 14);
-	item->pos.y_pos = 256 * item->item_flags[1] - (4608 * phd_sin(item->trigger_flags) >> 14);
+	item->pos.y_pos = 256 * item->item_flags[1] - (4608 * phd_sin(item->ocb) >> 14);
 	item->pos.z_pos = 256 * item->item_flags[2] + (phd_cos(item->pos.y_rot) * distance >> 14);
-	item->trigger_flags += 170;
+	item->ocb += 170;
 	room_number = item->room_number;
 	GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 
@@ -610,7 +610,7 @@ void MineCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 	item = &items[item_number];
 
-	if (item->trigger_flags || item->item_flags[3])
+	if (item->ocb || item->item_flags[3])
 		return;
 
 	if (l->anim_number == ANIM_MINEDETECT && l->frame_number >= anims[ANIM_MINEDETECT].frame_base + 57)
@@ -619,7 +619,7 @@ void MineCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		{
 			mines = &items[i];
 
-			if (mines->object_number != MINE || mines->status == ITEM_INVISIBLE || mines->trigger_flags)
+			if (mines->object_number != MINE || mines->status == ITEM_INVISIBLE || mines->ocb)
 				continue;
 
 			TriggerExplosionSparks(mines->pos.x_pos, mines->pos.y_pos, mines->pos.z_pos, 3, -2, 0, mines->room_number);
@@ -761,8 +761,8 @@ void ControlSethBlade(short item_number)
 			item->goal_anim_state = 1;
 			item->item_flags[2] = 0;
 		}
-		else if (!item->item_flags[2] && item->trigger_flags > 0)
-			item->item_flags[2] = item->trigger_flags;
+		else if (!item->item_flags[2] && item->ocb > 0)
+			item->item_flags[2] = item->ocb;
 	}
 	else
 	{
@@ -946,7 +946,7 @@ void ControlHammer(short item_number)
 
 	hammered = 0;
 
-	if (!item->trigger_flags)
+	if (!item->ocb)
 	{
 		if (frame < 52)
 			*(long*)&item->item_flags[0] = 0xE0;
@@ -957,12 +957,12 @@ void ControlHammer(short item_number)
 	{
 		if (item->item_flags[2])
 		{
-			if (item->trigger_flags == 3)
+			if (item->ocb == 3)
 			{
 				item->flags &= ~IFL_CODEBITS;
 				item->item_flags[2] = 0;
 			}
-			else if (item->trigger_flags == 4)
+			else if (item->ocb == 4)
 				item->item_flags[2]--;
 			else
 				item->item_flags[2] = 0;
@@ -987,7 +987,7 @@ void ControlHammer(short item_number)
 
 		if (frame == 8)
 		{
-			if (item->trigger_flags == 2)
+			if (item->ocb == 2)
 			{
 				for (target_item = room[item->room_number].item_number; target_item != NO_ITEM; target_item = item2->next_item)
 				{
@@ -1040,7 +1040,7 @@ void ControlHammer(short item_number)
 				}
 			}
 		}
-		else if (frame > 52 && item->trigger_flags == 2)
+		else if (frame > 52 && item->ocb == 2)
 			item->flags &= ~IFL_CODEBITS;
 	}
 
@@ -1086,7 +1086,7 @@ void ControlChain(short item_number)
 
 	item = &items[item_number];
 	
-	if (item->trigger_flags)
+	if (item->ocb)
 	{
 		item->item_flags[2] = 1;
 		item->item_flags[3] = 75;
@@ -1272,7 +1272,7 @@ void ControlRaisingBlock(short item_number)
 			SoundEffect(SFX_RUMBLE_NEXTDOOR, &item->pos, SFX_DEFAULT);
 			item->item_flags[1] += 64;
 
-			if (item->trigger_flags && abs(item->pos.x_pos - lara_item->pos.x_pos) < 10240 &&
+			if (item->ocb && abs(item->pos.x_pos - lara_item->pos.x_pos) < 10240 &&
 				abs(item->pos.y_pos - lara_item->pos.y_pos) < 10240 && abs(item->pos.z_pos - lara_item->pos.z_pos) < 10240)
 			{
 				if (item->item_flags[1] == 64 || item->item_flags[1] == 4096)
@@ -1286,7 +1286,7 @@ void ControlRaisingBlock(short item_number)
 	{
 		SoundEffect(SFX_RUMBLE_NEXTDOOR, &item->pos, SFX_DEFAULT);
 
-		if (item->trigger_flags && abs(item->pos.x_pos - lara_item->pos.x_pos) < 10240 &&
+		if (item->ocb && abs(item->pos.x_pos - lara_item->pos.x_pos) < 10240 &&
 			abs(item->pos.y_pos - lara_item->pos.y_pos) < 10240 && abs(item->pos.z_pos - lara_item->pos.z_pos) < 10240)
 		{
 			if (item->item_flags[1] == 64 || item->item_flags[1] == 4096)
@@ -1333,7 +1333,7 @@ void ControlScaledSpike(short item_number)
 				item->status = ITEM_INVISIBLE;
 			}
 
-			if (item->trigger_flags & 32)
+			if (item->ocb & 32)
 				item->item_flags[2] = 1;
 			else if (item->item_flags[2])
 				item->item_flags[2]--;
@@ -1365,7 +1365,7 @@ void ControlScaledSpike(short item_number)
 			larabounds = GetBestFrame(lara_item);
 			num = 0;
 
-			if ((item->item_flags[0] > 1024 || lara_item->gravity_status) && (item->trigger_flags & 7) > 2 && (item->trigger_flags & 7) < 6)
+			if ((item->item_flags[0] > 1024 || lara_item->gravity_status) && (item->ocb & 7) > 2 && (item->ocb & 7) < 6)
 			{
 				if (lara_item->fallspeed > 6 || item->item_flags[0] > 1024)
 				{
@@ -1382,7 +1382,7 @@ void ControlScaledSpike(short item_number)
 			yt = short(item->pos.y_pos + larabounds[2]);
 			yb = short(item->pos.y_pos + larabounds[3]);
 
-			if ((item->trigger_flags & 0xF) == 8 || !(item->trigger_flags & 0xF))
+			if ((item->ocb & 0xF) == 8 || !(item->ocb & 0xF))
 			{
 				iyb1 = -bounds[3];
 				iyb2 = -bounds[2];
@@ -1401,7 +1401,7 @@ void ControlScaledSpike(short item_number)
 
 			dy = abs(yt - yb) + 1;
 
-			if ((item->trigger_flags & 7) == 2 || (item->trigger_flags & 7) == 6)
+			if ((item->ocb & 7) == 2 || (item->ocb & 7) == 6)
 				num >>= 1;
 
 			while (num > 0)
@@ -1440,7 +1440,7 @@ void ControlScaledSpike(short item_number)
 			{
 				item->item_flags[0] = 0;
 
-				if (!(item->trigger_flags & 16) && lara_item->hit_points > 0)
+				if (!(item->ocb & 16) && lara_item->hit_points > 0)
 					item->item_flags[2] = 64;
 			}
 			else
@@ -1461,7 +1461,7 @@ void FlameEmitter3Control(short item_number)
 	if (!TriggerActive(item))
 		return;
 
-	if (item->trigger_flags)
+	if (item->ocb)
 	{
 		SoundEffect(SFX_ELEC_ARCING_LOOP, &item->pos, SFX_DEFAULT);
 		g = (GetRandomControl() & 0x3F) + 192;
@@ -1470,7 +1470,7 @@ void FlameEmitter3Control(short item_number)
 		s.y = item->pos.y_pos;
 		s.z = item->pos.z_pos;
 
-		if (!(GlobalCounter & 3) && (item->trigger_flags == 2 || item->trigger_flags == 4))
+		if (!(GlobalCounter & 3) && (item->ocb == 2 || item->ocb == 4))
 		{
 			d.x = item->pos.x_pos + (2048 * phd_sin(item->pos.y_rot - 0x8000) >> W2V_SHIFT);
 			d.y = item->pos.y_pos;
@@ -1482,7 +1482,7 @@ void FlameEmitter3Control(short item_number)
 				TriggerLightning(&s, &d, (GetRandomControl() & 0x1F) + 96, RGBA(0, g, b, 32), 1, 32, 3);
 		}
 
-		if (item->trigger_flags >= 3 && !(GlobalCounter & 1))
+		if (item->ocb >= 3 && !(GlobalCounter & 1))
 		{
 			d.x = 0;
 			d.y = -64;
@@ -1498,7 +1498,7 @@ void FlameEmitter3Control(short item_number)
 					TriggerLightning(&s, &d, (GetRandomControl() & 0x1F) + 96, RGBA(0, g, b, 32), 1, 32, 5);
 			}
 
-			if (item->trigger_flags != 3 || item2->trigger_flags)
+			if (item->ocb != 3 || item2->ocb)
 				TriggerLightningGlow(d.x, d.y, d.z, RGBA(0, g, b, 64));
 		}
 
@@ -1631,27 +1631,27 @@ void FlameEmitter2Control(short item_number)
 	if (!TriggerActive(item))
 		return;
 
-	if (item->trigger_flags < 0)
+	if (item->ocb < 0)
 	{
 		if (!item->item_flags[0])
 		{
-			FlipMap(-item->trigger_flags);
-			flipmap[-item->trigger_flags] ^= IFL_CODEBITS;
+			FlipMap(-item->ocb);
+			flipmap[-item->ocb] ^= IFL_CODEBITS;
 			item->item_flags[0] = 1;
 		}
 
 		return;
 	}
 
-	if (item->trigger_flags != 2)
+	if (item->ocb != 2)
 	{
-		if (item->trigger_flags == 123)
+		if (item->ocb == 123)
 			AddFire(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 1, item->room_number, item->item_flags[3]);
 		else
-			AddFire(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 1 - item->trigger_flags, item->room_number, item->item_flags[3]);
+			AddFire(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 1 - item->ocb, item->room_number, item->item_flags[3]);
 	}
 
-	if (!item->trigger_flags || item->trigger_flags == 2)
+	if (!item->ocb || item->ocb == 2)
 	{
 		r = (GetRandomControl() & 0x3F) + 192;
 		g = (GetRandomControl() & 0x1F) + 96;
@@ -1665,7 +1665,7 @@ void FlameEmitter2Control(short item_number)
 		TriggerDynamic(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 10, r, g, 0);
 	}
 
-	if (item->trigger_flags == 2)
+	if (item->ocb == 2)
 	{
 		item->pos.x_pos += phd_sin(item->pos.y_rot + 0x8000) >> 11;
 		item->pos.z_pos += phd_cos(item->pos.y_rot + 0x8000) >> 11;
@@ -1734,23 +1734,23 @@ long TestBoundsCollideTeethSpikes(ITEM_INFO* item)
 	short* bounds;
 	long x, y, z, rad, xMin, xMax, zMin, zMax;
 
-	if (item->trigger_flags & 8)
+	if (item->ocb & 8)
 	{
 		x = item->pos.x_pos & ~0x3FF | 0x200;
-		z = (item->pos.z_pos + SPxzoffs[item->trigger_flags & 7]) & ~0x3FF | 0x200;
+		z = (item->pos.z_pos + SPxzoffs[item->ocb & 7]) & ~0x3FF | 0x200;
 	}
 	else
 	{
-		x = (item->pos.x_pos - SPxzoffs[item->trigger_flags & 7]) & ~0x3FF | 0x200;
+		x = (item->pos.x_pos - SPxzoffs[item->ocb & 7]) & ~0x3FF | 0x200;
 		z = item->pos.z_pos & ~0x3FF | 0x200;
 	}
 
-	if (item->trigger_flags & 1)
+	if (item->ocb & 1)
 		rad = 300;
 	else
 		rad = 480;
 
-	y = item->pos.y_pos + SPDETyoffs[item->trigger_flags & 7];
+	y = item->pos.y_pos + SPDETyoffs[item->ocb & 7];
 	bounds = GetBestFrame(lara_item);
 
 	if (lara_item->pos.y_pos + bounds[2] > y || lara_item->pos.y_pos + bounds[3] < y - 900)
@@ -2257,7 +2257,7 @@ void FallingBlockCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	tx = item->pos.x_pos;
 	tz = item->pos.z_pos;
 
-	if (!item->item_flags[0] && !item->trigger_flags && item->pos.y_pos == l->pos.y_pos && !((tx ^ x) & ~1023) && !((z ^ tz) & ~1023))
+	if (!item->item_flags[0] && !item->ocb && item->pos.y_pos == l->pos.y_pos && !((tx ^ x) & ~1023) && !((z ^ tz) & ~1023))
 	{
 		SoundEffect(SFX_ROCK_FALL_CRUMBLE, &item->pos, SFX_DEFAULT);
 		AddActiveItem(item_number);
@@ -2420,7 +2420,7 @@ void TrapDoorControl(short item_number)
 
 	if (TriggerActive(item))
 	{
-		if (!item->current_anim_state && item->trigger_flags >= 0)
+		if (!item->current_anim_state && item->ocb >= 0)
 			item->goal_anim_state = 1;
 	}
 	else if (item->current_anim_state == 1)
@@ -2488,7 +2488,7 @@ void ControlObelisk(short item_number)
 			}
 		}
 
-		if (item->item_flags[3] >= 256 && item->trigger_flags == 2)
+		if (item->item_flags[3] >= 256 && item->ocb == 2)
 		{
 			s.x = item->pos.x_pos + ((0x2000 * phd_sin(item->pos.y_rot + 0x4000)) >> W2V_SHIFT);
 			s.y = item->pos.y_pos;
@@ -2562,7 +2562,7 @@ void ControlObelisk(short item_number)
 			item->frame_number = anims[item->anim_number].frame_base;
 		}
 
-		if (item->trigger_flags == 2)
+		if (item->ocb == 2)
 		{
 			for (int i = 0; i < level_items; i++)
 			{

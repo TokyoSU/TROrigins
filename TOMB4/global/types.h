@@ -24,8 +24,10 @@
 #define SetCutNotPlayed(num)	(CutSceneTriggered &= ~(1 << (num)))
 #define CheckCutPlayed(num)	(CutSceneTriggered & (1 << (num)))
 
-#define NO_HEIGHT	-32512
-#define NO_ITEM	-1
+#define NOT_TARGETABLE -16384
+#define NO_HEIGHT -32512
+#define NO_ITEM -1
+#define MESHBITS_ALL 0xFFFFFFFF
 #define FVF (D3DFVF_TEX2 | D3DFVF_SPECULAR | D3DFVF_DIFFUSE | D3DFVF_XYZRHW)
 #define W2V_SHIFT	14
 #define MAX_SAMPLES	370
@@ -66,6 +68,27 @@ enum DX_FLAGS
 	DXF_FPUSETUP = 0x20,
 	DXF_NOFREE = 0x40,
 	DXF_HWR = 0x80
+};
+
+enum exploding_death_flags
+{
+	EDF_NONE = 0x0000,
+	EDF_NOSPEED = 0x0010,
+	EDF_MORESPEED = 0x0020,
+	EDF_NOFALLSPEED = 0x0040,
+	EDF_MOREFALLSPEED = 0x0080,
+	EDF_CREATE_EFFECT = 0x0100,
+};
+
+enum bone_flags
+{
+	BF_NONE = 0x0000,
+	BF_POP = 0x0001,
+	BF_PUSH = 0x0002,
+	BF_X = 0x0004,
+	BF_Y = 0x0008,
+	BF_Z = 0x0010,
+	BF_ALL = (BF_X|BF_Y|BF_Z)
 };
 
 enum carried_weapon_flags
@@ -551,7 +574,7 @@ struct ITEM_INFO
 	short timer;
 	short flags;
 	short shade;
-	short trigger_flags;
+	short ocb;
 	short carried_item;
 	short after_death;
 	ushort fired_weapon;
@@ -1689,7 +1712,7 @@ struct AIOBJECT
 	long x;
 	long y;
 	long z;
-	short trigger_flags;
+	short ocb;
 	short flags;
 	short y_rot;
 	short box_number;

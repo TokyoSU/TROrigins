@@ -1969,7 +1969,7 @@ void EnemyJeepControl(short item_number)
 			{
 				aiobj = &AIObjects[i];
 
-				if (aiobj->trigger_flags == item->item_flags[3] && aiobj->room_number != 255)
+				if (aiobj->ocb == item->item_flags[3] && aiobj->room_number != 255)
 				{
 					jeep->enemy = &jeep->ai_target;
 					jeep->enemy->object_number = aiobj->object_number;
@@ -1979,7 +1979,7 @@ void EnemyJeepControl(short item_number)
 					jeep->enemy->pos.z_pos = aiobj->z;
 					jeep->enemy->pos.y_rot = aiobj->y_rot;
 					jeep->enemy->flags = aiobj->flags;
-					jeep->enemy->trigger_flags = aiobj->trigger_flags;
+					jeep->enemy->ocb = aiobj->ocb;
 					jeep->enemy->box_number = aiobj->box_number;
 
 					if (!(jeep->enemy->flags & 0x20))

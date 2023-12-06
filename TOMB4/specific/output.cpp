@@ -979,7 +979,7 @@ void _InsertRoom(ROOM_INFO* r)
 	InsertRoom(r);
 }
 
-void RenderLoadPic(long unused)
+void RenderLoadPic()
 {
 	short poisoned;
 
@@ -998,7 +998,7 @@ void RenderLoadPic(long unused)
 	if (gfLoadRoom == 255)
 		return;
 
-	KillActiveBaddies((ITEM_INFO*)0xABCDEF);
+	KillActiveBaddies(false);
 	SetFade(255, 0);
 	poisoned = lara.poisoned;
 	FadeScreenHeight = 0;
@@ -1037,11 +1037,9 @@ void RenderLoadPic(long unused)
 	if (tomb4.loadingtxt && !tomb4.tr5_loadbar)
 	{
 		if (tomb4.bar_mode == 2 || tomb4.bar_mode == 3)
-			PrintString(phd_centerx, long(float((480 - (font_height >> 1)) * float(phd_winymax / 480.0F))) - (font_height >> 1),
-				5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
+			PrintString(phd_centerx, long(float((480 - (font_height >> 1)) * float(phd_winymax / 480.0F))) - (font_height >> 1), 5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
 		else
-			PrintString(phd_centerx, long(float(phd_winymax / 480.0F) + (phd_winymax - font_height)) - (font_height >> 1),
-				5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
+			PrintString(phd_centerx, long(float(phd_winymax / 480.0F) + (phd_winymax - font_height)) - (font_height >> 1), 5, SCRIPT_TEXT(TXT_LOADING2), FF_CENTER);
 	}
 
 	S_OutputPolyList();

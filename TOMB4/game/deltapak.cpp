@@ -913,14 +913,12 @@ void tenth_cutseq_end()
 
 void eleventh_cutseq_init()
 {
-	ITEM_INFO* item;
-
-	item = find_a_fucking_item(ANIMATING5);
+	ITEM_INFO* item = find_a_fucking_item(ANIMATING5);
 	old_status_flags[numnailed] = item->status;
 	item->status = ITEM_INVISIBLE;
 	item->flags &= ~IFL_CODEBITS;
 	numnailed++;
-	KillActiveBaddies(0);
+	KillActiveBaddies(false);
 	cutseq_kill_item(MOTORBIKE);
 	cutseq_kill_item(ANIMATING4);
 	cutseq_kill_item(ANIMATING1);

@@ -2,7 +2,7 @@
 #include "../global/types.h"
 
 long ControlPhase(long nframes, long demo_mode);
-void FlipMap(long FlipNumber);
+void FlipMap(long flip_number);
 void RemoveRoomFlipItems(ROOM_INFO* r);
 void AddRoomFlipItems(ROOM_INFO* r);
 void TestTriggers(short* data, long heavy, long HeavyFlags);

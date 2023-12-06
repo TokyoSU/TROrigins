@@ -16,6 +16,7 @@ void LaraLocation(ITEM_INFO* item);
 void LaraLocationPad(ITEM_INFO* item);
 void GhostTrap(ITEM_INFO* item);
 void KillActiveBaddies(ITEM_INFO* item);
+void KillActiveBaddies(bool doRemoveAndDisable);
 void lara_hands_free(ITEM_INFO* item);
 void draw_right_gun(ITEM_INFO* item);
 void draw_left_gun(ITEM_INFO* item);

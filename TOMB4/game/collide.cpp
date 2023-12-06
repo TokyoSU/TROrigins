@@ -38,31 +38,31 @@ long GetCollidedObjects(ITEM_INFO* item, long rad, long noInvisible, ITEM_INFO**
 	MESH_INFO* mesh;
 	ROOM_INFO* r;
 	ITEM_INFO* item2;
-	short* doors;
 	short* bounds;
-	long j, sy, cy, dx, dy, dz, num;
-	short rooms[22];
-	short switch_bounds[6];
+	long i, j, sy, cy, dx, dy, dz, num;
+	short rooms[22] = {};
+	short switch_bounds[6] = {};
 	short room_count, statics_count, items_count, item_number, next_item;
 
 	rooms[0] = item->room_number;
 	r = &room[rooms[0]];
-	doors = r->door;
 	room_count = 1;
 	statics_count = 0;
 	items_count = 0;
 
-	if (doors)
+	if (r->door)
 	{
-		for (int i = *doors++; i > 0; i--, doors += 16)
+		for (i = 0; i < r->door->portal_count; i++)
 		{
+			auto cur_door = r->door->portals[i];
 			for (j = 0; j < room_count; j++)
-				if (rooms[j] == *doors)
+			{
+				if (rooms[j] == cur_door.adjoiningRoom)
 					break;
-
+			}
 			if (j == room_count)
 			{
-				rooms[room_count] = *doors;
+				rooms[room_count] = cur_door.adjoiningRoom;
 				room_count++;
 			}
 		}
@@ -444,13 +444,13 @@ long CollideStaticObjects(COLL_INFO* coll, long x, long y, long z, short room_nu
 	ROOM_INFO* r;
 	MESH_INFO* mesh;
 	STATIC_INFO* sinfo;
-	short* door;
 	long lxmin, lxmax, lymin, lymax, lzmin, lzmax;
 	long xmin, xmax, ymin, ymax, zmin, zmax;
 	long i, j;
 	short num_nearby_rooms;
-	short nearby_rooms[22];
+	short nearby_rooms[22] = {};
 
+	r = &room[room_number];
 	coll->hit_static = 0;
 	lxmin = x - coll->radius;
 	lxmax = x + coll->radius;
@@ -460,25 +460,22 @@ long CollideStaticObjects(COLL_INFO* coll, long x, long y, long z, short room_nu
 	lzmax = z + coll->radius;
 	num_nearby_rooms = 1;
 	nearby_rooms[0] = room_number;
-	door = room[room_number].door;
 
-	if (door)
+	if (r->door)
 	{
-		for (i = *door++; i > 0; i--)
+		for (i = 0; i < r->door->portal_count; i++)
 		{
+			auto cur_door = r->door->portals[i];
 			for (j = 0; j < num_nearby_rooms; j++)
 			{
-				if (nearby_rooms[j] == *door)
+				if (nearby_rooms[j] == cur_door.adjoiningRoom)
 					break;
 			}
-
 			if (j == num_nearby_rooms)
 			{
-				nearby_rooms[num_nearby_rooms] = *door;
+				nearby_rooms[num_nearby_rooms] = cur_door.adjoiningRoom;
 				num_nearby_rooms++;
 			}
-
-			door += 16;
 		}
 	}
 
@@ -560,11 +557,10 @@ void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll)
 	ITEM_INFO* item;
 	MESH_INFO* mesh;
 	PHD_3DPOS pos;
-	short* door;
 	short* bounds;
 	long i, j, dx, dy, dz;
 	short num_nearby_rooms, item_number, nex;
-	short nearby_rooms[22];
+	short nearby_rooms[22] = {};
 
 	l->hit_status = 0;
 	lara.hit_direction = -1;
@@ -572,27 +568,25 @@ void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll)
 	if (l->hit_points <= 0)
 		return;
 
+	r = &room[nearby_rooms[0]];
 	num_nearby_rooms = 1;
 	nearby_rooms[0] = l->room_number;
-	door = room[nearby_rooms[0]].door;
 
-	if (door)
+	if (r->door)
 	{
-		for (i = *door++; i > 0; i--)
+		for (i = 0; i < r->door->portal_count; i++)
 		{
+			auto cur_door = r->door->portals[i];
 			for (j = 0; j < num_nearby_rooms; j++)
 			{
-				if (nearby_rooms[j] == *door)
+				if (nearby_rooms[j] == cur_door.adjoiningRoom)
 					break;
 			}
-
 			if (j == num_nearby_rooms)
 			{
-				nearby_rooms[num_nearby_rooms] = *door;
+				nearby_rooms[num_nearby_rooms] = cur_door.adjoiningRoom;
 				num_nearby_rooms++;
 			}
-
-			door += 16;
 		}
 	}
 

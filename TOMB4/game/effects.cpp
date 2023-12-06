@@ -239,24 +239,14 @@ void LaraLocationPad(ITEM_INFO* item)
 
 void GhostTrap(ITEM_INFO* item)
 {
-	ITEM_INFO* wraith;
-	short nex;
-
-	nex = next_item_active;
-
-	if (next_item_active != NO_ITEM)
+	ITEM_INFO* target_item = NULL;
+	for (short item_num = next_item_active; item_num != NO_ITEM; item_num = target_item->next_active)
 	{
-		while (nex != NO_ITEM)
+		target_item = &items[item_num];
+		if (target_item->object_number == WRAITH3 && target_item->hit_points <= 0)
 		{
-			wraith = &items[nex];
-
-			if (wraith->object_number == WRAITH3 && !wraith->hit_points)
-			{
-				wraith->hit_points = item - items;
-				break;
-			}
-
-			nex = wraith->next_active;
+			target_item->hit_points = item - items;
+			break;
 		}
 	}
 
@@ -265,18 +255,35 @@ void GhostTrap(ITEM_INFO* item)
 
 void KillActiveBaddies(ITEM_INFO* item)
 {
-	ITEM_INFO* target_item;
-	short item_num;
-
-	for (item_num = next_item_active; item_num != NO_ITEM; item_num = target_item->next_active)
+	ITEM_INFO* target_item = NULL;
+	for (short item_num = next_item_active; item_num != NO_ITEM; item_num = target_item->next_active)
 	{
 		target_item = &items[item_num];
+		if (item == target_item && objects[target_item->object_number].intelligent)
+		{
+			target_item->status = ITEM_INVISIBLE;
+			if (item != NULL)
+			{
+				RemoveActiveItem(item_num);
+				DisableBaddieAI(item_num);
+				item->flags |= IFL_INVISIBLE;
+			}
+		}
+	}
 
+	flipeffect = -1;
+}
+
+void KillActiveBaddies(bool doRemoveAndDisable)
+{
+	ITEM_INFO* target_item = NULL;
+	for (short item_num = next_item_active; item_num != NO_ITEM; item_num = target_item->next_active)
+	{
+		target_item = &items[item_num];
 		if (objects[target_item->object_number].intelligent)
 		{
 			target_item->status = ITEM_INVISIBLE;
-
-			if (item != ((void*)0xABCDEF))
+			if (doRemoveAndDisable)
 			{
 				RemoveActiveItem(item_num);
 				DisableBaddieAI(item_num);

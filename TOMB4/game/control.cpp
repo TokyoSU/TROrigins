@@ -523,7 +523,7 @@ long ControlPhase(long nframes, long demo_mode)
 	return 0;
 }
 
-void FlipMap(long FlipNumber)
+void FlipMap(long flip_number)
 {
 	ROOM_INFO* r;
 	ROOM_INFO* flipped;
@@ -534,7 +534,7 @@ void FlipMap(long FlipNumber)
 	{
 		r = &room[i];
 
-		if (r->flipped_room >= 0 && r->FlipNumber == FlipNumber)
+		if (r->flipped_room >= 0 && r->flip_number == flip_number)
 		{
 			for (int j = r->item_number; j != NO_ITEM; j = items[j].next_item)
 				items[j].il.room_number = 255;
@@ -552,8 +552,8 @@ void FlipMap(long FlipNumber)
 		}
 	}
 
-	flip_stats[FlipNumber] = !flip_stats[FlipNumber];
-	flip_status = flip_stats[FlipNumber];
+	flip_stats[flip_number] = !flip_stats[flip_number];
+	flip_status = flip_stats[flip_number];
 
 	for (short slot = 0; slot < 5; slot++)
 	{

@@ -8,7 +8,7 @@ void ProcessPickupMeshVertices(MESH_DATA* mesh);
 void phd_PutPolygons(short* objptr, long clip);
 void phd_PutPolygons_train(short* objptr, long x);
 void _InsertRoom(ROOM_INFO* r);
-void RenderLoadPic(long unused);
+void RenderLoadPic();
 void S_InitialisePolyList();
 void phd_PutPolygonsPickup(short* objptr, float x, float y, long color);
 void phd_PutPolygonSkyMesh(short* objptr, long clipstatus);

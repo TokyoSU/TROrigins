@@ -604,7 +604,7 @@ void DoLevel(uchar Name, uchar Audio)
 	lara.examine1 = 0;
 	lara.examine2 = 0;
 	lara.examine3 = 0;
-	RenderLoadPic(0);
+	RenderLoadPic();
 
 	if (gfStatus == 3)
 	{
@@ -937,8 +937,8 @@ void DoTitle(uchar Name, uchar Audio)
 		PlayFmvNow(12);
 #endif
 
-	if (gfStatus != 4)
-		RenderLoadPic(0);
+	//if (gfStatus != 4)
+	//	RenderLoadPic();
 
 	input = 0;
 }

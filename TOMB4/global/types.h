@@ -32,7 +32,7 @@
 #define W2V_SHIFT	14
 #define MAX_SAMPLES	370
 #define MAX_DYNAMICS	64
-#define MALLOC_SIZE	15000000	//15MB
+#define MALLOC_SIZE	150000000	//150MB
 
 /********************DX defs********************/
 #define LPDIRECTDRAWX			LPDIRECTDRAW4
@@ -57,6 +57,7 @@
 /*typedefs*/
 typedef unsigned char uchar;
 typedef unsigned short ushort;
+typedef unsigned int uint;
 typedef unsigned long ulong;
 
 enum DX_FLAGS
@@ -1022,10 +1023,62 @@ struct PCLIGHT_INFO
 	uchar Pad;
 };
 
+struct SVECTOR2
+{
+	short x;
+	short y;
+	short z;
+};
+
+struct TR_VERTEX
+{
+	SVECTOR2 pos;
+	short lighting1;
+	short attributes;
+	short lighting2;
+};
+
+struct ROOM_FACE4
+{
+	short vertices[4];
+	short texture;
+	short lighting_effect;
+};
+
+struct ROOM_FACE3
+{
+	short vertices[3];
+	short texture;
+	short lighting_effect;
+};
+
+struct ROOM_DATA
+{
+	short nVerts;
+	TR_VERTEX* verts;
+	short gt4cnt;
+	ROOM_FACE4* gt4;
+	short gt3cnt;
+	ROOM_FACE3* gt3;
+};
+
+struct ROOM_PORTAL
+{
+	short adjoiningRoom;
+	SVECTOR2 normal;
+	SVECTOR2 vertices[4];
+};
+
+struct ROOM_DOORS
+{
+	int portal_count;
+	ROOM_PORTAL* portals;
+};
+
 struct ROOM_INFO
 {
-	short* data;
-	short* door;
+	ROOM_DATA data;
+	ROOM_DOORS* door;
 	FLOOR_INFO* floor;
 	LIGHTINFO* light;
 	MESH_INFO* mesh;
@@ -1039,9 +1092,9 @@ struct ROOM_INFO
 	long ambient;
 	short num_lights;
 	short num_meshes;
-	uchar ReverbType;
-	uchar FlipNumber;
-	char MeshEffect;
+	uchar reverb_type;
+	uchar flip_number;
+	char mesh_effect;
 	char bound_active;
 	short left;
 	short right;
@@ -1055,11 +1108,11 @@ struct ROOM_INFO
 	short fx_number;
 	short flipped_room;
 	ushort flags;
+
 	long nVerts;
 	long nWaterVerts;
 	long nShoreVerts;
 	LPDIRECT3DVERTEXBUFFER SourceVB;
-	short* FaceData;
 	float posx;
 	float posy;
 	float posz;

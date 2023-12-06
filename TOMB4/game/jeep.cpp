@@ -1061,30 +1061,33 @@ static long UserControl(ITEM_INFO* item, long height, long* pitch)
 
 void JeepBaddieCollision(ITEM_INFO* item)
 {
+	ROOM_INFO* r;
 	JEEPINFO* jeep;
-	ITEM_INFO* collided;
+	ITEM_INFO* collided = NULL;
 	OBJECT_INFO* obj;
-	short* doors;
-	long j, dx, dy, dz;
+	long i, j, dx, dy, dz;
 	short room_count, item_number;
 
+	r = &room[item->room_number];
 	jeep = (JEEPINFO*)item->data;
 	room_count = 1;
 	jroomies[0] = item->room_number;
-	doors = room[item->room_number].door;
 
-	for (int i = *doors++; i > 0; i--, doors += 16)
+	if (r->door)
 	{
-		for (j = 0; j < room_count; j++)
+		for (i = 0; i < r->door->portal_count; i++)
 		{
-			if (jroomies[j] == *doors)
-				break;
-		}
-
-		if (j == room_count)
-		{
-			jroomies[room_count] = *doors;
-			room_count++;
+			auto cur_door = r->door->portals[i];
+			for (j = 0; j < room_count; j++)
+			{
+				if (jroomies[j] == cur_door.adjoiningRoom)
+					break;
+			}
+			if (j == room_count)
+			{
+				jroomies[room_count] = cur_door.adjoiningRoom;
+				room_count++;
+			}
 		}
 	}
 
@@ -1147,12 +1150,12 @@ void JeepCollideStaticObjects(long x, long y, long z, short room_number, long he
 	STATIC_INFO* sinfo;
 	ROOM_INFO* r;
 	PHD_VECTOR pos;
-	short* doors;
-	long j;
+	long i, j;
 	static long JeepBounds[6] = { 0, 0, 0, 0, 0, 0 };
 	static long CollidedStaticBounds[6] = { 0, 0, 0, 0, 0, 0 };
 	short room_count, rn;
 
+	r = &room[room_number];
 	pos.x = x;
 	pos.y = y;
 	pos.z = z;
@@ -1164,20 +1167,22 @@ void JeepCollideStaticObjects(long x, long y, long z, short room_number, long he
 	JeepBounds[5] = z - 256;
 	room_count = 1;
 	jroomies[0] = room_number;
-	doors = room[room_number].door;
 
-	for (int i = *doors++; i > 0; i--, doors += 16)
+	if (r->door)
 	{
-		for (j = 0; j < room_count; j++)
+		for (i = 0; i < r->door->portal_count; i++)
 		{
-			if (jroomies[j] == *doors)
-				break;
-		}
-
-		if (j == room_count)
-		{
-			jroomies[room_count] = *doors;
-			room_count++;
+			auto cur_door = r->door->portals[i];
+			for (j = 0; j < room_count; j++)
+			{
+				if (jroomies[j] == cur_door.adjoiningRoom)
+					break;
+			}
+			if (j == room_count)
+			{
+				jroomies[room_count] = cur_door.adjoiningRoom;
+				room_count++;
+			}
 		}
 	}
 

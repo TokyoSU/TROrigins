@@ -570,9 +570,9 @@ void LaraControl(short item_number)
 	}
 
 	if (tomb4.reverb == 2)
-		S_SetReverbType(room[l->room_number].ReverbType);
+		S_SetReverbType(room[l->room_number].reverb_type);
 	else
-		S_SetReverbType(room[camera.pos.room_number].ReverbType);
+		S_SetReverbType(room[camera.pos.room_number].reverb_type);
 
 	if (l->hit_points <= 0)
 	{

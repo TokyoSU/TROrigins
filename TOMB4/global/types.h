@@ -1756,6 +1756,12 @@ struct AI_INFO
 	short angle;
 	short x_angle;
 	short enemy_facing;
+	AI_INFO()
+		: zone_number(0), enemy_zone(0), distance(0), ahead(0), bite(0), angle(0), x_angle(0), enemy_facing(0)
+	{}
+	AI_INFO(short zone_number, short enemy_zone, long distance, long ahead, long bite, short angle, short x_angle, short enemy_facing)
+		: zone_number(zone_number), enemy_zone(enemy_zone), distance(distance), ahead(ahead), bite(bite), angle(angle), x_angle(x_angle), enemy_facing(enemy_facing)
+	{}
 };
 
 struct AIOBJECT

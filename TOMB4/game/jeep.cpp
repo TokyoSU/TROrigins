@@ -1077,7 +1077,7 @@ void JeepBaddieCollision(ITEM_INFO* item)
 	{
 		for (i = 0; i < r->door->portal_count; i++)
 		{
-			auto cur_door = r->door->portals[i];
+			auto& cur_door = r->door->portals[i];
 			for (j = 0; j < room_count; j++)
 			{
 				if (jroomies[j] == cur_door.adjoiningRoom)
@@ -1172,7 +1172,7 @@ void JeepCollideStaticObjects(long x, long y, long z, short room_number, long he
 	{
 		for (i = 0; i < r->door->portal_count; i++)
 		{
-			auto cur_door = r->door->portals[i];
+			auto& cur_door = r->door->portals[i];
 			for (j = 0; j < room_count; j++)
 			{
 				if (jroomies[j] == cur_door.adjoiningRoom)

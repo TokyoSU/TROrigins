@@ -976,6 +976,7 @@ void GetRoomBounds()
 	{
 		auto rn = draw_room_list[room_list_start % 128];
 		room_list_start++;
+
 		auto* r = &room[rn];
 		r->bound_active -= 2;
 
@@ -1022,7 +1023,7 @@ void GetRoomBounds()
 		{
 			for (int i = 0; i < r->door->portal_count; i++)
 			{
-				auto door = r->door->portals[i];
+				auto& door = r->door->portals[i];
 				if (door.normal.x * long(r->x + door.vertices[0].x - mW2V[M03]) +
 					door.normal.y * long(r->y + door.vertices[0].y - mW2V[M13]) +
 					door.normal.z * long(r->z + door.vertices[0].z - mW2V[M23]) < 0)
@@ -1064,14 +1065,15 @@ void SetRoomBounds(ROOM_PORTAL* door, long adjointRoom, ROOM_INFO* actualRoom)
 		z = v->z;
 
 		if (z <= 0)
+		{
 			tooNear++;
+		}
 		else
 		{
 			if (z > f_zfar)
 				tooFar++;
 
 			z /= f_mpersp;
-
 			if (z)
 			{
 				x = x / z + f_centerx;
@@ -1083,7 +1085,6 @@ void SetRoomBounds(ROOM_PORTAL* door, long adjointRoom, ROOM_INFO* actualRoom)
 					x = (float)phd_left;
 				else
 					x = (float)phd_right;
-
 				if (y < 0)
 					y = (float)phd_top;
 				else
@@ -1141,13 +1142,10 @@ void SetRoomBounds(ROOM_PORTAL* door, long adjointRoom, ROOM_INFO* actualRoom)
 
 	if (tL < actualRoom->test_left)
 		tL = actualRoom->test_left;
-
 	if (tR > actualRoom->test_right)
 		tR = actualRoom->test_right;
-
 	if (tT < actualRoom->test_top)
 		tT = actualRoom->test_top;
-
 	if (tB > actualRoom->test_bottom)
 		tB = actualRoom->test_bottom;
 
@@ -1158,13 +1156,10 @@ void SetRoomBounds(ROOM_PORTAL* door, long adjointRoom, ROOM_INFO* actualRoom)
 	{
 		if (tL < r->test_left)
 			r->test_left = (short)tL;
-
 		if (tT < r->test_top)
 			r->test_top = (short)tT;
-
 		if (tR > r->test_right)
 			r->test_right = (short)tR;
-
 		if (tB > r->test_bottom)
 			r->test_bottom = (short)tB;
 	}

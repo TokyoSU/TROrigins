@@ -54,7 +54,7 @@ long GetCollidedObjects(ITEM_INFO* item, long rad, long noInvisible, ITEM_INFO**
 	{
 		for (i = 0; i < r->door->portal_count; i++)
 		{
-			auto cur_door = r->door->portals[i];
+			auto& cur_door = r->door->portals[i];
 			for (j = 0; j < room_count; j++)
 			{
 				if (rooms[j] == cur_door.adjoiningRoom)
@@ -465,7 +465,7 @@ long CollideStaticObjects(COLL_INFO* coll, long x, long y, long z, short room_nu
 	{
 		for (i = 0; i < r->door->portal_count; i++)
 		{
-			auto cur_door = r->door->portals[i];
+			auto& cur_door = r->door->portals[i];
 			for (j = 0; j < num_nearby_rooms; j++)
 			{
 				if (nearby_rooms[j] == cur_door.adjoiningRoom)
@@ -576,7 +576,7 @@ void LaraBaddieCollision(ITEM_INFO* l, COLL_INFO* coll)
 	{
 		for (i = 0; i < r->door->portal_count; i++)
 		{
-			auto cur_door = r->door->portals[i];
+			auto& cur_door = r->door->portals[i];
 			for (j = 0; j < num_nearby_rooms; j++)
 			{
 				if (nearby_rooms[j] == cur_door.adjoiningRoom)

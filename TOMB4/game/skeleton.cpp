@@ -335,8 +335,7 @@ void SkeletonControl(short item_number)
 				else if (!(GetRandomControl() & 0x3F))
 					item->goal_anim_state = 15;
 			}
-			else if (lara.target == item && larainfo.ahead && larainfo.distance < 0x400000 && GetRandomControl() & 1 &&
-				(lara.gun_type == WEAPON_SHOTGUN || !(GetRandomControl() & 0xF)) && item->mesh_bits == -1)
+			else if (lara.target == item && larainfo.ahead && larainfo.distance < 0x400000 && GetRandomControl() & 1 && (lara.gun_type == WEAPON_SHOTGUN || !(GetRandomControl() & 0xF)) && item->mesh_bits == -1)
 				item->goal_anim_state = 7;
 			else if (info.bite && info.distance < 0x718E4)
 			{

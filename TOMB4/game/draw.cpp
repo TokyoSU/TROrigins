@@ -106,7 +106,6 @@ void phd_RotY_I(short ang)
 void phd_RotX_I(short ang)
 {
 	float* mPtr;
-
 	phd_RotX(ang);
 	mPtr = mMXPtr;
 	mMXPtr = mIMptr;
@@ -128,7 +127,6 @@ void phd_RotZ_I(short ang)
 void phd_TranslateRel_I(long x, long y, long z)
 {
 	float* mPtr;
-
 	phd_TranslateRel(x, y, z);
 	mPtr = mMXPtr;
 	mMXPtr = mIMptr;
@@ -139,7 +137,6 @@ void phd_TranslateRel_I(long x, long y, long z)
 void phd_TranslateRel_ID(long x, long y, long z, long x2, long y2, long z2)
 {
 	float* mPtr;
-
 	phd_TranslateRel(x, y, z);
 	mPtr = mMXPtr;
 	mMXPtr = mIMptr;
@@ -150,7 +147,6 @@ void phd_TranslateRel_ID(long x, long y, long z, long x2, long y2, long z2)
 void phd_RotYXZ_I(short y, short x, short z)
 {
 	float* mPtr;
-
 	phd_RotYXZ(y, x, z);
 	mPtr = mMXPtr;
 	mMXPtr = mIMptr;
@@ -161,7 +157,6 @@ void phd_RotYXZ_I(short y, short x, short z)
 void gar_RotYXZsuperpack_I(short** pprot1, short** pprot2, long skip)
 {
 	float* mPtr;
-
 	gar_RotYXZsuperpack(pprot1, skip);
 	mPtr = mMXPtr;
 	mMXPtr = mIMptr;
@@ -172,7 +167,6 @@ void gar_RotYXZsuperpack_I(short** pprot1, short** pprot2, long skip)
 void gar_RotYXZsuperpack(short** pprot, long skip)
 {
 	ushort* prot;
-
 	while (skip)
 	{
 		prot = (ushort*)*pprot;
@@ -1047,10 +1041,10 @@ void SetRoomBounds(ROOM_PORTAL* door, long adjointRoom, ROOM_INFO* actualRoom)
 	if (r->left <= actualRoom->test_left && r->right >= actualRoom->test_right && r->top <= actualRoom->test_top && r->bottom >= actualRoom->test_bottom)
 		return;
 	
-	tL = (float)actualRoom->test_right;
-	tR = (float)actualRoom->test_left;
-	tB = (float)actualRoom->test_top;
-	tT = (float)actualRoom->test_bottom;
+	tR = (float)actualRoom->test_right;
+	tL = (float)actualRoom->test_left;
+	tT = (float)actualRoom->test_top;
+	tB = (float)actualRoom->test_bottom;
 	v = vbuf;
 	tooNear = 0;
 	tooFar = 0;

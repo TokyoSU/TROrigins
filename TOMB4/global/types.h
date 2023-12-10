@@ -487,6 +487,12 @@ struct FVECTOR
 	float x;
 	float y;
 	float z;
+	FVECTOR()
+		: x(0), y(0), z(0)
+	{}
+	FVECTOR(float x, float y, float z)
+		: x(x), y(y), z(z)
+	{}
 };
 
 struct SVECTOR

@@ -480,10 +480,10 @@ void ProcessRoomData(ROOM_INFO* r)
 				pclight->InnerAngle = 2 * acos(light->Inner);
 				pclight->OuterAngle = 2 * acos(light->Outer);
 
-				if (r->light[nLights].Type == LIGHT_SPOT && pclight->OuterAngle > 3.1415927F)
+				if (r->light[nLights].Type == LIGHT_SPOT && pclight->OuterAngle > (float)M_PI)
 				{
 					Log(1, "SpotLight Corrected");
-					pclight->OuterAngle = 3.1415927F;
+					pclight->OuterAngle = (float)M_PI;
 				}
 
 				pclight->Cutoff = light->Cutoff;
@@ -540,7 +540,6 @@ void InsertRoom(ROOM_INFO* r)
 void CalcTriFaceNormal(D3DVECTOR* p1, D3DVECTOR* p2, D3DVECTOR* p3, D3DVECTOR* N)
 {
 	FVECTOR u, v;
-
 	u.x = p1->x - p2->x;
 	u.y = p1->y - p2->y;
 	u.z = p1->z - p2->z;

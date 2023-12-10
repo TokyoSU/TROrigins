@@ -20,9 +20,7 @@ static BITE_INFO guide_lighter = { 30, 80, 50, 15 };
 
 void InitialiseGuide(short item_number)
 {
-	ITEM_INFO* item;
-
-	item = &items[item_number];
+	ITEM_INFO* item = &items[item_number];
 	InitialiseCreature(item_number);
 	item->anim_number = objects[GUIDE].anim_index + 4;
 	item->frame_number = anims[item->anim_number].frame_base;
@@ -30,7 +28,9 @@ void InitialiseGuide(short item_number)
 	item->goal_anim_state = 1;
 
 	if (!objects[WRAITH1].loaded)
+	{
 		item->meshswap_meshbits = 0x40000;
+	}
 	else
 	{
 		item->meshswap_meshbits = 0;
@@ -122,7 +122,6 @@ void GuideControl(short item_number)
 			if (baddie_slots[i].item_num != NO_ITEM && baddie_slots[i].item_num != item_number)
 			{
 				candidate = &items[baddie_slots[i].item_num];
-
 				if (candidate->object_number != GUIDE && abs(candidate->pos.y_pos - item->pos.y_pos) <= 512)
 				{
 					x = candidate->pos.x_pos - item->pos.x_pos;
@@ -145,7 +144,6 @@ void GuideControl(short item_number)
 	}
 
 	enemy = guide->enemy;
-
 	if (target)
 		guide->enemy = target;
 

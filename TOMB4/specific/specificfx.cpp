@@ -2829,7 +2829,6 @@ void DrawShockwaves()
 	for (int i = 0; i < 16; i++)
 	{
 		wave = &ShockWaves[i];
-
 		if (!wave->life)
 			continue;
 

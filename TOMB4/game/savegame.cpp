@@ -751,11 +751,10 @@ void SaveLevelData(long FullSave)
 		}
 
 		WriteSG(&byte, sizeof(uchar));
-
 		if (byte)
 		{
 			WriteSG(&item->pos, sizeof(PHD_3DPOS));
-			WriteSG(item->item_flags, sizeof(short) * 4);
+			WriteSG(item->item_flags, sizeof(long) * 4);
 		}
 
 		if (gfCurrentLevel == 1)
@@ -963,16 +962,13 @@ void RestoreLevelData(long FullSave)
 				item->flags = (short)flags;
 
 				if (packed & 0x80)
-					ReadSG(&item->item_flags[0], sizeof(short));
-
+					ReadSG(&item->item_flags[0], sizeof(long));
 				if (packed & 0x100)
-					ReadSG(&item->item_flags[1], sizeof(short));
-
+					ReadSG(&item->item_flags[1], sizeof(long));
 				if (packed & 0x200)
-					ReadSG(&item->item_flags[2], sizeof(short));
-
+					ReadSG(&item->item_flags[2], sizeof(long));
 				if (packed & 0x400)
-					ReadSG(&item->item_flags[3], sizeof(short));
+					ReadSG(&item->item_flags[3], sizeof(long));
 
 				if (packed & 0x800)
 					ReadSG(&item->timer, sizeof(short));

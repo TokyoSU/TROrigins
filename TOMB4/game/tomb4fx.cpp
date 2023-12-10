@@ -15,6 +15,7 @@
 #include "effects.h"
 #include "lara.h"
 #include "gameflow.h"
+#include "senet.h"
 
 NODEOFFSET_INFO NodeOffsets[16] =
 {
@@ -1701,14 +1702,10 @@ long GetFreeShockwave()
 
 void TriggerShockwave(PHD_VECTOR* pos, long InnerOuterRads, long speed, long bgrl, long XRotFlags)
 {
-	SHOCKWAVE_STRUCT* sw;
-	long swn;
-
-	swn = GetFreeShockwave();
-
+	auto swn = GetFreeShockwave();
 	if (swn != -1)
 	{
-		sw = &ShockWaves[swn];
+		auto* sw = &ShockWaves[swn];
 		sw->x = pos->x;
 		sw->y = pos->y;
 		sw->z = pos->z;
@@ -1721,6 +1718,28 @@ void TriggerShockwave(PHD_VECTOR* pos, long InnerOuterRads, long speed, long bgr
 		sw->g = CLRG(bgrl);
 		sw->b = CLRR(bgrl);
 		sw->life = CLRA(bgrl);
+		SoundEffect(SFX_DEMI_SIREN_SWAVE, (PHD_3DPOS*)pos, SFX_DEFAULT);
+	}
+}
+
+void TriggerShockwave(PHD_VECTOR* pos, uchar life, short inner, short outer, short xRot, short flags, short speed, DWORD color)
+{
+	auto swn = GetFreeShockwave();
+	if (swn != NO_ITEM)
+	{
+		auto* sw = &ShockWaves[swn];
+		sw->x = pos->x;
+		sw->y = pos->y;
+		sw->z = pos->z;
+		sw->InnerRad = inner;
+		sw->OuterRad = outer;
+		sw->XRot = xRot;
+		sw->flags = flags;
+		sw->Speed = speed;
+		sw->r = RGB_GETRED(color);
+		sw->g = RGB_GETGREEN(color);
+		sw->b = RGB_GETBLUE(color);
+		sw->life = life;
 		SoundEffect(SFX_DEMI_SIREN_SWAVE, (PHD_3DPOS*)pos, SFX_DEFAULT);
 	}
 }
@@ -1741,9 +1760,9 @@ void TriggerShockwaveHitEffect(long x, long y, long z, long rgb, short dir, long
 	sptr->sR = 0;
 	sptr->sG = 0;
 	sptr->sB = 0;
-	sptr->dR = CLRR(rgb);
-	sptr->dG = CLRG(rgb);
-	sptr->dB = CLRB(rgb);
+	sptr->dR = RGB_GETRED(rgb);
+	sptr->dG = RGB_GETGREEN(rgb);
+	sptr->dB = RGB_GETBLUE(rgb);
 	sptr->ColFadeSpeed = 4;
 	sptr->FadeToBlack = 8;
 	sptr->TransType = 2;
@@ -1787,43 +1806,38 @@ void TriggerShockwaveHitEffect(long x, long y, long z, long rgb, short dir, long
 
 void UpdateShockwaves()
 {
-	SHOCKWAVE_STRUCT* sw;
 	short* bounds;
 	long dx, dz, dist;
 	short dir;
 
 	for (int i = 0; i < 16; i++)
 	{
-		sw = &ShockWaves[i];
-
-		if (!sw->life)
+		auto* sw = &ShockWaves[i];
+		if (sw->life <= 0)
 			continue;
 
 		sw->life--;
-
-		if (!sw->life)
-			continue;
-
 		sw->OuterRad += sw->Speed;
 		sw->InnerRad += sw->Speed >> 1;
 		sw->Speed -= sw->Speed >> 4;
 
-		if (lara_item->hit_points >= 0 && sw->flags & 3)
+		if ((lara_item->hit_points >= 0) && (sw->flags & SW_DAMAGE_LARA))
 		{
-			bounds = GetBestFrame(lara_item);
-			dx = lara_item->pos.x_pos - sw->x;
-			dz = lara_item->pos.z_pos - sw->z;
-			dist = phd_sqrt(SQUARE(dx) + SQUARE(dz));
+			auto* bounds = GetBestFrame(lara_item);
+			auto dx = lara_item->pos.x_pos - sw->x;
+			auto dz = lara_item->pos.z_pos - sw->z;
+			auto dist = phd_sqrt(SQUARE(dx) + SQUARE(dz));
 
-			if (sw->y > lara_item->pos.y_pos + bounds[2] && sw->y < bounds[3] + lara_item->pos.y_pos + 256 &&
-				dist > sw->InnerRad && dist < sw->OuterRad)
+			if (sw->y > lara_item->pos.y_pos + bounds[2] && sw->y < bounds[3] + lara_item->pos.y_pos + 256 && dist > sw->InnerRad && dist < sw->OuterRad)
 			{
 				dir = (short)phd_atan(dz, dx);
-				TriggerShockwaveHitEffect(lara_item->pos.x_pos, sw->y, lara_item->pos.z_pos, *(long*)&sw->r, dir, sw->Speed);
-				lara_item->hit_points -= sw->Speed >> (((sw->flags & 2) != 0) + 2);
+				TriggerShockwaveHitEffect(lara_item->pos.x_pos, sw->y, lara_item->pos.z_pos, RGB_MAKE(sw->r, sw->g, sw->b), dir, sw->Speed);
+				lara_item->hit_points -= sw->Speed >> (((sw->flags & SW_DAMAGE_LARA_COUNT) != 0) + 2);
 			}
 			else
+			{
 				sw->Temp = 0;
+			}
 		}
 	}
 }
@@ -2268,4 +2282,72 @@ void Fade()
 
 	if (ScreenFade || dScreenFade)
 		DrawPsxTile(0, phd_winwidth | (phd_winheight << 16), RGBA(ScreenFade, ScreenFade, ScreenFade, 98), 2, 0);
+}
+
+void TriggerExplosion(ITEM_INFO* item, int height, long extras, bool isSmallObj)
+{
+	PHD_VECTOR pos;
+	pos.x = item->pos.x_pos;
+	pos.y = item->pos.y_pos - height;
+	pos.z = item->pos.z_pos;
+
+	auto* r = &room[item->room_number];
+	bool isUnderwater = r->flags & ROOM_UNDERWATER;
+
+	TriggerExplosionSparks(pos.x, pos.y, pos.z, extras, -3, isUnderwater, item->room_number);
+	for (int i = 0; i < 2; i++)
+		TriggerExplosionSparks(pos.x, pos.y, pos.z, extras, -2, isUnderwater, item->room_number);
+
+	int new_height = isSmallObj ? 64 : height;
+	if (isUnderwater)
+	{
+		auto rAmb = CLRR(r->ambient);
+		auto gAmb = CLRG(r->ambient);
+		auto bAmb = CLRB(r->ambient);
+		pos.y = item->pos.y_pos - new_height;
+		TriggerShockwave(&pos, 24, 128, 64, ANGLE(0), SW_DAMAGE_LARA, 96, RGB_MAKE(rAmb, gAmb, bAmb));
+	}
+	else
+	{
+		pos.y = item->pos.y_pos - (new_height + 64);
+		TriggerShockwave(&pos, 16, 64, 32, ANGLE(5), SW_DAMAGE_LARA, 64, RGB_MAKE(0, 128, 128));
+		pos.y = item->pos.y_pos - new_height;
+		TriggerShockwave(&pos, 24, 128, 64, ANGLE(0), SW_DAMAGE_LARA, 96, RGB_MAKE(0, 128, 128));
+		pos.y = item->pos.y_pos - (new_height - 64);
+		TriggerShockwave(&pos, 16, 64, 32, -ANGLE(5), SW_DAMAGE_LARA, 64, RGB_MAKE(0, 128, 128));
+	}
+}
+
+void TriggerExplosion(FX_INFO* fx, int height, long extras, bool isSmallObj)
+{
+	PHD_VECTOR pos;
+	pos.x = fx->pos.x_pos;
+	pos.y = fx->pos.y_pos - height;
+	pos.z = fx->pos.z_pos;
+
+	auto* r = &room[fx->room_number];
+	bool isUnderwater = r->flags & ROOM_UNDERWATER;
+
+	TriggerExplosionSparks(pos.x, pos.y, pos.z, extras, -3, isUnderwater, fx->room_number);
+	for (int i = 0; i < 2; i++)
+		TriggerExplosionSparks(pos.x, pos.y, pos.z, extras, -2, isUnderwater, fx->room_number);
+
+	int new_height = isSmallObj ? 64 : height;
+	if (isUnderwater)
+	{
+		auto rAmb = CLRR(r->ambient);
+		auto gAmb = CLRG(r->ambient);
+		auto bAmb = CLRB(r->ambient);
+		pos.y = fx->pos.y_pos - new_height;
+		TriggerShockwave(&pos, 24, 128, 64, ANGLE(0), SW_DAMAGE_LARA, 96, RGB_MAKE(rAmb, gAmb, bAmb));
+	}
+	else
+	{
+		pos.y = fx->pos.y_pos - (new_height + 64);
+		TriggerShockwave(&pos, 16, 64, 32, ANGLE(5), SW_DAMAGE_LARA, 64, RGB_MAKE(0, 128, 128));
+		pos.y = fx->pos.y_pos - new_height;
+		TriggerShockwave(&pos, 24, 128, 64, ANGLE(0), SW_DAMAGE_LARA, 96, RGB_MAKE(0, 128, 128));
+		pos.y = fx->pos.y_pos - (new_height - 64);
+		TriggerShockwave(&pos, 16, 64, 32, -ANGLE(5), SW_DAMAGE_LARA, 64, RGB_MAKE(0, 128, 128));
+	}
 }

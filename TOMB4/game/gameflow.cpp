@@ -529,7 +529,7 @@ void DoLevel(uchar Name, uchar Audio)
 
 		if (gfLegendTime && !DestFadeScreenHeight && !FadeScreenHeight && !cutseq_num)
 		{
-			PrintString(phd_winwidth >> 1, phd_winymax - font_height, 2, SCRIPT_TEXT(gfLegend), FF_CENTER);
+			PrintString(phd_winwidth >> 1, phd_winymax - font_height, 2, GetScriptText(gfLegend), FF_CENTER);
 			gfLegendTime--;
 		}
 
@@ -604,7 +604,7 @@ void DoLevel(uchar Name, uchar Audio)
 	lara.examine1 = 0;
 	lara.examine2 = 0;
 	lara.examine3 = 0;
-	RenderLoadPic();
+	//RenderLoadPic();
 
 	if (gfStatus == 3)
 	{
@@ -664,7 +664,7 @@ long TitleOptions()
 	switch (menu)
 	{
 	case 1:
-		PrintString(phd_centerx, font_height + phd_winymin, 6, SCRIPT_TEXT(TXT_Select_Level), FF_CENTER);
+		PrintString(phd_centerx, font_height + phd_winymin, 6, GetScriptText(TXT_Select_Level), FF_CENTER);
 
 		if (Gameflow->nLevels < 10)
 		{
@@ -705,7 +705,7 @@ long TitleOptions()
 		for (lp = nFirst; lp < nLevels + nFirst; lp++)
 		{
 			y += font_height;
-			PrintString(phd_centerx, y, selection & (1i64 << (lp - 1)) ? 1 : 2, SCRIPT_TEXT(gfLevelNames[lp]), FF_CENTER);
+			PrintString(phd_centerx, y, selection & (1i64 << (lp - 1)) ? 1 : 2, GetScriptText(gfLevelNames[lp]), FF_CENTER);
 		}
 
 		flag = 1i64 << (Gameflow->nLevels - 2);
@@ -732,10 +732,10 @@ long TitleOptions()
 	case 0:
 		ShowTitle();
 		Chris_Menu = 0;
-		PrintString(phd_centerx, phd_winymax - 4 * font_height, (selection & 1) ? 1 : 2, SCRIPT_TEXT(TXT_New_Game), FF_CENTER);
-		PrintString(phd_centerx, phd_winymax - 3 * font_height, (selection & 2) ? 1 : 2, SCRIPT_TEXT(TXT_Load_Game), FF_CENTER);
-		PrintString(phd_centerx, phd_winymax - 2 * font_height, (selection & 4) ? 1 : 2, SCRIPT_TEXT(TXT_Options), FF_CENTER);
-		PrintString(phd_centerx, phd_winymax - 1 * font_height, (selection & 8) ? 1 : 2, SCRIPT_TEXT(TXT_Exit), FF_CENTER);
+		PrintString(phd_centerx, phd_winymax - 4 * font_height, (selection & 1) ? 1 : 2, GetScriptText(TXT_New_Game), FF_CENTER);
+		PrintString(phd_centerx, phd_winymax - 3 * font_height, (selection & 2) ? 1 : 2, GetScriptText(TXT_Load_Game), FF_CENTER);
+		PrintString(phd_centerx, phd_winymax - 2 * font_height, (selection & 4) ? 1 : 2, GetScriptText(TXT_Options), FF_CENTER);
+		PrintString(phd_centerx, phd_winymax - 1 * font_height, (selection & 8) ? 1 : 2, GetScriptText(TXT_Exit), FF_CENTER);
 		flag = 8;
 		break;
 
@@ -1090,7 +1090,7 @@ long DoCredits()
 		if (y < font_height + phd_winheight + 1 && y > -font_height)
 		{
 			if (*s == '%')
-				PrintString(phd_winwidth >> 1, y, 6, SCRIPT_TEXT(CreditGroups[atoi(s + 1)]), FF_CENTER);
+				PrintString(phd_winwidth >> 1, y, 6, GetScriptText(CreditGroups[atoi(s + 1)]), FF_CENTER);
 			else if (*s != '0')
 				PrintString(phd_winwidth >> 1, y, 2 + (i == 72 ? 4 : 0), s, FF_CENTER);
 

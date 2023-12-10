@@ -8,19 +8,17 @@
 #include "effects.h"
 #include "../specific/3dmath.h"
 #include "camera.h"
+#include "tomb4fx.h"
 
 long ExplodeFX(FX_INFO* fx, long NoXZVel, short Num)
 {
-	short** meshpp;
-
-	meshpp = &meshes[fx->frame_number];
 	ShatterItem.YRot = fx->pos.y_rot;
-	ShatterItem.meshp = *meshpp;
+	ShatterItem.meshp = meshes[fx->frame_number];
 	ShatterItem.Sphere.x = fx->pos.x_pos;
 	ShatterItem.Sphere.y = fx->pos.y_pos;
 	ShatterItem.Sphere.z = fx->pos.z_pos;
 	ShatterItem.Bit = 0;
-	ShatterItem.flags = fx->flag2 & 0x400;
+	ShatterItem.flags = fx->flag2 & EDF_INVERT_SHATTER_COLOR;
 	ShatterObject(&ShatterItem, 0, Num, fx->room_number, NoXZVel);
 	return 1;
 }
@@ -60,20 +58,19 @@ void ControlBodyPart(short fx_number)
 
 	if (fx->pos.y_pos >= height)
 	{
-		if (fx->flag2 & 1)
+		if (fx->flag2 & EDF_SMOKE)
 		{
 			fx->pos.x_pos = ox;
 			fx->pos.y_pos = oy;
 			fx->pos.z_pos = oz;
 
-			if (fx->flag2 & 0x200)
+			if (fx->flag2 & EDF_UNKNOWN_FLAG)
 				ExplodeFX(fx, -2, 32);
 			else
 				ExplodeFX(fx, -1, 32);
 
 			KillEffect(fx_number);
-
-			if (fx->flag2 & 0x800)
+			if (fx->flag2 & EDF_ROCK_FALL_SOUND)
 				SoundEffect(SFX_ROCK_FALL_LAND, &fx->pos, SFX_DEFAULT);
 
 			return;
@@ -94,27 +91,28 @@ void ControlBodyPart(short fx_number)
 		}
 
 		fx->speed -= fx->speed >> 2;
-
 		if (abs(fx->speed) < 4)
 			fx->speed = 0;
-
 		fx->pos.y_pos = oy;
 	}
 
-	if (!fx->speed)
+	if (fx->speed == 0)
 	{
 		fx->flag1++;
-
 		if (fx->flag1 > 32)
 		{
+			if (fx->flag2 & EDF_EXPLODE)
+				TriggerExplosion(fx, 0, 3, true);
 			KillEffect(fx_number);
 			return;
 		}
 	}
 
-	if (fx->flag2 & 2 && GetRandomControl() & 1)
-		DoBloodSplat((GetRandomControl() & 0x3F) + fx->pos.x_pos - 32, (GetRandomControl() & 0x1F) + fx->pos.y_pos - 16,
-			(GetRandomControl() & 0x3F) + fx->pos.z_pos - 32, 1, short(GetRandomControl() << 1), fx->room_number);
+	if (fx->flag2 & EDF_FIRE)
+		AddFire(fx->pos.x_pos, fx->pos.y_pos, fx->pos.z_pos, 2, fx->room_number, 128);
+
+	if ((fx->flag2 & EDF_BLOOD) && GetRandomControl() & 1)
+		DoBloodSplat((GetRandomControl() & 0x3F) + fx->pos.x_pos - 32, (GetRandomControl() & 0x1F) + fx->pos.y_pos - 16, (GetRandomControl() & 0x3F) + fx->pos.z_pos - 32, 1, short(GetRandomControl() << 1), fx->room_number);
 
 	if (room_number != fx->room_number)
 		EffectNewRoom(fx_number, room_number);

@@ -280,7 +280,7 @@ const char* RPC_GetLevelName()
 			return "In Title";
 	}
 	else
-		return SCRIPT_TEXT(gfLevelNames[gfCurrentLevel]);
+		return GetScriptText(gfLevelNames[gfCurrentLevel]);
 }
 
 const char* RPC_GetTimer()

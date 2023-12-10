@@ -19,15 +19,21 @@
 #define	CLRB(clr)	((clr) & 0xFF)			//and 0xFF
 
 /*misc*/
-#define SCRIPT_TEXT(num)		(&gfStringWad[gfStringOffset[num]])
-#define SetCutPlayed(num)	(CutSceneTriggered |= 1 << (num))
-#define SetCutNotPlayed(num)	(CutSceneTriggered &= ~(1 << (num)))
-#define CheckCutPlayed(num)	(CutSceneTriggered & (1 << (num)))
+#define GetScriptText(num) &gfStringWad[gfStringOffset[num]]
+#define SetCutPlayed(num) (CutSceneTriggered |= 1 << (num))
+#define SetCutNotPlayed(num) (CutSceneTriggered &= ~(1 << (num)))
+#define CheckCutPlayed(num) (CutSceneTriggered & (1 << (num)))
 
 #define NOT_TARGETABLE -16384
 #define NO_HEIGHT -32512
+#define BLOCKABLE 0x8000
+#define BLOCKED 0x4000
+#define NO_BOX 2047
 #define NO_ITEM -1
 #define MESHBITS_ALL 0xFFFFFFFF
+#define MESHBITS_NONE 0
+#define MESHBITS(meshIdx) (1 << meshIdx)
+#define ANGLE(x) (x * 182)
 #define FVF (D3DFVF_TEX2 | D3DFVF_SPECULAR | D3DFVF_DIFFUSE | D3DFVF_XYZRHW)
 #define WALL_SHIFT 10
 #define W2V_SHIFT 14
@@ -75,14 +81,27 @@ enum DX_FLAGS
 	DXF_HWR = 0x80
 };
 
+enum SHOCKWAVE_FLAGS
+{
+	SW_DAMAGE_LARA_COUNT = 0x0001,
+	SW_DAMAGE_LARA = 0x0002
+};
+
 enum exploding_death_flags
 {
 	EDF_NONE = 0x0000,
+	EDF_SMOKE = 0x0001,
+	EDF_BLOOD = 0x0002,
+	EDF_FIRE = 0x0004,
+	EDF_EXPLODE = 0x0008,
 	EDF_NOSPEED = 0x0010,
 	EDF_MORESPEED = 0x0020,
 	EDF_NOFALLSPEED = 0x0040,
 	EDF_MOREFALLSPEED = 0x0080,
 	EDF_CREATE_EFFECT = 0x0100,
+	EDF_UNKNOWN_FLAG = 0x0200,
+	EDF_INVERT_SHATTER_COLOR = 0x0400,
+	EDF_ROCK_FALL_SOUND = 0x0800
 };
 
 enum bone_flags
@@ -100,7 +119,7 @@ enum carried_weapon_flags
 {
 	W_NONE =		0x0,
 	W_PRESENT =		0x1,
-	W_FLASHLIGHT =	0x2,	//speculation, actually unused
+	W_FLASHLIGHT =	0x2,	// speculation, actually unused
 	W_LASERSIGHT =	0x4,
 	W_AMMO1 =		0x8,
 	W_AMMO2 =		0x10,
@@ -456,6 +475,12 @@ struct PHD_VECTOR
 	long x;
 	long y;
 	long z;
+	PHD_VECTOR()
+		: x(0), y(0), z(0)
+	{}
+	PHD_VECTOR(long x, long y, long z)
+		: x(x), y(y), z(z)
+	{}
 };
 
 struct PHD_3DPOS
@@ -589,8 +614,8 @@ struct ITEM_INFO
 	short carried_item;
 	short after_death;
 	ushort fired_weapon;
-	short item_flags[4];
-	void* data;
+	long item_flags[4];
+	LPVOID data;
 	PHD_3DPOS pos;
 	ITEM_LIGHT il;
 	ulong active : 1;
@@ -604,8 +629,26 @@ struct ITEM_INFO
 	ulong ai_bits : 5;
 	ulong really_active : 1;
 	ulong meshswap_meshbits;
-	short draw_room;
-	short TOSSPAD;
+
+	bool IsMeshDrawn(long meshIdx)
+	{
+		return mesh_bits & MESHBITS(meshIdx);
+	}
+
+	bool IsMeshHidden(long meshIdx)
+	{
+		return !(mesh_bits & MESHBITS(meshIdx));
+	}
+
+	void DrawMesh(long meshIdx)
+	{
+		mesh_bits |= MESHBITS(meshIdx);
+	}
+
+	void HideMesh(long meshIdx)
+	{
+		mesh_bits &= ~MESHBITS(meshIdx);
+	}
 };
 
 struct BOX_NODE
@@ -674,6 +717,7 @@ struct FX_INFO
 	short shade;
 	short flag1;
 	short flag2;
+	short flag3;
 };
 
 struct LARA_ARM
@@ -1695,6 +1739,12 @@ struct BITE_INFO
 	long y;
 	long z;
 	long mesh_num;
+	BITE_INFO()
+		: x(0), y(0), z(0), mesh_num(0)
+	{}
+	BITE_INFO(long x, long y, long z, long mesh_num)
+		: x(x), y(y), z(z), mesh_num(mesh_num)
+	{}
 };
 
 struct D3DTLBUMPVERTEX

@@ -381,7 +381,7 @@ void InitialiseObelisk(short item_number)
 {
 	ITEM_INFO* item;
 	ITEM_INFO* item2;
-	short* ifl;
+	long* ifl;
 
 	item = &items[item_number];
 	item->anim_number = objects[item->object_number].anim_index + 3;
@@ -408,46 +408,33 @@ void InitialiseObelisk(short item_number)
 
 void InitialiseMineHelicopter(short item_number)
 {
-	ITEM_INFO* item;
-
-	item = &items[item_number];
-
-	if (!item->ocb)
-		item->mesh_bits = 0;
+	auto* item = &items[item_number];
+	if (item->ocb == 0)
+		item->mesh_bits = MESHBITS_NONE; // Show no mesh.
 }
 
 void InitialiseSmashObject(short item_number)
 {
-	ITEM_INFO* item;
-	ROOM_INFO* rinfo;
-	FLOOR_INFO* floor;
-
-	item = &items[item_number];
-	item->flags = 0;
-	item->mesh_bits = 1;
-	rinfo = &room[item->room_number];
-	floor = &rinfo->floor[((item->pos.z_pos - rinfo->z) >> 10) + ((item->pos.x_pos - rinfo->x) >> 10) * rinfo->x_size];
-
-	if (boxes[floor->box].overlap_index & 0x8000)
-		boxes[floor->box].overlap_index |= 0x4000;
+	auto* item = &items[item_number];
+	item->mesh_bits = MESHBITS(0); // Show mesh 0
+	item->flags = NULL;
+	auto* r = &room[item->room_number];
+	auto* floor = &r->floor[GetSectorIndex(r, item)];
+	auto* box = &boxes[floor->box];
+	if (box->overlap_index & BLOCKABLE)
+		box->overlap_index |= BLOCKED;
 }
 
 void InitialiseStatuePlinth(short item_number)
 {
-	ITEM_INFO* item;
-
-	item = &items[item_number];
-
-	if (!item->ocb)
-		item->mesh_bits = 1;
+	auto* item = &items[item_number];
+	if (item->ocb == 0)
+		item->mesh_bits = MESHBITS(0);
 }
 
 void InitialiseSmokeEmitter(short item_number)
 {
-	ITEM_INFO* item;
-
-	item = &items[item_number];
-
+	auto* item = &items[item_number];
 	if (item->object_number != STEAM_EMITTER)
 		return;
 
@@ -455,16 +442,16 @@ void InitialiseSmokeEmitter(short item_number)
 	{
 		item->item_flags[0] = item->ocb >> 4;
 
-		if (!item->pos.y_rot)
+		if (item->pos.y_rot == ANGLE(0))
 			item->pos.z_pos += 320;
-		else if (item->pos.y_rot == 0x4000)
+		else if (item->pos.y_rot == ANGLE(90))
 			item->pos.x_pos += 320;
-		else if (item->pos.y_rot == -0x4000)
+		else if (item->pos.y_rot == -ANGLE(90))
 			item->pos.x_pos -= 320;
-		else if (item->pos.y_rot == -0x8000)
+		else if (item->pos.y_rot == -ANGLE(180))
 			item->pos.z_pos -= 320;
 	}
-	else if (room[item->room_number].flags & ROOM_UNDERWATER && item->ocb == 1)
+	else if (room[item->room_number].flags & ROOM_UNDERWATER && item->ocb & 1)
 	{
 		item->item_flags[0] = 20;
 		item->item_flags[1] = 1;
@@ -473,12 +460,9 @@ void InitialiseSmokeEmitter(short item_number)
 
 void InitialisePulley(short item_number)
 {
-	ITEM_INFO* item;
-
-	item = &items[item_number];
+	auto* item = &items[item_number];
 	item->item_flags[3] = item->ocb;
 	item->ocb = abs(item->ocb);
-
 	if (item->status == ITEM_INVISIBLE)
 	{
 		item->item_flags[1] = 1;
@@ -488,13 +472,9 @@ void InitialisePulley(short item_number)
 
 void InitialisePickUp(short item_number)
 {
-	ITEM_INFO* item;
-	short* bounds;
-	short ocb;
-
-	item = &items[item_number];
-	ocb = item->ocb & 0x3F;
-	bounds = GetBoundsAccurate(item);
+	auto* item = &items[item_number];
+	auto ocb = item->ocb & 0x3F;
+	auto* bounds = GetBoundsAccurate(item);
 
 	if (ocb == 0 || ocb == 3 || ocb == 4)
 		item->pos.y_pos -= bounds[3];
@@ -504,10 +484,8 @@ void InitialisePickUp(short item_number)
 		RPickups[NumRPickups] = (uchar)item_number;
 		NumRPickups++;
 	}
-
 	if (item->ocb & 256)
-		item->mesh_bits = 0;
-
+		item->mesh_bits = MESHBITS_NONE;
 	if (item->status == ITEM_INVISIBLE)
 		item->flags |= IFL_TRIGGERED;
 }

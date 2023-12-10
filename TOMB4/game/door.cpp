@@ -89,9 +89,9 @@ void DoorControl(short item_number)
 			item->item_flags[0]--;
 			item->pos.y_pos -= 12;
 
-			if (item->pos.y_pos < bounds[2] + *(long*)&item->item_flags[2] - 256)
+			if (item->pos.y_pos < bounds[2] + item->item_flags[2] - 256)
 			{
-				item->pos.y_pos = bounds[2] + *(long*)&item->item_flags[2] - 256;
+				item->pos.y_pos = bounds[2] + item->item_flags[2] - 256;
 				item->item_flags[0] = 0;
 			}
 

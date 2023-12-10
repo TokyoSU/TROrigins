@@ -136,9 +136,9 @@ static long S_Death()
 		{
 			if (!menu)	//"main" menu
 			{
-				PrintString(phd_centerx, phd_centery, 3, SCRIPT_TEXT(TXT_GAME_OVER), FF_CENTER);
-				PrintString(phd_centerx, phd_centery + 2 * font_height, !selection ? 1 : 2, SCRIPT_TEXT(TXT_Load_Game), FF_CENTER);
-				PrintString(phd_centerx, phd_centery + 3 * font_height, selection == 1 ? 1 : 2, SCRIPT_TEXT(TXT_Exit_to_Title), FF_CENTER);
+				PrintString(phd_centerx, phd_centery, 3, GetScriptText(TXT_GAME_OVER), FF_CENTER);
+				PrintString(phd_centerx, phd_centery + 2 * font_height, !selection ? 1 : 2, GetScriptText(TXT_Load_Game), FF_CENTER);
+				PrintString(phd_centerx, phd_centery + 3 * font_height, selection == 1 ? 1 : 2, GetScriptText(TXT_Exit_to_Title), FF_CENTER);
 
 				if (selection)
 				{
@@ -189,7 +189,7 @@ static long S_Death()
 		}
 		else
 		{
-			PrintString(phd_centerx, phd_centery, 3, SCRIPT_TEXT(TXT_GAME_OVER), FF_CENTER);
+			PrintString(phd_centerx, phd_centery, 3, GetScriptText(TXT_GAME_OVER), FF_CENTER);
 
 			if (lara.death_count > 300 || (lara.death_count > 150 && input != IN_NONE))
 				return 1;
@@ -533,7 +533,6 @@ void FlipMap(long flip_number)
 	for (int i = 0; i < number_rooms; i++)
 	{
 		r = &room[i];
-
 		if (r->flipped_room >= 0 && r->flip_number == flip_number)
 		{
 			for (int j = r->item_number; j != NO_ITEM; j = items[j].next_item)
@@ -564,33 +563,28 @@ void FlipMap(long flip_number)
 
 void RemoveRoomFlipItems(ROOM_INFO* r)
 {
-	ITEM_INFO* item;
-
-	for (short item_num = r->item_number; item_num != NO_ITEM; item_num = item->next_item)
+	for (short item_num = r->item_number; item_num != NO_ITEM;)
 	{
-		item = &items[item_num];
-
+		auto* item = &items[item_num];
 		if (item->flags & IFL_INVISIBLE && objects[item->object_number].intelligent)
 		{
-			if (item->hit_points <= 0 && item->hit_points != -16384)
+			if (item->hit_points <= 0 && item->hit_points != NOT_TARGETABLE)
 				KillItem(item_num);
 		}
+		item_num = item->next_item;
 	}
 }
 
 void AddRoomFlipItems(ROOM_INFO* r)
 {
-	ITEM_INFO* item;
-
-	for (short item_num = r->item_number; item_num != NO_ITEM; item_num =item->next_item)
+	for (short item_num = r->item_number; item_num != NO_ITEM;)
 	{
-		item = &items[item_num];
-
-		if (items[item_num].object_number == RAISING_BLOCK1 && item->item_flags[1])
+		auto* item = &items[item_num];
+		if (item->object_number == RAISING_BLOCK1 && item->item_flags[1])
 			AlterFloorHeight(item, -1024);
-
 		if (item->object_number == RAISING_BLOCK2 && item->item_flags[1])
 			AlterFloorHeight(item, -2048);
+		item_num = item->next_item;
 	}
 }
 

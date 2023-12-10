@@ -323,7 +323,7 @@ void MovableBlock(short item_number)
 		switch (quadrant)
 		{
 		case NORTH:
-			offset = pos.z + *(long*)&item->item_flags[2] - *(long*)&lara_item->item_flags[2];
+			offset = pos.z + item->item_flags[2] - lara_item->item_flags[2];
 
 			if (abs(item->pos.z_pos - offset) < 512 && item->pos.z_pos < offset)
 				item->pos.z_pos = offset;
@@ -331,7 +331,7 @@ void MovableBlock(short item_number)
 			break;
 
 		case EAST:
-			offset = pos.x + *(long*)item->item_flags - *(long*)lara_item->item_flags;
+			offset = pos.x + item->item_flags[0] - lara_item->item_flags[0];
 
 			if (abs(item->pos.x_pos - offset) < 512 && item->pos.x_pos < offset)
 				item->pos.x_pos = offset;
@@ -339,7 +339,7 @@ void MovableBlock(short item_number)
 			break;
 
 		case SOUTH:
-			offset = pos.z + *(long*)&item->item_flags[2] - *(long*)&lara_item->item_flags[2];
+			offset = pos.z + item->item_flags[2] - lara_item->item_flags[2];
 
 			if (abs(item->pos.z_pos - offset) < 512 && item->pos.z_pos > offset)
 				item->pos.z_pos = offset;
@@ -347,7 +347,7 @@ void MovableBlock(short item_number)
 			break;
 
 		case WEST:
-			offset = pos.x + *(long*)item->item_flags - *(long*)lara_item->item_flags;
+			offset = pos.x + item->item_flags[0] - lara_item->item_flags[0];
 
 			if (abs(item->pos.x_pos - offset) < 512 && item->pos.x_pos > offset)
 				item->pos.x_pos = offset;
@@ -392,7 +392,7 @@ void MovableBlock(short item_number)
 		switch (quadrant)
 		{
 		case NORTH:
-			offset = pos.z + *(long*)&item->item_flags[2] - *(long*)&lara_item->item_flags[2];
+			offset = pos.z + item->item_flags[2] - lara_item->item_flags[2];
 
 			if (abs(item->pos.z_pos - offset) < 512 && item->pos.z_pos > offset)
 				item->pos.z_pos = offset;
@@ -400,7 +400,7 @@ void MovableBlock(short item_number)
 			break;
 
 		case EAST:
-			offset = pos.x + *(long*)item->item_flags - *(long*)lara_item->item_flags;
+			offset = pos.x + item->item_flags[0] - lara_item->item_flags[0];
 
 			if (abs(item->pos.x_pos - offset) < 512 && item->pos.x_pos > offset)
 				item->pos.x_pos = offset;
@@ -408,7 +408,7 @@ void MovableBlock(short item_number)
 			break;
 
 		case SOUTH:
-			offset = pos.z + *(long*)&item->item_flags[2] - *(long*)&lara_item->item_flags[2];
+			offset = pos.z + item->item_flags[2] - lara_item->item_flags[2];
 
 			if (abs(item->pos.z_pos - offset) < 512 && item->pos.z_pos < offset)
 				item->pos.z_pos = offset;
@@ -416,7 +416,7 @@ void MovableBlock(short item_number)
 			break;
 
 		case WEST:
-			offset = pos.x + *(long*)item->item_flags - *(long*)lara_item->item_flags;
+			offset = pos.x + item->item_flags[0] - lara_item->item_flags[0];
 
 			if (abs(item->pos.x_pos - offset) < 512 && item->pos.x_pos < offset)
 				item->pos.x_pos = offset;
@@ -552,10 +552,10 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 		lara.torso_x_rot = 0;
 		lara.torso_y_rot = 0;
 		GetLaraJointPos(&pos, 14);
-		*(long*)&laraitem->item_flags[0] = pos.x;
-		*(long*)&laraitem->item_flags[2] = pos.z;
-		*(long*)&item->item_flags[0] = item->pos.x_pos;
-		*(long*)&item->item_flags[2] = item->pos.z_pos;
+		laraitem->item_flags[0] = pos.x;
+		laraitem->item_flags[2] = pos.z;
+		item->item_flags[0] = item->pos.x_pos;
+		item->item_flags[2] = item->pos.z_pos;
 	}
 	else
 		ObjectCollision(item_number, laraitem, coll);

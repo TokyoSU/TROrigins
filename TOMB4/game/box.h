@@ -1,7 +1,8 @@
 #pragma once
 #include "../global/types.h"
 
-void CreatureDie(short item_number, long explode);
+// Use EDF_Xx flags.
+void CreatureDie(short item_number, long explode, long flags = 0);
 void InitialiseCreature(short item_number);
 long CreatureActive(short item_number);
 void CreatureAIInfo(ITEM_INFO* item, AI_INFO* info);
@@ -36,6 +37,7 @@ void CreatureYRot(PHD_3DPOS* srcpos, short angle, short angadd);
 long MoveCreature3DPos(PHD_3DPOS* srcpos, PHD_3DPOS* destpos, long velocity, short angdif, long angadd);
 long GetSectorIndex(ROOM_INFO* r, int x, int z);
 long GetSectorIndex(ROOM_INFO* r, ITEM_INFO* item);
+CREATURE_INFO* GetCreatureInfo(ITEM_INFO* item);
 
 extern BOX_INFO* boxes;
 extern ushort* overlap;

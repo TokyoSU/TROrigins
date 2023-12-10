@@ -355,7 +355,7 @@ void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num,
 			vec.z += TPos.z;
 			c = rgb;
 
-			if (shatter_item && shatter_item->flags & 0x400)
+			if (shatter_item != NULL && (shatter_item->flags & EDF_INVERT_SHATTER_COLOR))
 				c = -rgb;
 
 			TriggerDebris(&vec, tex, offsets, Vels, c);

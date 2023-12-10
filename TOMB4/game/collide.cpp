@@ -254,18 +254,16 @@ void GenericSphereBoxCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	short y_rot;
 
 	item = &items[item_number];
-
 	if (item->status != ITEM_INVISIBLE && TestBoundsCollide(item, l, coll->radius))
 	{
 		TouchBits = TestCollision(item, l);
-
 		if (TouchBits)
 		{
 			y_rot = item->pos.y_rot;
 			item->pos.y_rot = 0;
 			GetSpheres(item, Slist, 1);
 			item->pos.y_rot = y_rot;
-			DeadlyBits = *(long*)&item->item_flags[0];
+			DeadlyBits = item->item_flags[0];
 
 			if (item->item_flags[2])
 				TouchBits &= ~0x1;
@@ -1121,21 +1119,17 @@ void StargateCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		GlobalCollisionBounds[3] = bounds[3];
 		GlobalCollisionBounds[4] = bounds[4];
 		GlobalCollisionBounds[5] = bounds[5];
-
 		if (TestBoundsCollide2(item, l, coll->radius))
 			ItemPushLara(item, l, coll, 0, 2);
-
 		bounds += 6;
 	}
 
 	touchedBits = TestCollision(item, l);
-
 	if (!touchedBits)
 		return;
 
-	hurtfulBits = *(long*)&item->item_flags[0] & touchedBits;
-	touchedBits = *(long*)&item->item_flags[0];
-
+	hurtfulBits = item->item_flags[0] & touchedBits;
+	touchedBits = item->item_flags[0];
 	if (!hurtfulBits)
 		return;
 

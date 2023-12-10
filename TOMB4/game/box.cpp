@@ -48,7 +48,7 @@ static void DropBaddyPickups(ITEM_INFO* item)
 	}
 }
 
-void CreatureDie(short item_number, long explode)
+void CreatureDie(short item_number, long explode, long flags)
 {
 	auto* item = &items[item_number];
 	item->hit_points = NOT_TARGETABLE;
@@ -57,10 +57,9 @@ void CreatureDie(short item_number, long explode)
 	if (explode)
 	{
 		if (objects[item->object_number].hit_effect == 1)
-			ExplodingDeath2(item_number, MESHBITS_ALL, 258);
+			ExplodingDeath2(item_number, MESHBITS_ALL, flags|EDF_CREATE_EFFECT|EDF_BLOOD);
 		else
-			ExplodingDeath2(item_number, MESHBITS_ALL, 256);
-
+			ExplodingDeath2(item_number, MESHBITS_ALL, flags|EDF_CREATE_EFFECT);
 		KillItem(item_number);
 	}
 	else
@@ -84,22 +83,24 @@ void InitialiseCreature(short item_number)
 
 long CreatureActive(short item_number)
 {
-	ITEM_INFO* item;
-
-	item = &items[item_number];
-
+	auto* item = &items[item_number];
 	if (item->flags & IFL_CLEARBODY)
-		return 0;
+		return FALSE;
 
 	if (item->status == ITEM_INVISIBLE)
 	{
 		if (EnableBaddieAI(item_number, 0))
+		{
 			item->status = ITEM_ACTIVE;
+			item->really_active = TRUE;
+		}
 		else
-			return 0;
+		{
+			return FALSE;
+		}
 	}
 
-	return 1;
+	return TRUE;
 }
 
 void CreatureAIInfo(ITEM_INFO* item, AI_INFO* info)
@@ -1808,4 +1809,9 @@ long GetSectorIndex(ROOM_INFO* r, int x, int z)
 long GetSectorIndex(ROOM_INFO* r, ITEM_INFO* item)
 {
 	return ((item->pos.z_pos - r->z) >> WALL_SHIFT) + r->x_size * ((item->pos.x_pos - r->x) >> WALL_SHIFT);
+}
+
+CREATURE_INFO* GetCreatureInfo(ITEM_INFO* item)
+{
+	return reinterpret_cast<CREATURE_INFO*>(item->data);
 }

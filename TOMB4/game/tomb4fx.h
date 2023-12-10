@@ -37,6 +37,7 @@ long GetFreeDrip();
 void TriggerLaraDrips();
 long GetFreeShockwave();
 void TriggerShockwave(PHD_VECTOR* pos, long InnerOuterRads, long speed, long rgb, long XRotFlags);
+void TriggerShockwave(PHD_VECTOR* pos, uchar life, short inner, short outer, short xRot, short flags, short speed, DWORD color);
 void TriggerShockwaveHitEffect(long x, long y, long z, long rgb, short dir, long speed);
 void UpdateShockwaves();
 void UpdateLightning();
@@ -50,6 +51,8 @@ void UpdateFadeClip();
 void SetScreenFadeOut(short speed, short back);
 void SetScreenFadeIn(short speed);
 void Fade();
+void TriggerExplosion(ITEM_INFO* item, int height = 0, long extras = 3, bool isSmallObj = false);
+void TriggerExplosion(FX_INFO* fx, int height = 0, long extras = 3, bool isSmallObj = false);
 
 extern NODEOFFSET_INFO NodeOffsets[16];
 extern LIGHTNING_STRUCT Lightning[16];

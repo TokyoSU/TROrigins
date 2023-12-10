@@ -154,7 +154,6 @@ void GetAIEnemy(CREATURE_INFO* info, long tfl)
 	for (int i = 0; i < nAIObjects; i++)
 	{
 		ai = &AIObjects[i];
-
 		if (ai->ocb == tfl && ai->room_number != 255)
 		{
 			info->enemy = &info->ai_target;
@@ -190,7 +189,6 @@ void DoVonCroyCutscene(ITEM_INFO* item, CREATURE_INFO* info)
 		return;
 
 	item->pos.z_rot = 0;
-
 	if (item->item_flags[3] == 8 || item->item_flags[3] == 15)
 	{
 		if (lara_item->current_anim_state == AS_HANG || lara_item->current_anim_state == AS_HANGLEFT || lara_item->current_anim_state == AS_HANGRIGHT)
@@ -208,7 +206,6 @@ void DoVonCroyCutscene(ITEM_INFO* item, CREATURE_INFO* info)
 	{
 	case 0:
 		SetFadeClip(24, 1);
-		//empty func call here
 		ScreenFading = 1;
 		dScreenFade = 255;
 		ScreenFade = 255;
@@ -359,9 +356,7 @@ void DoVonCroyCutscene(ITEM_INFO* item, CREATURE_INFO* info)
 
 void InitialiseVoncroy(short item_number)
 {
-	ITEM_INFO* item;
-
-	item = &items[item_number];
+	ITEM_INFO* item = &items[item_number];
 	InitialiseCreature(item_number);
 	item->anim_number = objects[VON_CROY].anim_index + 11;
 	item->frame_number = anims[item->anim_number].frame_base;

@@ -355,7 +355,7 @@ void SaveLevelData(long FullSave)
 	ITEM_INFO* item;
 	ROOM_INFO* r;
 	OBJECT_INFO* obj;
-	MESH_INFO* mesh;
+	MESH_INFO* static_mesh;
 	CREATURE_INFO* creature;
 	ulong flags;
 	long k, flare_age;
@@ -396,11 +396,11 @@ void SaveLevelData(long FullSave)
 
 		for (int j = 0; j < r->num_meshes; j++)
 		{
-			mesh = &r->mesh[j];
+			static_mesh = &r->static_mesh[j];
 
-			if (mesh->static_number >= SHATTER0)
+			if (static_mesh->object_number >= SHATTER0)
 			{
-				word |= ((mesh->Flags & 1) << k);
+				word |= ((static_mesh->intensity2 & 1) << k);
 				k++;
 
 				if (k == 16)
@@ -793,7 +793,7 @@ void RestoreLevelData(long FullSave)
 	CREATURE_INFO* creature;
 	FLOOR_INFO* floor;
 	OBJECT_INFO* obj;
-	MESH_INFO* mesh;
+	MESH_INFO* static_mesh;
 	ulong flags;
 	long k, flare_age;
 	ushort word, packed, uroom_number, uword;
@@ -827,9 +827,9 @@ void RestoreLevelData(long FullSave)
 
 		for (int j = 0; j < r->num_meshes; j++)
 		{
-			mesh = &r->mesh[j];
+			static_mesh = &r->static_mesh[j];
 
-			if (mesh->static_number >= SHATTER0)
+			if (static_mesh->object_number >= SHATTER0)
 			{
 				if (k == 16)
 				{
@@ -837,13 +837,13 @@ void RestoreLevelData(long FullSave)
 					k = 0;
 				}
 
-				mesh->Flags ^= (uword ^ mesh->Flags) & 1;
+				static_mesh->intensity2 ^= (uword ^ static_mesh->intensity2) & 1;
 
-				if (!mesh->Flags)
+				if (!static_mesh->intensity2)
 				{
 					room_number = i;
-					floor = GetFloor(mesh->x, mesh->y, mesh->z, &room_number);
-					GetHeight(floor, mesh->x, mesh->y, mesh->z);
+					floor = GetFloor(static_mesh->x, static_mesh->y, static_mesh->z, &room_number);
+					GetHeight(floor, static_mesh->x, static_mesh->y, static_mesh->z);
 					TestTriggers(trigger_index, 1, 0);
 					floor->stopper = 0;
 				}

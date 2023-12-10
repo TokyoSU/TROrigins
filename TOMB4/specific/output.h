@@ -1,10 +1,10 @@
 #pragma once
 #include "../global/types.h"
 
-void ProcessObjectMeshVertices(MESH_DATA* mesh);
-void ProcessStaticMeshVertices(MESH_DATA* mesh);
-void ProcessTrainMeshVertices(MESH_DATA* mesh);
-void ProcessPickupMeshVertices(MESH_DATA* mesh);
+void ProcessObjectMeshVertices(MESH_DATA* static_mesh);
+void ProcessStaticMeshVertices(MESH_DATA* static_mesh);
+void ProcessTrainMeshVertices(MESH_DATA* static_mesh);
+void ProcessPickupMeshVertices(MESH_DATA* static_mesh);
 void phd_PutPolygons(short* objptr, long clip);
 void phd_PutPolygons_train(short* objptr, long x);
 void _InsertRoom(ROOM_INFO* r);

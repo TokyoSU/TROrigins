@@ -29,10 +29,14 @@
 #define NO_ITEM -1
 #define MESHBITS_ALL 0xFFFFFFFF
 #define FVF (D3DFVF_TEX2 | D3DFVF_SPECULAR | D3DFVF_DIFFUSE | D3DFVF_XYZRHW)
-#define W2V_SHIFT	14
-#define MAX_SAMPLES	370
-#define MAX_DYNAMICS	64
-#define MALLOC_SIZE	150000000	//150MB
+#define WALL_SHIFT 10
+#define W2V_SHIFT 14
+#define MAX_SAMPLES 370
+#define MAX_DYNAMICS 64
+#define MAX_BUCKETS 32
+#define MAX_VERTEX_PER_BUCKETS 2048
+#define MAX_BUCKET_VERTEX MAX_VERTEX_PER_BUCKETS + MAX_BUCKETS
+#define MALLOC_SIZE	15000000	// 15MB
 
 /********************DX defs********************/
 #define LPDIRECTDRAWX			LPDIRECTDRAW4
@@ -858,26 +862,27 @@ struct CAMERA_INFO
 	PHD_VECTOR mike_pos;
 };
 
+struct COLL_DATA
+{
+	long floor;
+	long ceiling;
+	long type;
+	COLL_DATA()
+		: floor(0), ceiling(0), type(0)
+	{}
+	COLL_DATA(long floor, long ceiling, long type)
+		: floor(floor), ceiling(ceiling), type(type)
+	{}
+};
+
 struct COLL_INFO
 {
-	long mid_floor;
-	long mid_ceiling;
-	long mid_type;
-	long front_floor;
-	long front_ceiling;
-	long front_type;
-	long left_floor;
-	long left_ceiling;
-	long left_type;
-	long right_floor;
-	long right_ceiling;
-	long right_type;
-	long left_floor2;
-	long left_ceiling2;
-	long left_type2;
-	long right_floor2;
-	long right_ceiling2;
-	long right_type2;
+	COLL_DATA middle;
+	COLL_DATA front;
+	COLL_DATA left;
+	COLL_DATA right;
+	COLL_DATA left2;
+	COLL_DATA right2;
 	long radius;
 	long bad_pos;
 	long bad_neg;
@@ -932,7 +937,7 @@ struct OBJECT_INFO
 	ushort semi_transparent : 1;
 	ushort water_creature : 1;
 	ushort using_drawanimating_item : 1;
-	ushort HitEffect : 2;
+	ushort hit_effect : 2;
 	ushort undead : 1;
 	ushort save_mesh : 1;
 	void (*draw_routine_extra)(ITEM_INFO* item);
@@ -997,9 +1002,9 @@ struct MESH_INFO
 	long y;
 	long z;
 	short y_rot;
-	short shade;
-	short Flags;
-	short static_number;
+	short intensity1;
+	short intensity2;
+	short object_number;
 };
 
 struct PCLIGHT_INFO
@@ -1087,12 +1092,12 @@ struct ROOM_INFO
 	ROOM_DOORS* door;
 	FLOOR_INFO* floor;
 	LIGHTINFO* light;
-	MESH_INFO* mesh;
+	MESH_INFO* static_mesh;
 	long x;
 	long y;
 	long z;
-	long minfloor;
-	long maxceiling;
+	long bottom_floor;
+	long top_ceiling;
 	short x_size;
 	short y_size;
 	long ambient;
@@ -1233,7 +1238,7 @@ struct SPARKS
 	short Zvel;
 	short Gravity;
 	short RotAng;
-	short Flags;
+	short flags;
 	uchar sSize;
 	uchar dSize;
 	uchar Size;
@@ -1298,7 +1303,7 @@ struct DXPTR
 	ulong dwRenderHeight;
 	RECT rViewport;
 	RECT rScreen;
-	long Flags;
+	long flags;
 	ulong WindowStyle;
 	long CoopLevel;
 	LPDIRECTINPUTX lpDirectInput;
@@ -1488,7 +1493,7 @@ struct LIGHTNING_STRUCT
 	char Yvel3;
 	char Zvel3;
 	uchar Size;
-	uchar Flags;
+	uchar flags;
 	uchar Rand;
 	uchar Segments;
 	uchar Pad[3];
@@ -1719,11 +1724,11 @@ struct TEXTURE
 	long bumptpage;
 };
 
-struct TEXTUREBUCKET
+struct BUCKETS
 {
 	long tpage;
 	long nVtx;
-	D3DTLBUMPVERTEX vtx[544];
+	D3DTLBUMPVERTEX vtx[MAX_BUCKET_VERTEX];
 };
 
 struct THREAD
@@ -1802,7 +1807,7 @@ struct SHATTER_ITEM
 	short* meshp;
 	long Bit;
 	short YRot;
-	short Flags;
+	short flags;
 };
 
 struct SPOTCAM
@@ -1872,7 +1877,7 @@ struct BOX_INFO
 	uchar top;
 	uchar bottom;
 	short height;
-	short overlap_index;
+	ushort overlap_index;
 };
 
 struct SMOKE_SPARKS
@@ -1885,7 +1890,7 @@ struct SMOKE_SPARKS
 	short Zvel;
 	short Gravity;
 	short RotAng;
-	short Flags;
+	short flags;
 	uchar sSize;
 	uchar dSize;
 	uchar Size;
@@ -2088,7 +2093,7 @@ struct SHOCKWAVE_STRUCT
 	short InnerRad;
 	short OuterRad;
 	short XRot;
-	short Flags;
+	short flags;
 	uchar r;
 	uchar g;
 	uchar b;
@@ -2140,7 +2145,7 @@ struct FIRE_SPARKS
 	short Zvel;
 	short Gravity;
 	short RotAng;
-	short Flags;
+	short flags;
 	uchar sSize;
 	uchar dSize;
 	uchar Size;
@@ -2302,7 +2307,7 @@ struct SP_DYNAMIC
 	uchar R;
 	uchar G;
 	uchar B;
-	uchar Flags;
+	uchar flags;
 	uchar Pad[2];
 };
 

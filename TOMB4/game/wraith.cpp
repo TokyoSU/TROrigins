@@ -86,7 +86,7 @@ void TriggerWraithFlame(long x, long y, long z, short xv, short yv, short zv, lo
 	sptr->y = y;
 	sptr->z = (GetRandomControl() & 0x1F) + z - 16;
 	sptr->Friction = 85;
-	sptr->Flags = 522;
+	sptr->flags = 522;
 	sptr->Xvel = xv;
 	sptr->Yvel = yv;
 	sptr->Zvel = zv;
@@ -156,7 +156,7 @@ void TriggerWraithEffect(long x, long y, long z, short vel, long objnum)
 		sptr->Yvel = (GetRandomControl() & 0x7F) - 64;
 		sptr->Zvel = short((rad * phd_cos(ang)) >> W2V_SHIFT);
 		sptr->Friction = 4;
-		sptr->Flags = 522;
+		sptr->flags = 522;
 		sptr->MaxYvel = 0;
 		sptr->Scalar = 3;
 		sptr->Gravity = (GetRandomControl() & 0x7F) - 64;
@@ -198,7 +198,7 @@ void WraithControl(short item_number)
 		dx = r->x + (r->y_size << 9) - item->pos.x_pos;
 		dz = r->z + (r->x_size << 9) - item->pos.z_pos;
 		dist = SQUARE(dx) + SQUARE(dz);
-		y = r->y + ((r->minfloor - r->maxceiling) >> 1);
+		y = r->y + ((r->bottom_floor - r->top_ceiling) >> 1);
 		dy = y - abs((dist >> 13) - 768);
 	}
 

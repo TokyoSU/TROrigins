@@ -1203,7 +1203,7 @@ void DrawEffect(short fx_num)
 void PrintObjects(short room_number)
 {
 	ROOM_INFO* r;
-	MESH_INFO* mesh;
+	MESH_INFO* static_mesh;
 	STATIC_INFO* sinfo;
 	ITEM_INFO* item;
 	OBJECT_INFO* obj;
@@ -1233,21 +1233,21 @@ void PrintObjects(short room_number)
 		phd_bottom = r->bottom;
 	}
 
-	mesh = r->mesh;
+	static_mesh = r->static_mesh;
 
-	for (int i = r->num_meshes; i > 0; i--, mesh++)
+	for (int i = r->num_meshes; i > 0; i--, static_mesh++)
 	{
-		if (mesh->Flags & 1)
+		if (static_mesh->intensity2 & 1)
 		{
 			phd_PushMatrix();
-			phd_TranslateAbs(mesh->x, mesh->y, mesh->z);
-			phd_RotY(mesh->y_rot);
-			sinfo = &static_objects[mesh->static_number];
+			phd_TranslateAbs(static_mesh->x, static_mesh->y, static_mesh->z);
+			phd_RotY(static_mesh->y_rot);
+			sinfo = &static_objects[static_mesh->object_number];
 			clip = S_GetObjectBounds(&sinfo->x_minp);
 
 			if (clip)
 			{
-				S_CalculateStaticMeshLight(mesh->x, mesh->y, mesh->z, mesh->shade, r);
+				S_CalculateStaticMeshLight(static_mesh->x, static_mesh->y, static_mesh->z, static_mesh->intensity1, r);
 				phd_PutPolygons(meshes[sinfo->mesh_number], clip);
 			}
 
@@ -1519,8 +1519,8 @@ void calc_animating_item_clip_window(ITEM_INFO* item, short* bounds)
 
 	xMinR = r->x + 1024;
 	xMaxR = xMinR + ((r->y_size - 2) << 10);
-	yMinR = r->maxceiling;
-	yMaxR = r->minfloor;
+	yMinR = r->top_ceiling;
+	yMaxR = r->bottom_floor;
 	zMinR = r->z + 1024;
 	zMaxR = zMinR + ((r->x_size - 2) << 10);
 

@@ -20,7 +20,7 @@ long ExplodeFX(FX_INFO* fx, long NoXZVel, short Num)
 	ShatterItem.Sphere.y = fx->pos.y_pos;
 	ShatterItem.Sphere.z = fx->pos.z_pos;
 	ShatterItem.Bit = 0;
-	ShatterItem.Flags = fx->flag2 & 0x400;
+	ShatterItem.flags = fx->flag2 & 0x400;
 	ShatterObject(&ShatterItem, 0, Num, fx->room_number, NoXZVel);
 	return 1;
 }

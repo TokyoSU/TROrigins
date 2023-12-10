@@ -779,7 +779,7 @@ void CreateMonoScreen()
 {
 	MonoScreenOn = 1;
 
-	if (App.dx.Flags & DXF_WINDOWED)
+	if (App.dx.flags & DXF_WINDOWED)
 		ConvertSurfaceToTextures(App.dx.lpBackBuffer);
 	else
 		ConvertSurfaceToTextures(App.dx.lpPrimaryBuffer);

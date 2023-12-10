@@ -486,7 +486,7 @@ void ControlSprinkler(short item_number)
 			sptr->y = (sptr->Yvel >> 5) + item->pos.y_pos - 928;
 			sptr->z = item->pos.z_pos + (sptr->Zvel >> 3);
 			sptr->Friction = 4;
-			sptr->Flags = GetRandomControl() & 0x20;
+			sptr->flags = GetRandomControl() & 0x20;
 			sptr->Gravity = (GetRandomControl() & 0x3F) + 64;
 			sptr->MaxYvel = 0;
 		}
@@ -514,7 +514,7 @@ void ControlSprinkler(short item_number)
 
 			smokeptr->Zvel = 2 * (GetRandomControl() & 0x1FF) - 512;
 			smokeptr->Friction = 3;
-			smokeptr->Flags = 16;
+			smokeptr->flags = 16;
 			smokeptr->RotAng = GetRandomControl() & 0xFFF;
 
 			if (GetRandomControl() & 1)
@@ -2331,8 +2331,8 @@ void FloorTrapDoorCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 				ForcedFixedCamera.z = item->pos.z_pos - ((2048 * phd_cos(item->pos.y_rot) >> W2V_SHIFT));
 				y = item->pos.y_pos - 2048;
 
-				if (y < room[item->room_number].maxceiling)
-					y = room[item->room_number].maxceiling;
+				if (y < room[item->room_number].top_ceiling)
+					y = room[item->room_number].top_ceiling;
 
 				ForcedFixedCamera.y = y;
 				ForcedFixedCamera.room_number = item->room_number;
@@ -2355,7 +2355,7 @@ void OpenTrapDoor(ITEM_INFO* item)
 	r = &room[item->room_number];
 	floor = &r->floor[((item->pos.z_pos - r->z) >> 10) + r->x_size * ((item->pos.x_pos - r->x) >> 10)];
 
-	if (item->pos.y_pos == r->minfloor)
+	if (item->pos.y_pos == r->bottom_floor)
 	{
 		floor->pit_room = pitsky & 0xFF;
 		r = &room[floor->pit_room];
@@ -2382,7 +2382,7 @@ void CloseTrapDoor(ITEM_INFO* item)
 	r = &room[item->room_number];
 	floor = &r->floor[((item->pos.z_pos - r->z) >> 10) + r->x_size * ((item->pos.x_pos - r->x) >> 10)];
 
-	if (item->pos.y_pos == r->minfloor)
+	if (item->pos.y_pos == r->bottom_floor)
 	{
 		pitsky = floor->pit_room;
 		floor->pit_room = 255;
@@ -2393,7 +2393,7 @@ void CloseTrapDoor(ITEM_INFO* item)
 		item->item_flags[2] = 1;
 		item->item_flags[3] = pitsky;
 	}
-	else if (item->pos.y_pos == r->maxceiling)
+	else if (item->pos.y_pos == r->top_ceiling)
 	{
 		pitsky = floor->sky_room;
 		floor->sky_room = 255;

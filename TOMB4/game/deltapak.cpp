@@ -573,7 +573,7 @@ void finish_cutseq()
 void DrawCutSeqActors()
 {
 	OBJECT_INFO* obj;
-	short** mesh;
+	short** static_mesh;
 	long* bone;
 	short* rot;
 	long n;
@@ -591,7 +591,7 @@ void DrawCutSeqActors()
 			phd_TranslateAbs(GLOBAL_cutme->orgx, GLOBAL_cutme->orgy, GLOBAL_cutme->orgz);
 			obj = &objects[GLOBAL_cutme->actor_data[i].objslot];
 			bone = &bones[obj->bone_index];
-			mesh = &meshes[obj->mesh_index];
+			static_mesh = &meshes[obj->mesh_index];
 			CalcActorLighting(&duff_item[i - 1], obj, temp_rotation_buffer);
 			phd_TranslateRel(temp_rotation_buffer[6], temp_rotation_buffer[7], temp_rotation_buffer[8]);
 			rot = &temp_rotation_buffer[9];
@@ -600,14 +600,14 @@ void DrawCutSeqActors()
 			if (cutseq_meshbits[i] & 1)
 			{
 				if (cutseq_meshswapbits[i] & 1)
-					phd_PutPolygons(mesh[1], -1);
+					phd_PutPolygons(static_mesh[1], -1);
 				else
-					phd_PutPolygons(mesh[0], -1);
+					phd_PutPolygons(static_mesh[0], -1);
 			}
 
-			mesh += 2;
+			static_mesh += 2;
 
-			for (int j = 0; j < obj->nmeshes - 1; j++, bone += 4, mesh += 2)
+			for (int j = 0; j < obj->nmeshes - 1; j++, bone += 4, static_mesh += 2)
 			{
 				if (*bone & 1)
 					phd_PopMatrix();
@@ -622,9 +622,9 @@ void DrawCutSeqActors()
 				if (cutseq_meshbits[i] & n)
 				{
 					if (cutseq_meshswapbits[i] & n)
-						phd_PutPolygons(mesh[1], -1);
+						phd_PutPolygons(static_mesh[1], -1);
 					else
-						phd_PutPolygons(mesh[0], -1);
+						phd_PutPolygons(static_mesh[0], -1);
 				}
 			}
 		}

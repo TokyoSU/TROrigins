@@ -184,7 +184,7 @@ short* FindPlinth(ITEM_INFO* item)
 {
 	ITEM_INFO* plinth;
 	ROOM_INFO* r;
-	MESH_INFO* mesh;
+	MESH_INFO* static_mesh;
 	short* p;
 	short* o;
 	long i;
@@ -192,20 +192,20 @@ short* FindPlinth(ITEM_INFO* item)
 
 	o = 0;
 	r = &room[item->room_number];
-	mesh = r->mesh;
+	static_mesh = r->static_mesh;
 
 	for (i = r->num_meshes; i > 0; i--)
 	{
-		if (mesh->Flags & 1 && item->pos.x_pos == mesh->x && item->pos.z_pos == mesh->z)
+		if (static_mesh->intensity2 & 1 && item->pos.x_pos == static_mesh->x && item->pos.z_pos == static_mesh->z)
 		{
 			p = GetBestFrame(item);
-			o = &static_objects[mesh->static_number].x_minc;
+			o = &static_objects[static_mesh->object_number].x_minc;
 
 			if (p[0] <= o[1] && p[1] >= o[0] && p[4] <= o[5] && p[5] >= o[4] && (o[0] || o[1]))
 				break;
 		}
 
-		mesh++;
+		static_mesh++;
 	}
 
 	if (i)

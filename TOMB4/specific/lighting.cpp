@@ -27,14 +27,14 @@ long nSunLights, nPointLights, nSpotLights, nShadowLights, nTotalLights;
 static ITEM_INFO StaticMeshLightItem;
 static long SetupLight_thing;
 
-void S_CalculateStaticMeshLight(long x, long y, long z, long shade, ROOM_INFO* r)
+void S_CalculateStaticMeshLight(long x, long y, long z, long intensity1, ROOM_INFO* r)
 {
 	StaticMeshLightItem.il.ambient = r->ambient;
 	StaticMeshLightItem.il.item_pos.x = x;
 	StaticMeshLightItem.il.item_pos.y = y;
 	StaticMeshLightItem.il.item_pos.z = z;
 	StaticMeshLightItem.room_number = (short)current_room;
-	StaticMeshShade = shade;
+	StaticMeshShade = intensity1;
 	current_item = &StaticMeshLightItem;
 }
 

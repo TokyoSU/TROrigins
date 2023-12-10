@@ -87,7 +87,7 @@ void ControlMapper(short item_number)
 			sptr->dSize = (GetRandomControl() & 1) + 3;
 			sptr->MaxYvel = 0;
 			sptr->Gravity = (GetRandomControl() & 0x1F) + 32;
-			sptr->Flags = 10;
+			sptr->flags = 10;
 		}
 	}
 
@@ -366,10 +366,10 @@ void TriggerRopeFlame(PHD_VECTOR* pos)
 	sptr->Xvel = (GetRandomControl() & 0xFF) - 128;
 	sptr->Zvel = (GetRandomControl() & 0xFF) - 128;
 	sptr->Friction = 5;
-	sptr->Flags = 538;
+	sptr->flags = 538;
 
 	if (!(GetRandomControl() & 3))
-		sptr->Flags |= 0x20;
+		sptr->flags |= 0x20;
 
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 
@@ -775,24 +775,17 @@ void SmashObjectControl(short item_number)
 
 void SmashObject(short item_number)
 {
-	ITEM_INFO* item;
-	ROOM_INFO* r;
-	BOX_INFO* box;
-	long sector;
-
-	item = &items[item_number];
-	r = &room[item->room_number];
-	sector = ((item->pos.z_pos - r->z) >> 10) + r->x_size * ((item->pos.x_pos - r->x) >> 10);
-	box = &boxes[r->floor[sector].box];
-
+	auto* item = &items[item_number];
+	auto* r = &room[item->room_number];
+	auto* box = &boxes[r->floor[GetSectorIndex(r, item)].box];
 	if (box->overlap_index & 0x8000)
 		box->overlap_index &= ~0x4000;
 
 	SoundEffect(SFX_EXPLOSION1, &item->pos, SFX_DEFAULT);
 	SoundEffect(SFX_EXPLOSION2, &item->pos, SFX_DEFAULT);
-	item->collidable = 0;
+	item->collidable = FALSE;
 	item->mesh_bits = 0xFFFE;
-	ExplodingDeath2(item_number, -1, 256);
+	ExplodingDeath2(item_number, MESHBITS_ALL, 256);
 	item->flags |= IFL_INVISIBLE;
 
 	if (item->status == ITEM_ACTIVE)
@@ -803,12 +796,10 @@ void SmashObject(short item_number)
 
 void EarthQuake(short item_number)
 {
-	ITEM_INFO* item;
 	long pitch;
 	short earth_item;
 
-	item = &items[item_number];
-
+	auto* item = &items[item_number];
 	if (!TriggerActive(item))
 		return;
 

@@ -68,7 +68,7 @@ void TriggerRiseEffect(ITEM_INFO* item)
 	sptr->Zvel = phd_cos(fx->pos.y_rot) >> 2;
 	sptr->TransType = 2;
 	sptr->Friction = 68;
-	sptr->Flags = 26;
+	sptr->flags = 26;
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 
 	if (GetRandomControl() & 1)
@@ -127,7 +127,7 @@ void SkeletonControl(short item_number)
 	CREATURE_INFO* skelly;
 	FLOOR_INFO* floor;
 	ROOM_INFO* r;
-	MESH_INFO* mesh;
+	MESH_INFO* static_mesh;
 	AI_INFO info;
 	AI_INFO larainfo;
 	PHD_VECTOR pos;
@@ -410,13 +410,13 @@ void SkeletonControl(short item_number)
 			{
 				for (int i = 0; i < r->num_meshes; i++)
 				{
-					mesh = &r->mesh[i];
+					static_mesh = &r->static_mesh[i];
 
-					if (mesh->z >> 10 == pos.z >> 10 && mesh->x >> 10 == pos.x >> 10 && mesh->static_number >= SHATTER0)
+					if (static_mesh->z >> 10 == pos.z >> 10 && static_mesh->x >> 10 == pos.x >> 10 && static_mesh->object_number >= SHATTER0)
 					{
-						ShatterObject(0, mesh, -64, lara_item->room_number, 0);
+						ShatterObject(0, static_mesh, -64, lara_item->room_number, 0);
 						SoundEffect(SFX_HIT_ROCK, &item->pos, SFX_DEFAULT);
-						mesh->Flags &= ~1;
+						static_mesh->intensity2 &= ~1;
 						floor->stopper = 0;
 						GetHeight(floor, pos.x, pos.y, pos.z);
 						TestTriggers(trigger_index, 1, 0);

@@ -70,7 +70,6 @@ char tsv_buffer[16384];
 
 static PHD_VECTOR NodeVectors[16];
 
-
 LIGHTNING_STRUCT* TriggerLightning(PHD_VECTOR* s, PHD_VECTOR* d, char variation, long rgb, uchar flags, uchar size, uchar segments)
 {
 	LIGHTNING_STRUCT* lptr;
@@ -107,8 +106,10 @@ LIGHTNING_STRUCT* TriggerLightning(PHD_VECTOR* s, PHD_VECTOR* d, char variation,
 					*vptr++ = 0;
 			}
 
-			lptr->Flags = flags;
-			*(long*)&lptr->r = rgb;
+			lptr->flags = flags;
+			lptr->r = RGBA_GETRED(rgb);
+			lptr->g = RGBA_GETGREEN(rgb);
+			lptr->b = RGBA_GETBLUE(rgb);
 			lptr->Segments = segments;
 			lptr->Rand = variation;
 			lptr->Size = size;
@@ -119,7 +120,7 @@ LIGHTNING_STRUCT* TriggerLightning(PHD_VECTOR* s, PHD_VECTOR* d, char variation,
 	return 0;
 }
 
-long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
+long ExplodingDeath2(short item_number, long mesh_bits, short flags)
 {
 	auto* item = &items[item_number];
 	auto* obj = &objects[item->object_number];
@@ -137,7 +138,7 @@ long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
 
 	if ((mesh_bits & 1) && (item->mesh_bits & 1))
 	{
-		if ((Flags & EDF_CREATE_EFFECT) || !(GetRandomControl() & 3))
+		if ((flags & EDF_CREATE_EFFECT) || !(GetRandomControl() & 3))
 		{
 			auto fx_number = CreateEffect(item->room_number);
 			if (fx_number != NO_ITEM)
@@ -150,16 +151,16 @@ long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
 				fx->pos.y_rot = (short)(GetRandomControl() << 1);
 				fx->pos.x_rot = 0;
 
-				if (Flags & EDF_NOSPEED)
+				if (flags & EDF_NOSPEED)
 					fx->speed = 0;
-				else if (Flags & EDF_MORESPEED)
+				else if (flags & EDF_MORESPEED)
 					fx->speed = (short)(GetRandomControl() >> 12);
 				else
 					fx->speed = (short)(GetRandomControl() >> 8);
 
-				if (Flags & EDF_NOFALLSPEED)
+				if (flags & EDF_NOFALLSPEED)
 					fx->fallspeed = 0;
-				else if (Flags & EDF_MOREFALLSPEED)
+				else if (flags & EDF_MOREFALLSPEED)
 					fx->fallspeed = (short)(-(GetRandomControl() >> 12));
 				else
 					fx->fallspeed = (short)(-(GetRandomControl() >> 8));
@@ -167,7 +168,7 @@ long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
 				fx->frame_number = obj->mesh_index;
 				fx->object_number = BODY_PART;
 				fx->shade = 0x4210;
-				fx->flag2 = Flags;
+				fx->flag2 = flags;
 			}
 
 			item->mesh_bits--;
@@ -205,7 +206,7 @@ long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
 		}
 
 		bit <<= 1;
-		if ((bit & mesh_bits) && (bit & item->mesh_bits) && ((Flags & EDF_CREATE_EFFECT) || !(GetRandomControl() & 3)))
+		if ((bit & mesh_bits) && (bit & item->mesh_bits) && ((flags & EDF_CREATE_EFFECT) || !(GetRandomControl() & 3)))
 		{
 			auto fx_number = CreateEffect(item->room_number);
 			if (fx_number != NO_ITEM)
@@ -218,16 +219,16 @@ long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
 				fx->pos.y_rot = (short)(GetRandomControl() << 1);
 				fx->pos.x_rot = 0;
 
-				if (Flags & EDF_NOSPEED)
+				if (flags & EDF_NOSPEED)
 					fx->speed = 0;
-				else if (Flags & EDF_MORESPEED)
+				else if (flags & EDF_MORESPEED)
 					fx->speed = (short)(GetRandomControl() >> 12);
 				else
 					fx->speed = (short)(GetRandomControl() >> 8);
 
-				if (Flags & EDF_NOFALLSPEED)
+				if (flags & EDF_NOFALLSPEED)
 					fx->fallspeed = 0;
-				else if (Flags & EDF_MOREFALLSPEED)
+				else if (flags & EDF_MOREFALLSPEED)
 					fx->fallspeed = (short)(-(GetRandomControl() >> 12));
 				else
 					fx->fallspeed = (short)(-(GetRandomControl() >> 8));
@@ -235,7 +236,7 @@ long ExplodingDeath2(short item_number, long mesh_bits, short Flags)
 				fx->frame_number = obj->mesh_index + 2 * i;
 				fx->object_number = BODY_PART;
 				fx->shade = 0x4210;
-				fx->flag2 = Flags;
+				fx->flag2 = flags;
 			}
 			item->mesh_bits -= bit;
 		}
@@ -271,7 +272,7 @@ void DrawGunshells()
 	}
 }
 
-void TriggerGunSmoke(long x, long y, long z, long xVel, long yVel, long zVel, long notLara, long weaponType, long shade)
+void TriggerGunSmoke(long x, long y, long z, long xVel, long yVel, long zVel, long notLara, long weaponType, long intensity1)
 {
 	SMOKE_SPARKS* sptr;
 	uchar size;
@@ -279,7 +280,7 @@ void TriggerGunSmoke(long x, long y, long z, long xVel, long yVel, long zVel, lo
 	sptr = &smoke_spark[GetFreeSmokeSpark()];
 	sptr->On = 1;
 	sptr->sShade = 0;
-	sptr->dShade = uchar(4 * shade);
+	sptr->dShade = uchar(4 * intensity1);
 	sptr->ColFadeSpeed = 4;
 	sptr->FadeToBlack = uchar(32 - 16 * notLara);
 	sptr->Life = (GetRandomControl() & 3) + 40;
@@ -311,10 +312,10 @@ void TriggerGunSmoke(long x, long y, long z, long xVel, long yVel, long zVel, lo
 	if (GetRandomControl() & 1)
 	{
 		if (room[lara_item->room_number].flags & ROOM_NOT_INSIDE)
-			sptr->Flags = 272;
+			sptr->flags = 272;
 
 		else
-			sptr->Flags = 16;
+			sptr->flags = 16;
 
 		sptr->RotAng = GetRandomControl() & 0xFFF;
 
@@ -324,9 +325,9 @@ void TriggerGunSmoke(long x, long y, long z, long xVel, long yVel, long zVel, lo
 			sptr->RotAdd = (GetRandomControl() & 0xF) + 16;
 	}
 	else if (room[lara_item->room_number].flags & ROOM_NOT_INSIDE)
-		sptr->Flags = 256;
+		sptr->flags = 256;
 	else
-		sptr->Flags = 0;
+		sptr->flags = 0;
 
 	sptr->Gravity = -2 - (GetRandomControl() & 1);
 	sptr->MaxYvel = -2 - (GetRandomControl() & 1);
@@ -490,7 +491,7 @@ void TriggerGlobalStaticFlame()
 	sptr->Xvel = 0;
 	sptr->Yvel = 0;
 	sptr->Zvel = 0;
-	sptr->Flags = 0;
+	sptr->flags = 0;
 	sptr->dSize = (GetRandomControl() & 0x1F) + 0x80;
 	sptr->sSize = sptr->dSize;
 	sptr->Size = sptr->dSize;
@@ -524,7 +525,7 @@ void TriggerGlobalFireFlame()
 
 	if (GetRandomControl() & 1)
 	{
-		sptr->Flags = 16;
+		sptr->flags = 16;
 		sptr->RotAng = GetRandomControl() & 0xFFF;
 
 		if (GetRandomControl() & 1)
@@ -533,7 +534,7 @@ void TriggerGlobalFireFlame()
 			sptr->RotAdd = (GetRandomControl() & 0xF) + 16;
 	}
 	else
-		sptr->Flags = 0;
+		sptr->flags = 0;
 
 	sptr->Size = (GetRandomControl() & 0x1F) + 128;
 	sptr->sSize = sptr->Size;
@@ -574,7 +575,7 @@ void keep_those_fires_burning()
 			
 			if (GetRandomControl() & 1)
 			{
-				sptr->Flags = 16;
+				sptr->flags = 16;
 				sptr->RotAng = GetRandomControl() & 0xFFF;
 
 				if (GetRandomControl() & 1)
@@ -583,7 +584,7 @@ void keep_those_fires_burning()
 					sptr->RotAdd = (GetRandomControl() & 0xF) + 16;
 			}
 			else
-				sptr->Flags = 0;
+				sptr->flags = 0;
 
 			sptr->Gravity = -16 - (GetRandomControl() & 0xF);
 			sptr->MaxYvel = -8 - (GetRandomControl() & 7);
@@ -643,7 +644,7 @@ void UpdateFireSparks()
 			sptr->B = sptr->dB;
 		}
 
-		if (sptr->Flags & 0x10)
+		if (sptr->flags & 0x10)
 			sptr->RotAng = (sptr->RotAng + sptr->RotAdd) & 0xFFF;
 
 		if (sptr->R < 24 && sptr->G < 24 && sptr->B < 24)
@@ -852,7 +853,7 @@ void UpdateSmokeSparks()
 		else
 			sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 
-		if (sptr->Flags & 0x10)
+		if (sptr->flags & 0x10)
 			sptr->RotAng = (sptr->RotAng + sptr->RotAdd) & 0xFFF;
 
 		fade = ((sptr->sLife - sptr->Life) << 16) / sptr->sLife;
@@ -877,7 +878,7 @@ void UpdateSmokeSparks()
 		sptr->y += sptr->Yvel >> 5;
 		sptr->z += sptr->Zvel >> 5;
 
-		if (sptr->Flags & 0x100)
+		if (sptr->flags & 0x100)
 		{
 			sptr->x += SmokeWindX >> 1;
 			sptr->z += SmokeWindZ >> 1;
@@ -910,7 +911,7 @@ void TriggerShatterSmoke(long x, long y, long z)
 	
 	if (GetRandomControl() & 1)
 	{
-		sptr->Flags = 16;
+		sptr->flags = 16;
 		sptr->RotAng = GetRandomControl() & 0xFFF;
 
 		if (GetRandomControl() & 1)
@@ -919,9 +920,9 @@ void TriggerShatterSmoke(long x, long y, long z)
 			sptr->RotAdd = (GetRandomControl() & 0x3F) + 64;
 	}
 	else if (room[lara_item->room_number].flags & ROOM_NOT_INSIDE)
-		sptr->Flags = 256;
+		sptr->flags = 256;
 	else
-		sptr->Flags = 0;
+		sptr->flags = 0;
 
 	sptr->Gravity = -4 - (GetRandomControl() & 3);
 	sptr->MaxYvel = -4 - (GetRandomControl() & 3);
@@ -1012,7 +1013,7 @@ void TriggerGunShell(short leftright, short objnum, long weapon)
 {
 	GUNSHELL_STRUCT* shell;
 	PHD_VECTOR pos;
-	long shade;
+	long intensity1;
 
 	if (leftright)
 	{
@@ -1062,11 +1063,11 @@ void TriggerGunShell(short leftright, short objnum, long weapon)
 	if (lara_item->mesh_bits)
 	{
 		if (weapon == WEAPON_SHOTGUN)
-			shade = 24;
+			intensity1 = 24;
 		else
-			shade = 16;
+			intensity1 = 16;
 
-		TriggerGunSmoke(pos.x, pos.y, pos.z, 0, 0, 0, 0, weapon, shade);
+		TriggerGunSmoke(pos.x, pos.y, pos.z, 0, 0, 0, 0, weapon, intensity1);
 	}
 
 	shell = &Gunshells[GetFreeGunshell()];
@@ -1143,8 +1144,8 @@ void UpdateGunShells()
 
 		if (room[shell->room_number].flags & ROOM_UNDERWATER && !(room[oroom].flags & ROOM_UNDERWATER))
 		{
-			TriggerSmallSplash(shell->pos.x_pos, room[shell->room_number].maxceiling, shell->pos.z_pos, 8);
-			SetupRipple(shell->pos.x_pos, room[shell->room_number].maxceiling, shell->pos.z_pos, (GetRandomControl() & 3) + 8, 2);
+			TriggerSmallSplash(shell->pos.x_pos, room[shell->room_number].top_ceiling, shell->pos.z_pos, 8);
+			SetupRipple(shell->pos.x_pos, room[shell->room_number].top_ceiling, shell->pos.z_pos, (GetRandomControl() & 3) + 8, 2);
 			shell->fallspeed >>= 5;
 			continue;
 		}
@@ -1221,7 +1222,7 @@ void TriggerSmallSplash(long x, long y, long z, long num)
 		sptr->y = y - (sptr->Yvel >> 5);
 		sptr->z = z + (sptr->Zvel >> 3);
 		sptr->Friction = 5;
-		sptr->Flags = 0;
+		sptr->flags = 0;
 		sptr->MaxYvel = 0;
 		sptr->Gravity = (GetRandomControl() & 0xF) + 64;
 		num--;
@@ -1588,7 +1589,7 @@ void UpdateBubbles()
 
 		if (!(room[room_number].flags & ROOM_UNDERWATER))
 		{
-			SetupRipple(bubble->pos.x, room[bubble->room_number].maxceiling, bubble->pos.z, (GetRandomControl() & 0xF) + 48, 2);
+			SetupRipple(bubble->pos.x, room[bubble->room_number].top_ceiling, bubble->pos.z, (GetRandomControl() & 0xF) + 48, 2);
 			bubble->size = 0;
 			continue;
 		}
@@ -1714,7 +1715,7 @@ void TriggerShockwave(PHD_VECTOR* pos, long InnerOuterRads, long speed, long bgr
 		sw->InnerRad = InnerOuterRads & 0xFFFF;
 		sw->OuterRad = InnerOuterRads >> 16;
 		sw->XRot = XRotFlags & 0xFFFF;
-		sw->Flags = XRotFlags >> 16;
+		sw->flags = XRotFlags >> 16;
 		sw->Speed = (short)speed;
 		sw->r = CLRB(bgrl);
 		sw->g = CLRG(bgrl);
@@ -1767,7 +1768,7 @@ void TriggerShockwaveHitEffect(long x, long y, long z, long rgb, short dir, long
 	sptr->Yvel = -512 - (GetRandomControl() & 0x1FF);
 	sptr->Zvel = (short)zvel;
 	sptr->Friction = 3;
-	sptr->Flags = 538;
+	sptr->flags = 538;
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 
 	if (GetRandomControl() & 1)
@@ -1807,7 +1808,7 @@ void UpdateShockwaves()
 		sw->InnerRad += sw->Speed >> 1;
 		sw->Speed -= sw->Speed >> 4;
 
-		if (lara_item->hit_points >= 0 && sw->Flags & 3)
+		if (lara_item->hit_points >= 0 && sw->flags & 3)
 		{
 			bounds = GetBestFrame(lara_item);
 			dx = lara_item->pos.x_pos - sw->x;
@@ -1819,7 +1820,7 @@ void UpdateShockwaves()
 			{
 				dir = (short)phd_atan(dz, dx);
 				TriggerShockwaveHitEffect(lara_item->pos.x_pos, sw->y, lara_item->pos.z_pos, *(long*)&sw->r, dir, sw->Speed);
-				lara_item->hit_points -= sw->Speed >> (((sw->Flags & 2) != 0) + 2);
+				lara_item->hit_points -= sw->Speed >> (((sw->flags & 2) != 0) + 2);
 			}
 			else
 				sw->Temp = 0;
@@ -1889,7 +1890,7 @@ void CalcLightningSpline(PHD_VECTOR* pos, SVECTOR* dest, LIGHTNING_STRUCT* lptr)
 	dest++;
 	segments = lptr->Segments * 3;
 
-	if (lptr->Flags & 1)
+	if (lptr->flags & 1)
 	{
 		xadd = 0x10000 / (segments - 1);
 		x = xadd;
@@ -1959,7 +1960,7 @@ void TriggerLightningGlow(long x, long y, long z, long rgb)
 	sptr->Zvel = 0;
 	sptr->Yvel = 0;
 	sptr->Xvel = 0;
-	sptr->Flags = 10;
+	sptr->flags = 10;
 	sptr->Scalar = 3;
 	sptr->MaxYvel = 0;
 	sptr->Def = objects[DEFAULT_SPRITES].mesh_index + 11;
@@ -2011,9 +2012,9 @@ void TriggerFlashSmoke(long x, long y, long z, short room_number)
 	}
 
 	if (room[room_number].flags & ROOM_NOT_INSIDE)
-		sptr->Flags = 272;
+		sptr->flags = 272;
 	else
-		sptr->Flags = 16;
+		sptr->flags = 16;
 
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 
@@ -2061,7 +2062,7 @@ void S_DrawSparks()
 		if (!sptr->On)
 			continue;
 
-		if (sptr->Flags & 0x40)
+		if (sptr->flags & 0x40)
 		{
 			fx = &effects[sptr->FxObj];
 			x = sptr->x + fx->pos.x_pos;
@@ -2073,14 +2074,14 @@ void S_DrawSparks()
 				sptr->x = x;
 				sptr->y = y;
 				sptr->z = z;
-				sptr->Flags &= ~0x40;
+				sptr->flags &= ~0x40;
 			}
 		}
-		else if (sptr->Flags & 0x80)
+		else if (sptr->flags & 0x80)
 		{
 			item = &items[sptr->FxObj];
 
-			if (sptr->Flags & 0x1000)
+			if (sptr->flags & 0x1000)
 			{
 				if (NodeOffsets[sptr->NodeNumber].GotIt)
 				{
@@ -2114,7 +2115,7 @@ void S_DrawSparks()
 					sptr->x = x;
 					sptr->y = y;
 					sptr->z = z;
-					sptr->Flags &= ~0x1080;
+					sptr->flags &= ~0x1080;
 				}
 			}
 			else
@@ -2152,9 +2153,9 @@ void S_DrawSparks()
 		XY[1] = long(fPos.y * perspz + f_centery);
 		Z[0] = (long)fPos.z;
 
-		if (sptr->Flags & 8)
+		if (sptr->flags & 8)
 		{
-			if (sptr->Flags & 2)
+			if (sptr->flags & 2)
 				smallest_size = 4;
 		}
 		else

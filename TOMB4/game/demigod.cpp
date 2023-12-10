@@ -98,7 +98,7 @@ void TriggerDemigodMissileFlame(short fx_number, long xv, long yv, long zv)
 	sptr->Yvel = (short)yv;
 	sptr->Zvel = (short)zv;
 	sptr->Friction = 68;
-	sptr->Flags = 602;
+	sptr->flags = 602;
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 
 	if (GetRandomControl() & 1)
@@ -145,7 +145,7 @@ void TriggerHammerSmoke(long x, long y, long z, long num)
 
 		if (GetRandomControl() & 1)
 		{
-			sptr->Flags = 16;
+			sptr->flags = 16;
 			sptr->RotAng = GetRandomControl() & 0xFFF;
 
 			if (GetRandomControl() & 1)
@@ -154,9 +154,9 @@ void TriggerHammerSmoke(long x, long y, long z, long num)
 				sptr->RotAdd = (GetRandomControl() & 0x3F) + 64;
 		}
 		else if (room[lara_item->room_number].flags & ROOM_NOT_INSIDE)
-			sptr->Flags = 256;
+			sptr->flags = 256;
 		else
-			sptr->Flags = 0;
+			sptr->flags = 0;
 
 		sptr->Gravity = -4 - (GetRandomControl() & 3);
 		sptr->MaxYvel = -4 - (GetRandomControl() & 3);

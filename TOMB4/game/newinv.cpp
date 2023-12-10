@@ -608,7 +608,7 @@ void do_debounced_joystick_poo()
 	}
 }
 
-void DrawInventoryItemMe(INVDRAWITEM* item, long shade, long overlay, long shagflag)
+void DrawInventoryItemMe(INVDRAWITEM* item, long intensity1, long overlay, long shagflag)
 {
 	ANIM_STRUCT* anim;
 	OBJECT_INFO* object;
@@ -662,12 +662,12 @@ void DrawInventoryItemMe(INVDRAWITEM* item, long shade, long overlay, long shagf
 		{
 			alpha = GlobalAlpha;
 
-			if (shade > 127)
-				shade = 255;
+			if (intensity1 > 127)
+				intensity1 = 255;
 			else
-				shade <<= 1;
+				intensity1 <<= 1;
 
-			GlobalAlpha = shade << 24;
+			GlobalAlpha = intensity1 << 24;
 			phd_PutPolygonsPickup(*meshpp, (float)xoffset, (float)yoffset, pcbright);
 			GlobalAlpha = alpha;
 		}
@@ -696,7 +696,7 @@ void DrawInventoryItemMe(INVDRAWITEM* item, long shade, long overlay, long shagf
 
 			if (lara_item->pos.y_rot > -48 && lara_item->pos.y_rot <= 48 && tomb4.cheats)
 			{
-				shade = 96;
+				intensity1 = 96;
 
 				if (rings[RING_INVENTORY]->current_object_list[rings[RING_INVENTORY]->curobjinlist].invitem == INV_SMALLMEDI_ITEM)
 				{
@@ -766,12 +766,12 @@ void DrawInventoryItemMe(INVDRAWITEM* item, long shade, long overlay, long shagf
 			{
 				alpha = GlobalAlpha;
 
-				if (shade > 127)
-					shade = 255;
+				if (intensity1 > 127)
+					intensity1 = 255;
 				else
-					shade <<= 1;
+					intensity1 <<= 1;
 
-				GlobalAlpha = shade << 24;
+				GlobalAlpha = intensity1 << 24;
 				phd_PutPolygonsPickup(*meshpp, (float)xoffset, (float)yoffset, pcbright);
 				GlobalAlpha = alpha;
 			}
@@ -781,7 +781,7 @@ void DrawInventoryItemMe(INVDRAWITEM* item, long shade, long overlay, long shagf
 	phd_PopMatrix();
 }
 
-void DrawThreeDeeObject2D(long x, long y, long num, long shade, long xrot, long yrot, long zrot, long bright, long overlay)
+void DrawThreeDeeObject2D(long x, long y, long num, long intensity1, long xrot, long yrot, long zrot, long bright, long overlay)
 {
 	INVOBJ* objme;
 	INVDRAWITEM item;
@@ -806,7 +806,7 @@ void DrawThreeDeeObject2D(long x, long y, long num, long shade, long xrot, long 
 	phd_TranslateRel(0, 0, objme->scale1);
 	xoffset = x;
 	yoffset = objme->yoff + y;
-	DrawInventoryItemMe(&item, shade, overlay, objme->flags & 8);
+	DrawInventoryItemMe(&item, intensity1, overlay, objme->flags & 8);
 	phd_PopMatrix();
 	xoffset = phd_centerx;
 	yoffset = phd_centery;
@@ -2503,7 +2503,7 @@ void handle_inventry_menu()
 void draw_current_object_list(long ringnum)
 {
 	INVOBJ* objme;
-	long n, maxobj, xoff, shade, minobj, objmeup, nummeup, activenum;
+	long n, maxobj, xoff, intensity1, minobj, objmeup, nummeup, activenum;
 	short ymeup, yrot;
 	char textbufme[128];
 
@@ -2634,34 +2634,34 @@ void draw_current_object_list(long ringnum)
 		if (minobj == i)
 		{
 			if (rings[ringnum]->objlistmovement < 0)
-				shade = 0;
+				intensity1 = 0;
 			else
-				shade = rings[ringnum]->objlistmovement >> 9;
+				intensity1 = rings[ringnum]->objlistmovement >> 9;
 		}
 		else if (i == minobj + 1 && maxobj != minobj + 1)
 		{
 			if (rings[ringnum]->objlistmovement < 0)
-				shade = 128 - ((-128 * rings[ringnum]->objlistmovement) >> 16);
+				intensity1 = 128 - ((-128 * rings[ringnum]->objlistmovement) >> 16);
 			else
-				shade = 128;
+				intensity1 = 128;
 		}
 		else if (i == maxobj)
 		{
 			if (rings[ringnum]->objlistmovement < 0)
-				shade = (-128 * rings[ringnum]->objlistmovement) >> 16;
+				intensity1 = (-128 * rings[ringnum]->objlistmovement) >> 16;
 			else
-				shade = 128 - (short)(rings[ringnum]->objlistmovement >> 9);
+				intensity1 = 128 - (short)(rings[ringnum]->objlistmovement >> 9);
 		}
 		else
-			shade = 128;
+			intensity1 = 128;
 
 		if (!minobj && !maxobj)
-			shade = 128;
+			intensity1 = 128;
 
-		if (ringnum == RING_AMMO && combine_ring_fade_val < 128 && shade)
-			shade = combine_ring_fade_val;
-		else if (ringnum == RING_INVENTORY && normal_ring_fade_val < 128 && shade)
-			shade = normal_ring_fade_val;
+		if (ringnum == RING_AMMO && combine_ring_fade_val < 128 && intensity1)
+			intensity1 = combine_ring_fade_val;
+		else if (ringnum == RING_INVENTORY && normal_ring_fade_val < 128 && intensity1)
+			intensity1 = normal_ring_fade_val;
 
 		objme = &inventry_objects_list[rings[ringnum]->current_object_list[n].invitem];
 
@@ -2799,7 +2799,7 @@ void draw_current_object_list(long ringnum)
 		DrawThreeDeeObject2D(long((((float)phd_centerx / 256.0F) * 256 + inventry_xpos) + xoff + i * OBJLIST_SPACING),
 			long((float)phd_centery / 120.0F * ymeup + inventry_ypos),
 			rings[ringnum]->current_object_list[n].invitem,
-			shade, 0, yrot, 0, rings[ringnum]->current_object_list[n].bright, 0);
+			intensity1, 0, yrot, 0, rings[ringnum]->current_object_list[n].bright, 0);
 
 		n++;
 

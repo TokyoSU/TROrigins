@@ -21,16 +21,16 @@ void ElementPuzzleCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	ITEM_INFO* item;
 	short* bounds;
 	long y;
-	short mesh, rotY;
+	short static_mesh, rotY;
 
 	item = &items[item_number];
 
 	if (!item->ocb)
-		mesh = LARA_WATER_MESH;
+		static_mesh = LARA_WATER_MESH;
 	else if (item->ocb == 1)
-		mesh = LARA_PETROL_MESH;
+		static_mesh = LARA_PETROL_MESH;
 	else if (item->ocb == 2)
-		mesh = LARA_DIRT_MESH;
+		static_mesh = LARA_DIRT_MESH;
 	else
 		return;
 
@@ -46,13 +46,13 @@ void ElementPuzzleCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 		if (TestLaraPosition(ElementPuzzleBounds, item, l))
 		{
-			if (l->anim_number == ANIM_POURWATERSKIN && lara_item->item_flags[2] == mesh)
+			if (l->anim_number == ANIM_POURWATERSKIN && lara_item->item_flags[2] == static_mesh)
 			{
 				l->anim_number = ANIM_FILLSCALE;
 				l->frame_number = anims[ANIM_FILLSCALE].frame_base;
 			}
 
-			if (l->frame_number == anims[ANIM_FILLSCALE].frame_base + 74 && lara_item->item_flags[2] == mesh)
+			if (l->frame_number == anims[ANIM_FILLSCALE].frame_base + 74 && lara_item->item_flags[2] == static_mesh)
 			{
 				if (!item->ocb)
 				{

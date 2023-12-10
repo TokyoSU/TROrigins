@@ -641,7 +641,7 @@ void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, long* xyptr, long* zptr)
 
 	v = MyVertexBuffer;
 
-	if (sptr->Flags & 8)
+	if (sptr->flags & 8)
 	{
 		z1 = zptr[0];
 		
@@ -654,7 +654,7 @@ void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, long* xyptr, long* zptr)
 			return;
 		}
 
-		if (sptr->Flags & 2)
+		if (sptr->flags & 2)
 		{
 			scale = sptr->Size << sptr->Scalar;
 			s1 = ((phd_persp * sptr->Size) << sptr->Scalar) / z1;
@@ -683,7 +683,7 @@ void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, long* xyptr, long* zptr)
 
 		if (x1 + s1h >= phd_winxmin && x1 - s1h < phd_winxmax && y1 + s2h >= phd_winymin && y1 - s2h < phd_winymax)
 		{
-			if (sptr->Flags & 0x10)
+			if (sptr->flags & 0x10)
 			{
 				sin = rcossin_tbl[sptr->RotAng << 1];
 				cos = rcossin_tbl[(sptr->RotAng << 1) + 1];
@@ -2350,7 +2350,7 @@ void InitBinoculars()
 
 void DrawBinoculars()
 {
-	MESH_DATA* mesh;
+	MESH_DATA* static_mesh;
 	D3DTLVERTEX* v;
 	TEXTURESTRUCT* tex;
 	D3DTLVERTEX* vtx;
@@ -2363,14 +2363,14 @@ void DrawBinoculars()
 	vtx = MyVertexBuffer;
 
 	if (LaserSight)
-		mesh = targetMeshP;
+		static_mesh = targetMeshP;
 	else
-		mesh = binocsMeshP;
+		static_mesh = binocsMeshP;
 
-	mesh->SourceVB->Lock(DDLOCK_READONLY, (void**)&v, 0);
+	static_mesh->SourceVB->Lock(DDLOCK_READONLY, (void**)&v, 0);
 	clip = clipflags;
 
-	for (int i = 0; i < mesh->nVerts; i++)
+	for (int i = 0; i < static_mesh->nVerts; i++)
 	{
 		clipdistance = 0;
 		vtx[i] = v[i];
@@ -2390,13 +2390,13 @@ void DrawBinoculars()
 		*clip++ = clipdistance;
 	}
 
-	mesh->SourceVB->Unlock();
-	quad = mesh->gt4;
-	tri = mesh->gt3;
+	static_mesh->SourceVB->Unlock();
+	quad = static_mesh->gt4;
+	tri = static_mesh->gt3;
 
 	if (LaserSight)
 	{
-		for (int i = 0; i < mesh->ngt4; i++, quad += 6)
+		for (int i = 0; i < static_mesh->ngt4; i++, quad += 6)
 		{
 			tex = &textinfo[quad[4] & 0x7FFF];
 			drawbak = tex->drawtype;
@@ -2415,7 +2415,7 @@ void DrawBinoculars()
 			tex->drawtype = drawbak;
 		}
 
-		for (int i = 0, j = 0; i < mesh->ngt3; i++, tri += 5)
+		for (int i = 0, j = 0; i < static_mesh->ngt3; i++, tri += 5)
 		{
 			tex = &textinfo[tri[3] & 0x7FFF];
 			drawbak = tex->drawtype;
@@ -2436,7 +2436,7 @@ void DrawBinoculars()
 	}
 	else
 	{
-		for (int i = 0; i < mesh->ngt4; i++, quad += 6)
+		for (int i = 0; i < static_mesh->ngt4; i++, quad += 6)
 		{
 			tex = &textinfo[quad[4] & 0x7FFF];
 			drawbak = tex->drawtype;
@@ -2455,7 +2455,7 @@ void DrawBinoculars()
 			tex->drawtype = drawbak;
 		}
 
-		for (int i = 0; i < mesh->ngt3; i++, tri += 5)
+		for (int i = 0; i < static_mesh->ngt3; i++, tri += 5)
 		{
 			tex = &textinfo[tri[3] & 0x7FFF];
 			drawbak = tex->drawtype;
@@ -3516,7 +3516,7 @@ void S_DrawFireSparks(long size, long life)
 		if (XY[0] + newSize < phd_winxmin || XY[0] - newSize >= phd_winxmax || XY[1] + newSize < phd_winymin || XY[1] - newSize >= phd_winymax)
 			continue;
 
-		if (sptr->Flags & 0x10)
+		if (sptr->flags & 0x10)
 		{
 			ang = sptr->RotAng << 1;
 			s = rcossin_tbl[ang];
@@ -3909,7 +3909,7 @@ void S_DrawSmokeSparks()
 			continue;
 		}
 
-		if (sptr->Flags & 0x10)
+		if (sptr->flags & 0x10)
 		{
 			ang = sptr->RotAng << 1;
 			s = rcossin_tbl[ang];

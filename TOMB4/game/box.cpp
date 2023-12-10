@@ -56,7 +56,7 @@ void CreatureDie(short item_number, long explode)
 
 	if (explode)
 	{
-		if (objects[item->object_number].HitEffect == 1)
+		if (objects[item->object_number].hit_effect == 1)
 			ExplodingDeath2(item_number, MESHBITS_ALL, 258);
 		else
 			ExplodingDeath2(item_number, MESHBITS_ALL, 256);
@@ -1798,4 +1798,14 @@ long MoveCreature3DPos(PHD_3DPOS* srcpos, PHD_3DPOS* destpos, long velocity, sho
 
 	return srcpos->x_pos == destpos->x_pos && srcpos->y_pos == destpos->y_pos &&
 		srcpos->z_pos == destpos->z_pos && srcpos->y_rot == destpos->y_rot;
+}
+
+long GetSectorIndex(ROOM_INFO* r, int x, int z)
+{
+	return ((z - r->z) >> WALL_SHIFT) + r->x_size * ((x - r->x) >> WALL_SHIFT);
+}
+
+long GetSectorIndex(ROOM_INFO* r, ITEM_INFO* item)
+{
+	return ((item->pos.z_pos - r->z) >> WALL_SHIFT) + r->x_size * ((item->pos.x_pos - r->x) >> WALL_SHIFT);
 }

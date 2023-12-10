@@ -357,7 +357,7 @@ void ObjectObjects()
 		obj->control = ControlAnimatingSlots;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
-		obj->HitEffect = 0;
+		obj->hit_effect = 0;
 	}
 
 	obj = &objects[FIREROPE];
@@ -428,7 +428,7 @@ void ObjectObjects()
 	obj->collision = ScalesCollision;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
-	obj->HitEffect = 0;
+	obj->hit_effect = 0;
 
 	obj = &objects[TEETH_SPIKES];
 	obj->initialise = InitialiseScaledSpike;
@@ -791,7 +791,7 @@ void TrapObjects()
 	obj->initialise = InitialiseMineHelicopter;
 	obj->control = ControlMineHelicopter;
 	obj->collision = MineCollision;
-	obj->HitEffect = 3;
+	obj->hit_effect = 3;
 
 	obj = &objects[SPRINKLER];
 	obj->control = ControlSprinkler;
@@ -875,7 +875,7 @@ void BaddyObjects()
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		obj->HitEffect = 2;
+		obj->hit_effect = 2;
 		obj->undead = 1;
 	}
 
@@ -902,7 +902,7 @@ void BaddyObjects()
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		obj->HitEffect = 0;
+		obj->hit_effect = 0;
 		obj->undead = 1;
 		bones[obj->bone_index + 24] |= 4;
 		bones[obj->bone_index + 24] |= 8;
@@ -935,7 +935,7 @@ void BaddyObjects()
 		obj->radius = 128;
 		obj->object_mip = 5120;
 		obj->intelligent = 1;
-		obj->HitEffect = 0;
+		obj->hit_effect = 0;
 		obj->save_flags = 1;
 		obj->save_mesh = 1;
 		obj->save_anim = 1;
@@ -979,7 +979,7 @@ void BaddyObjects()
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		obj->HitEffect = 1;
+		obj->hit_effect = 1;
 		bones[obj->bone_index + 28] |= 4;
 		bones[obj->bone_index + 28] |= 8;
 		bones[obj->bone_index + 88] |= 4;
@@ -1019,7 +1019,7 @@ void BaddyObjects()
 		obj->bite_offset = 1;
 		obj->object_mip = 5120;
 		obj->intelligent = 1;
-		obj->HitEffect = 1;
+		obj->hit_effect = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 		obj->save_mesh = 1;
@@ -1060,7 +1060,7 @@ void BaddyObjects()
 		obj->radius = 512;
 		obj->object_mip = 5120;
 		obj->intelligent = 1;
-		obj->HitEffect = 1;
+		obj->hit_effect = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
@@ -1079,7 +1079,7 @@ void BaddyObjects()
 		obj->pivot_length = 20;
 		obj->radius = 128;
 		obj->intelligent = 1;
-		obj->HitEffect = 1;
+		obj->hit_effect = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
@@ -1103,7 +1103,7 @@ void BaddyObjects()
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		obj->HitEffect = 2;
+		obj->hit_effect = 2;
 		obj->undead = 1;
 		bones[obj->bone_index + 28] |= 4;
 		bones[obj->bone_index + 28] |= 8;
@@ -1127,7 +1127,7 @@ void BaddyObjects()
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		obj->HitEffect = 2;
+		obj->hit_effect = 2;
 		obj->undead = 1;
 		bones[obj->bone_index + 24] |= 4;
 		bones[obj->bone_index + 24] |= 8;
@@ -1151,7 +1151,7 @@ void BaddyObjects()
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		obj->HitEffect = 3;
+		obj->hit_effect = 3;
 		obj->undead = 1;
 	}
 
@@ -1187,7 +1187,7 @@ void BaddyObjects()
 		obj->pivot_length = 50;
 		obj->radius = 128;
 		obj->intelligent = 1;
-		obj->HitEffect = 3;
+		obj->hit_effect = 3;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
@@ -1207,7 +1207,7 @@ void BaddyObjects()
 		obj->radius = 409;
 		obj->object_mip = 5120;
 		obj->intelligent = 1;
-		obj->HitEffect = 3;
+		obj->hit_effect = 3;
 		obj->undead = 1;
 		obj->save_mesh = 1;
 		obj->save_flags = 1;
@@ -1229,7 +1229,7 @@ void BaddyObjects()
 		obj->radius = 341;
 		obj->object_mip = 5120;
 		obj->intelligent = 1;
-		obj->HitEffect = 1;
+		obj->hit_effect = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 		obj->water_creature = 1;
@@ -1254,7 +1254,7 @@ void BaddyObjects()
 		obj->radius = 409;
 		obj->object_mip = 5120;
 		obj->intelligent = 1;
-		obj->HitEffect = 1;
+		obj->hit_effect = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 		obj->water_creature = 1;
@@ -1282,7 +1282,7 @@ void BaddyObjects()
 		obj->save_flags = 1;
 		obj->undead = 1;
 		obj->save_anim = 1;
-		obj->HitEffect = 3;
+		obj->hit_effect = 3;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
 		bones[obj->bone_index + 32] |= 4;
@@ -1353,7 +1353,7 @@ void BaddyObjects()
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		obj->HitEffect = 3;
+		obj->hit_effect = 3;
 		obj->undead = 1;
 		bones[obj->bone_index + 24] |= 4;
 		bones[obj->bone_index + 24] |= 8;
@@ -1375,7 +1375,7 @@ void BaddyObjects()
 		obj->bite_offset = 0;
 		obj->object_mip = 5120;
 		obj->intelligent = 1;
-		obj->HitEffect = 1;
+		obj->hit_effect = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
@@ -1400,7 +1400,7 @@ void BaddyObjects()
 		obj->bite_offset = 0;
 		obj->object_mip = 5120;
 		obj->intelligent = 1;
-		obj->HitEffect = 1;
+		obj->hit_effect = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
@@ -1424,7 +1424,7 @@ void BaddyObjects()
 		obj->radius = 409;
 		obj->object_mip = 5120;
 		obj->intelligent = 1;
-		obj->HitEffect = 1;
+		obj->hit_effect = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
@@ -1443,7 +1443,7 @@ void BaddyObjects()
 		obj->hit_points = 40;
 		obj->radius = 102;
 		obj->intelligent = 1;
-		obj->HitEffect = 1;
+		obj->hit_effect = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
@@ -1467,7 +1467,7 @@ void BaddyObjects()
 		obj->radius = 341;
 		obj->object_mip = 5120;
 		obj->intelligent = 1;
-		obj->HitEffect = 1;
+		obj->hit_effect = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
@@ -1490,7 +1490,7 @@ void BaddyObjects()
 		obj->radius = 341;
 		obj->object_mip = 5120;
 		obj->intelligent = 1;
-		obj->HitEffect = 1;
+		obj->hit_effect = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
@@ -1512,7 +1512,7 @@ void BaddyObjects()
 			obj->pivot_length = 200;
 			obj->radius = 256;
 			obj->intelligent = 1;
-			obj->HitEffect = 1;
+			obj->hit_effect = 1;
 			obj->save_flags = 1;
 			obj->save_anim = 1;
 			obj->save_hitpoints = 1;
@@ -1551,7 +1551,7 @@ void BaddyObjects()
 			obj->save_anim = 1;
 			obj->save_hitpoints = 1;
 			obj->save_position = 1;
-			obj->HitEffect = 2;
+			obj->hit_effect = 2;
 			obj->undead = 1;
 			bones[obj->bone_index + 32] |= 4;
 			bones[obj->bone_index + 36] |= 4;
@@ -1572,7 +1572,7 @@ void BaddyObjects()
 		obj->pivot_length = 10;
 		obj->radius = 102;
 		obj->intelligent = 1;
-		obj->HitEffect = 1;
+		obj->hit_effect = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
@@ -1592,7 +1592,7 @@ void BaddyObjects()
 		obj->radius = 204;
 		obj->object_mip = 5120;
 		obj->intelligent = 1;
-		obj->HitEffect = 1;
+		obj->hit_effect = 1;
 		obj->save_flags = 1;
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
@@ -1616,7 +1616,7 @@ void BaddyObjects()
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		obj->HitEffect = 3;
+		obj->hit_effect = 3;
 		obj->undead = 1;
 		bones[obj->bone_index] |= 8;
 		bones[obj->bone_index + 4] |= 4;

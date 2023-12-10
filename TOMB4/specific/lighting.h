@@ -1,7 +1,7 @@
 #pragma once
 #include "../global/types.h"
 
-void S_CalculateStaticMeshLight(long x, long y, long z, long shade, ROOM_INFO* r);
+void S_CalculateStaticMeshLight(long x, long y, long z, long intensity1, ROOM_INFO* r);
 void InitItemDynamicLighting(ITEM_INFO* item);
 void SetupDynamicLight(DYNAMIC* light, ITEM_INFO* item);
 void SetupLight(PCLIGHT* light, ITEM_INFO* item, long* ambient);

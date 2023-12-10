@@ -62,7 +62,7 @@ void ControlPulseLight(short item_number)
 void ControlElectricalLight(short item_number)
 {
 	ITEM_INFO* item;
-	long shade, r, g, b;
+	long intensity1, r, g, b;
 
 	item = &items[item_number];
 
@@ -74,7 +74,7 @@ void ControlElectricalLight(short item_number)
 
 	if (item->item_flags[0] < 16)
 	{
-		shade = (GetRandomControl() & 0x3F) << 2;
+		intensity1 = (GetRandomControl() & 0x3F) << 2;
 		item->item_flags[0]++;
 	}
 	else
@@ -82,10 +82,10 @@ void ControlElectricalLight(short item_number)
 		if (item->item_flags[0] >= 96)
 		{
 			if (item->item_flags[0] >= 160)
-				shade = 255 - (GetRandomControl() & 0x1F);
+				intensity1 = 255 - (GetRandomControl() & 0x1F);
 			else
 			{
-				shade = 96 - (GetRandomControl() & 0x1F);
+				intensity1 = 96 - (GetRandomControl() & 0x1F);
 
 				if (!(GetRandomControl() & 0x1F) && item->item_flags[0] > 128)
 					item->item_flags[0] = 160;
@@ -96,17 +96,17 @@ void ControlElectricalLight(short item_number)
 		else
 		{
 			if (wibble & 0x3F && GetRandomControl() & 7)
-				shade = GetRandomControl() & 0x3F;
+				intensity1 = GetRandomControl() & 0x3F;
 			else
-				shade = 192 - (GetRandomControl() & 0x3F);
+				intensity1 = 192 - (GetRandomControl() & 0x3F);
 
 			item->item_flags[0]++;
 		}
 	}
 
-	r = ((shade * (item->ocb & 0x1F)) << 3) >> 8;
-	g = (shade * ((item->ocb >> 2) & 0xF8)) >> 8;
-	b = (shade * ((item->ocb >> 7) & 0xF8)) >> 8;
+	r = ((intensity1 * (item->ocb & 0x1F)) << 3) >> 8;
+	g = (intensity1 * ((item->ocb >> 2) & 0xF8)) >> 8;
+	b = (intensity1 * ((item->ocb >> 7) & 0xF8)) >> 8;
 	TriggerDynamic(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 16, r, g, b);
 }
 

@@ -49,10 +49,8 @@ void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, sho
 	switch (type)
 	{
 	case 0:
-
 		if (App.dx.lpZBuffer)
 			App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
-
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHATESTENABLE, 0);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
@@ -210,7 +208,6 @@ void DrawSortList()
 		for (num = 0; num < SortCount; num++)
 		{
 			pSort = SortList[num];
-
 			if (pSort->drawtype == 0 || pSort->drawtype == 1 || pSort->drawtype == 4)
 				break;
 		}
@@ -223,13 +220,11 @@ void DrawSortList()
 		for (; num < SortCount; num++)
 		{
 			pSort = SortList[num];
-
 			if (pSort->drawtype == 0 || pSort->drawtype == 1 || pSort->drawtype == 4)
 			{
 				if (pSort->drawtype == drawtype && pSort->tpage == tpage)
 				{
 					vtx = (D3DTLBUMPVERTEX*)(pSort + 1);
-
 					for (int i = 0; i < pSort->nVtx; i++, vtx++, bVtx++)
 					{
 						bVtx->sx = vtx->sx;
@@ -275,7 +270,6 @@ void DrawSortList()
 		for (; num >= 0; num--)
 		{
 			pSort = SortList[num];
-
 			if (pSort->drawtype == 2 || pSort->drawtype == 3 || pSort->drawtype == 5 || pSort->drawtype == 6 || pSort->drawtype == 7)
 			{
 				if (pSort->tpage == tpage && pSort->drawtype == drawtype)
@@ -311,9 +305,9 @@ void DrawSortList()
 			HWR_DrawSortList(bVtxbak, nVtx, tpage, drawtype);
 	}
 
-	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 1);
-	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHATESTENABLE, 0);
-	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, TRUE);
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHATESTENABLE, FALSE);
+	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, FALSE);
 	InitBuckets();
 }
 

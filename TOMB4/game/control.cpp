@@ -209,7 +209,7 @@ long ControlPhase(long nframes, long demo_mode)
 	ITEM_INFO* item;
 	FX_INFO* fx;
 	FLOOR_INFO* floor;
-	MESH_INFO* mesh;
+	MESH_INFO* static_mesh;
 	short item_num, nex, fx_num;
 
 	RegeneratePickups();
@@ -451,9 +451,9 @@ long ControlPhase(long nframes, long demo_mode)
 		while (SmashedMeshCount)
 		{
 			SmashedMeshCount--;
-			mesh = SmashedMesh[SmashedMeshCount];
-			floor = GetFloor(mesh->x, mesh->y, mesh->z, &SmashedMeshRoom[SmashedMeshCount]);
-			GetHeight(floor, mesh->x, mesh->y, mesh->z);
+			static_mesh = SmashedMesh[SmashedMeshCount];
+			floor = GetFloor(static_mesh->x, static_mesh->y, static_mesh->z, &SmashedMeshRoom[SmashedMeshCount]);
+			GetHeight(floor, static_mesh->x, static_mesh->y, static_mesh->z);
 			TestTriggers(trigger_index, 1, 0);
 			floor->stopper = 0;
 			SmashedMesh[SmashedMeshCount] = 0;
@@ -2411,7 +2411,7 @@ long ExplodeItemNode(ITEM_INFO* item, long Node, long NoXZVel, long bits)
 	ShatterItem.Sphere.z = Slist[Node].z;
 	ShatterItem.YRot = item->pos.y_rot;
 	ShatterItem.il = &item->il;
-	ShatterItem.Flags = item->object_number != CROSSBOW_BOLT ? 0 : 1024;
+	ShatterItem.flags = item->object_number != CROSSBOW_BOLT ? 0 : 1024;
 	ShatterObject(&ShatterItem, 0, (short)bits, item->room_number, NoXZVel);
 	item->mesh_bits &= ~ShatterItem.Bit;
 	return 1;
@@ -2437,7 +2437,7 @@ long IsRoomOutside(long x, long y, long z)
 	{
 		r = &room[offset & 0x7FFF];
 
-		if (y >= r->maxceiling && y <= r->minfloor &&
+		if (y >= r->top_ceiling && y <= r->bottom_floor &&
 			z >= r->z + 1024 && z <= ((r->x_size - 1) << 10) + r->z &&
 			x >= r->x + 1024 && x <= ((r->y_size - 1) << 10) + r->x)
 		{
@@ -2464,7 +2464,7 @@ long IsRoomOutside(long x, long y, long z)
 		{
 			r = &room[*pTable];
 
-			if (y >= r->maxceiling && y <= r->minfloor &&
+			if (y >= r->top_ceiling && y <= r->bottom_floor &&
 				z >= r->z + 1024 && z <= ((r->x_size - 1) << 10) + r->z &&
 				x >= r->x + 1024 && x <= ((r->y_size - 1) << 10) + r->x)
 			{
@@ -2493,7 +2493,7 @@ long IsRoomOutside(long x, long y, long z)
 long ObjectOnLOS2(GAME_VECTOR* start, GAME_VECTOR* target, PHD_VECTOR* Coord, MESH_INFO** StaticMesh)
 {
 	ITEM_INFO* item;
-	MESH_INFO* mesh;
+	MESH_INFO* static_mesh;
 	ROOM_INFO* r;
 	PHD_3DPOS ItemPos;
 	short* bounds;
@@ -2529,18 +2529,18 @@ long ObjectOnLOS2(GAME_VECTOR* start, GAME_VECTOR* target, PHD_VECTOR* Coord, ME
 
 		for (int j = 0; j < r->num_meshes; j++)
 		{
-			mesh = &r->mesh[j];
+			static_mesh = &r->static_mesh[j];
 
-			if (mesh->Flags & 1)
+			if (static_mesh->intensity2 & 1)
 			{
-				ItemPos.x_pos = mesh->x;
-				ItemPos.y_pos = mesh->y;
-				ItemPos.z_pos = mesh->z;
-				ItemPos.y_rot = mesh->y_rot;
+				ItemPos.x_pos = static_mesh->x;
+				ItemPos.y_pos = static_mesh->y;
+				ItemPos.z_pos = static_mesh->z;
+				ItemPos.y_rot = static_mesh->y_rot;
 
-				if (DoRayBox(start, target, &static_objects[mesh->static_number].x_minc, &ItemPos, Coord, -1 - mesh->static_number))
+				if (DoRayBox(start, target, &static_objects[static_mesh->object_number].x_minc, &ItemPos, Coord, -1 - static_mesh->object_number))
 				{
-					*StaticMesh = mesh;
+					*StaticMesh = static_mesh;
 					target->room_number = los_rooms[i];
 				}
 			}
@@ -2591,13 +2591,13 @@ long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long f
 			{
 				if (item_no < 0)
 				{
-					if (Mesh->static_number >= SHATTER0 && Mesh->static_number < SHATTER8)
+					if (Mesh->object_number >= SHATTER0 && Mesh->object_number < SHATTER8)
 					{
 						ShatterObject(0, Mesh, 128, target.room_number, 0);
 						SmashedMeshRoom[SmashedMeshCount] = target.room_number;
 						SmashedMesh[SmashedMeshCount] = Mesh;
 						SmashedMeshCount++;
-						Mesh->Flags &= ~1;
+						Mesh->intensity2 &= ~1;
 						SoundEffect(SFX_HIT_ROCK, (PHD_3DPOS*)Mesh, SFX_DEFAULT);
 					}
 
@@ -2623,11 +2623,11 @@ long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long f
 						}
 						else
 						{
-							if (objects[shotitem->object_number].HitEffect == 1)
+							if (objects[shotitem->object_number].hit_effect == 1)
 								DoBloodSplat(target.x, target.y, target.z, (GetRandomControl() & 3) + 3, shotitem->pos.y_rot, shotitem->room_number);
-							else if (objects[shotitem->object_number].HitEffect == 2)
+							else if (objects[shotitem->object_number].hit_effect == 2)
 								TriggerRicochetSpark(&target, lara_item->pos.y_rot, 3, -5);
-							else if (objects[shotitem->object_number].HitEffect == 3)
+							else if (objects[shotitem->object_number].hit_effect == 3)
 								TriggerRicochetSpark(&target, lara_item->pos.y_rot, 3, 0);
 
 							shotitem->hit_status = 1;
@@ -3157,7 +3157,7 @@ long DoRayBox(GAME_VECTOR* start, GAME_VECTOR* target, short* bounds, PHD_3DPOS*
 				ShatterItem.Sphere.z = Slist[ClosestNode].z;
 				ShatterItem.Bit = ClosestBit;
 				ShatterItem.il = &item->il;
-				ShatterItem.Flags = 0;
+				ShatterItem.flags = 0;
 			}
 
 			return 1;

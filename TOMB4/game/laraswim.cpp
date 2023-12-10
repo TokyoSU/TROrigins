@@ -500,10 +500,10 @@ void LaraSwimCollision(ITEM_INFO* item, COLL_INFO* coll)
 		return;
 	}
 
-	if (coll->mid_floor < 0 && coll->mid_floor != NO_HEIGHT)
+	if (coll->middle.floor < 0 && coll->middle.floor != NO_HEIGHT)
 	{
 		item->pos.x_rot += 364;
-		item->pos.y_pos += coll->mid_floor;
+		item->pos.y_pos += coll->middle.floor;
 	}
 
 	if (lara.water_status != LW_FLYCHEAT)
@@ -593,8 +593,8 @@ void LaraWaterCurrent(COLL_INFO* coll)
 		break;
 	}
 
-	if (coll->mid_floor < 0 && coll->mid_floor != NO_HEIGHT)
-		lara_item->pos.y_pos += coll->mid_floor;
+	if (coll->middle.floor < 0 && coll->middle.floor != NO_HEIGHT)
+		lara_item->pos.y_pos += coll->middle.floor;
 
 	ShiftItem(lara_item, coll);
 	coll->old.x = lara_item->pos.x_pos;

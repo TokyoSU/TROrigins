@@ -169,7 +169,7 @@ long S_LoadLevelFile(long num)
 void FreeLevel()
 {
 	MESH_DATA** vbuf;
-	MESH_DATA* mesh;
+	MESH_DATA* static_mesh;
 	ROOM_INFO* r;
 
 	Log(2, "FreeLevel");
@@ -177,12 +177,12 @@ void FreeLevel()
 	for (int i = 0; i < num_level_meshes; i++)
 	{
 		vbuf = &mesh_vtxbuf[i];
-		mesh = *vbuf;
+		static_mesh = *vbuf;
 
-		if (mesh->SourceVB)
+		if (static_mesh->SourceVB)
 		{
-			Log(4, "Released %s @ %x - RefCnt = %d", "Mesh VB", mesh->SourceVB, mesh->SourceVB->Release());
-			mesh->SourceVB = 0;
+			Log(4, "Released %s @ %x - RefCnt = %d", "Mesh VB", static_mesh->SourceVB, static_mesh->SourceVB->Release());
+			static_mesh->SourceVB = 0;
 		}
 	}
 	
@@ -585,8 +585,8 @@ bool LoadRooms()
 		r->x = lvr.GetLong();
 		r->y = 0;
 		r->z = lvr.GetLong();
-		r->minfloor = lvr.GetLong(); // bottom
-		r->maxceiling = lvr.GetLong(); // top
+		r->bottom_floor = lvr.GetLong(); // bottom
+		r->top_ceiling = lvr.GetLong(); // top
 
 		r->data.nVerts = lvr.GetShort();
 		r->data.verts = (TR_VERTEX*)game_malloc(sizeof(TR_VERTEX) * r->data.nVerts);
@@ -669,13 +669,13 @@ bool LoadRooms()
 		r->num_meshes = lvr.GetShort();
 		if (r->num_meshes)
 		{
-			r->mesh = lvr.GetStructGameMalloc<MESH_INFO>(r->num_meshes);
+			r->static_mesh = lvr.GetStructGameMalloc<MESH_INFO>(r->num_meshes);
 			for (int j = 0; j < r->num_meshes; j++)
-				r->mesh[j].Flags = 1;
+				r->static_mesh[j].intensity2 = 1;
 		}
 		else
 		{
-			r->mesh = nullptr;
+			r->static_mesh = nullptr;
 		}
 
 		r->flipped_room = lvr.GetShort();
@@ -707,7 +707,7 @@ bool LoadObjects()
 {
 	OBJECT_INFO* obj;
 	STATIC_INFO* stat;
-	short** mesh;
+	short** static_mesh;
 	short** mesh_size;
 	long size, num, slot;
 	static long num_meshes, num_anims;
@@ -767,14 +767,14 @@ bool LoadObjects()
 		obj->mesh_index *= 2;
 	}
 
-	mesh = meshes;
+	static_mesh = meshes;
 	mesh_size = &meshes[num_meshes];
-	memcpy(mesh_size, mesh, num_meshes * 4);
+	memcpy(mesh_size, static_mesh, num_meshes * 4);
 
 	for (int i = 0; i < num_meshes; i++)
 	{
-		*mesh++ = *mesh_size;
-		*mesh++ = *mesh_size;
+		*static_mesh++ = *mesh_size;
+		*static_mesh++ = *mesh_size;
 		mesh_size++;
 	}
 
@@ -1008,27 +1008,25 @@ bool LoadItems()
 	for (int i = 0; i < number_rooms; i++)
 	{
 		r = &room[i];
-
 		for (int j = 0; j < r->num_meshes; j++)
 		{
-			x = (r->mesh[j].x - r->x) >> 10;
-			z = (r->mesh[j].z - r->z) >> 10;
+			auto* statmesh = &r->static_mesh[j];
+			x = (statmesh->x - r->x) >> WALL_SHIFT;
+			z = (statmesh->z - r->z) >> WALL_SHIFT;
 
 			floor = &(r->floor[x * r->x_size + z]);
-
-			if (!(boxes[floor->box].overlap_index & 0x4000) && (gfCurrentLevel != 4 || i != 19 && i != 23 && i != 16))
+			if (!(boxes[floor->box].overlap_index & 0x4000))
 			{
-				stat = &static_objects[r->mesh[j].static_number];
+				stat = &static_objects[statmesh->object_number];
 				y = floor->floor << 8;
 
-				if (y <= (r->mesh[j].y - stat->y_maxc + 512) && y < r->mesh[j].y - stat->y_minc)
+				if (y <= (statmesh->y - stat->y_maxc + 512) && y < statmesh->y - stat->y_minc)
 				{
-					if (!stat->x_maxc || !stat->x_minc || !stat->z_maxc || !stat->z_minc ||
-						(stat->x_maxc ^ stat->x_minc) & 0x8000 && (stat->z_maxc ^ stat->z_minc) & 0x8000)
+					if (!stat->x_maxc || !stat->x_minc || !stat->z_maxc || !stat->z_minc || (stat->x_maxc ^ stat->x_minc) & 0x8000 && (stat->z_maxc ^ stat->z_minc) & 0x8000)
 					{
-						x = (r->mesh[j].x - r->x) >> 10;
-						z = (r->mesh[j].z - r->z) >> 10;
-						r->floor[x * r->x_size + z].stopper = 1;
+						x = (statmesh->x - r->x) >> WALL_SHIFT;
+						z = (statmesh->z - r->z) >> WALL_SHIFT;
+						r->floor[x * r->x_size + z].stopper = TRUE;
 					}
 				}
 			}

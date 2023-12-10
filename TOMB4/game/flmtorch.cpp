@@ -46,7 +46,7 @@ void TriggerTorchFlame(short item_number, long node)
 	sptr->Yvel = -16 - (GetRandomControl() & 0xF);
 	sptr->Zvel = (GetRandomControl() & 0xFF) - 128;
 	sptr->Friction = 5;
-	sptr->Flags = 4762;
+	sptr->flags = 4762;
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 
 	if (GetRandomControl() & 1)
@@ -329,7 +329,7 @@ void FlameTorchControl(short item_number)
 		}
 		else
 		{
-			sinfo = &static_objects[meshlist[0]->static_number];
+			sinfo = &static_objects[meshlist[0]->object_number];
 			pos.x_pos = meshlist[0]->x;
 			pos.y_pos = meshlist[0]->y;
 			pos.z_pos = meshlist[0]->z;

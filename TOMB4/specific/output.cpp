@@ -39,7 +39,7 @@ long GlobalAmbient;
 float AnimatingTexturesV[16][8][3];
 static short AnimatingTexturesVOffset;
 
-void ProcessObjectMeshVertices(MESH_DATA* mesh)
+void ProcessObjectMeshVertices(MESH_DATA* static_mesh)
 {
 	POINTLIGHT_STRUCT* point;
 	SUNLIGHT_STRUCT* sun;
@@ -61,16 +61,16 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 		DistanceFogStart = tomb4.distance_fog * 1024.0F;
 
 	num = 255.0F / DistanceFogStart;
-	mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&v, 0);
+	static_mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&v, 0);
 
-	for (int i = 0; i < mesh->nVerts; i++)
+	for (int i = 0; i < static_mesh->nVerts; i++)
 	{
 		vtx.x = *v++;
 		vtx.y = *v++;
 		vtx.z = *v++;
-		n.x = mesh->Normals[i].x;
-		n.y = mesh->Normals[i].y;
-		n.z = mesh->Normals[i].z;
+		n.x = static_mesh->Normals[i].x;
+		n.y = static_mesh->Normals[i].y;
+		n.z = static_mesh->Normals[i].z;
 		v += 5;
 
 		vPos.x = vtx.x * D3DMView._11 + vtx.y * D3DMView._21 + vtx.z * D3DMView._31 + D3DMView._41;
@@ -257,10 +257,10 @@ void ProcessObjectMeshVertices(MESH_DATA* mesh)
 		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, sA);
 	}
 
-	mesh->SourceVB->Unlock();
+	static_mesh->SourceVB->Unlock();
 }
 
-void ProcessStaticMeshVertices(MESH_DATA* mesh)
+void ProcessStaticMeshVertices(MESH_DATA* static_mesh)
 {
 	DYNAMIC* l;
 	FVECTOR d;
@@ -285,9 +285,9 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 	pR = (StaticMeshShade & 0x1F) << 3;
 	pG = ((StaticMeshShade >> 5) & 0x1F) << 3;
 	pB = ((StaticMeshShade >> 10) & 0x1F) << 3;
-	mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&v, 0);
+	static_mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&v, 0);
 
-	for (int i = 0; i < mesh->nVerts; i++)
+	for (int i = 0; i < static_mesh->nVerts; i++)
 	{
 		vtx.x = *v++;
 		vtx.y = *v++;
@@ -300,9 +300,9 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 		MyVertexBuffer[i].tu = vPos.x;
 		MyVertexBuffer[i].tv = vPos.y;
 
-		cR = CLRR(mesh->prelight[i]);
-		cG = CLRG(mesh->prelight[i]);
-		cB = CLRB(mesh->prelight[i]);
+		cR = CLRR(static_mesh->prelight[i]);
+		cG = CLRG(static_mesh->prelight[i]);
+		cB = CLRB(static_mesh->prelight[i]);
 		cR = (cR * pR) >> 8;
 		cG = (cG * pG) >> 8;
 		cB = (cB * pB) >> 8;
@@ -444,10 +444,10 @@ void ProcessStaticMeshVertices(MESH_DATA* mesh)
 		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, sA);
 	}
 
-	mesh->SourceVB->Unlock();
+	static_mesh->SourceVB->Unlock();
 }
 
-void ProcessTrainMeshVertices(MESH_DATA* mesh)
+void ProcessTrainMeshVertices(MESH_DATA* static_mesh)
 {
 	FVECTOR vPos;
 	FVECTOR vtx;
@@ -463,9 +463,9 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 	DistanceFogStart = 17.0F * 1024.0F;	//does not listen to custom distance fog
 	DistanceFogEnd = 25.0F * 1024.0F;
 	num = 255.0F / DistanceFogStart;
-	mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&v, 0);
+	static_mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&v, 0);
 
-	for (int i = 0; i < mesh->nVerts; i++)
+	for (int i = 0; i < static_mesh->nVerts; i++)
 	{
 		vtx.x = *v++;
 		vtx.y = *v++;
@@ -573,10 +573,10 @@ void ProcessTrainMeshVertices(MESH_DATA* mesh)
 		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, sA);
 	}
 
-	mesh->SourceVB->Unlock();
+	static_mesh->SourceVB->Unlock();
 }
 
-void ProcessPickupMeshVertices(MESH_DATA* mesh)
+void ProcessPickupMeshVertices(MESH_DATA* static_mesh)
 {
 	FVECTOR vPos;
 	FVECTOR vtx;
@@ -587,9 +587,9 @@ void ProcessPickupMeshVertices(MESH_DATA* mesh)
 	short clipFlag;
 
 	clip = clipflags;
-	mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&v, 0);
+	static_mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&v, 0);
 
-	for (int i = 0; i < mesh->nVerts; i++)
+	for (int i = 0; i < static_mesh->nVerts; i++)
 	{
 		vtx.x = *v++;
 		vtx.y = *v++;
@@ -671,7 +671,7 @@ void ProcessPickupMeshVertices(MESH_DATA* mesh)
 		MyVertexBuffer[i].specular = RGBA(sR, sG, sB, 0xFF);
 	}
 
-	mesh->SourceVB->Unlock();
+	static_mesh->SourceVB->Unlock();
 }
 
 static void RGB_M(ulong& c, long m)	//Original was a macro.
@@ -687,7 +687,7 @@ static void RGB_M(ulong& c, long m)	//Original was a macro.
 
 void phd_PutPolygons(short* objptr, long clip)
 {
-	MESH_DATA* mesh;
+	MESH_DATA* static_mesh;
 	SPRITESTRUCT* envmap_sprite;
 	TEXTURESTRUCT* pTex;
 	D3DVECTOR normals[4];
@@ -701,7 +701,7 @@ void phd_PutPolygons(short* objptr, long clip)
 	bool envmap;
 
 	SetD3DViewMatrix();
-	mesh = (MESH_DATA*)objptr;
+	static_mesh = (MESH_DATA*)objptr;
 
 	if (!objptr)
 		return;
@@ -720,7 +720,7 @@ void phd_PutPolygons(short* objptr, long clip)
 		ambientB = CLRB(GlobalAmbient);
 		GlobalAmbient = 0;
 	}
-	else if (mesh->prelight)
+	else if (static_mesh->prelight)
 		InitItemDynamicLighting(current_item);
 	else
 		InitObjectLighting(current_item);
@@ -730,17 +730,17 @@ void phd_PutPolygons(short* objptr, long clip)
 	clip_right = f_right;
 	clip_bottom = f_bottom;
 
-	if (mesh->nVerts)
+	if (static_mesh->nVerts)
 	{
-		if (mesh->prelight)
-			ProcessStaticMeshVertices(mesh);
+		if (static_mesh->prelight)
+			ProcessStaticMeshVertices(static_mesh);
 		else
-			ProcessObjectMeshVertices(mesh);
+			ProcessObjectMeshVertices(static_mesh);
 	}
 
-	quad = mesh->gt4;
+	quad = static_mesh->gt4;
 
-	for (int i = 0; i < mesh->ngt4; i++, quad += 6)
+	for (int i = 0; i < static_mesh->ngt4; i++, quad += 6)
 	{
 		pTex = &textinfo[quad[4] & 0x7FFF];
 		envmap = 0;
@@ -754,10 +754,10 @@ void phd_PutPolygons(short* objptr, long clip)
 			envmap = 1;
 			num = (quad[5] >> 2) & 0x1F;
 			num <<= 3;
-			normals[0] = mesh->Normals[quad[0]];
-			normals[1] = mesh->Normals[quad[1]];
-			normals[2] = mesh->Normals[quad[2]];
-			normals[3] = mesh->Normals[quad[3]];
+			normals[0] = static_mesh->Normals[quad[0]];
+			normals[1] = static_mesh->Normals[quad[1]];
+			normals[2] = static_mesh->Normals[quad[2]];
+			normals[3] = static_mesh->Normals[quad[3]];
 			D3DTransform(&normals[0], &D3DMView);
 			D3DTransform(&normals[1], &D3DMView);
 			D3DTransform(&normals[2], &D3DMView);
@@ -828,9 +828,9 @@ void phd_PutPolygons(short* objptr, long clip)
 		pTex->drawtype = drawbak;
 	}
 
-	tri = mesh->gt3;
+	tri = static_mesh->gt3;
 
-	for (int i = 0; i < mesh->ngt3; i++, tri += 5)
+	for (int i = 0; i < static_mesh->ngt3; i++, tri += 5)
 	{
 		pTex = &textinfo[tri[3] & 0x7FFF];
 		envmap = 0;
@@ -844,9 +844,9 @@ void phd_PutPolygons(short* objptr, long clip)
 			envmap = 1;
 			num = (tri[4] >> 2) & 0x1F;
 			num <<= 3;
-			normals[0] = mesh->Normals[tri[0]];
-			normals[1] = mesh->Normals[tri[1]];
-			normals[2] = mesh->Normals[tri[2]];
+			normals[0] = static_mesh->Normals[tri[0]];
+			normals[1] = static_mesh->Normals[tri[1]];
+			normals[2] = static_mesh->Normals[tri[2]];
 			D3DTransform(&normals[0], &D3DMView);
 			D3DTransform(&normals[1], &D3DMView);
 			D3DTransform(&normals[2], &D3DMView);
@@ -911,7 +911,7 @@ void phd_PutPolygons(short* objptr, long clip)
 
 void phd_PutPolygons_train(short* objptr, long x)
 {
-	MESH_DATA* mesh;
+	MESH_DATA* static_mesh;
 	D3DTLVERTEX* v;
 	TEXTURESTRUCT* pTex;
 	short* quad;
@@ -924,7 +924,7 @@ void phd_PutPolygons_train(short* objptr, long x)
 	phd_PushMatrix();
 	phd_TranslateRel(x, 0, 0);
 	SetD3DViewMatrix();
-	mesh = (MESH_DATA*)objptr;
+	static_mesh = (MESH_DATA*)objptr;
 	phd_PopMatrix();
 
 	v = MyVertexBuffer;
@@ -936,10 +936,10 @@ void phd_PutPolygons_train(short* objptr, long x)
 	ambientR = 0xFF;
 	ambientG = 0xFF;
 	ambientB = 0xFF;
-	ProcessTrainMeshVertices(mesh);
-	quad = mesh->gt4;
+	ProcessTrainMeshVertices(static_mesh);
+	quad = static_mesh->gt4;
 
-	for (int i = 0; i < mesh->ngt4; i++, quad += 6)
+	for (int i = 0; i < static_mesh->ngt4; i++, quad += 6)
 	{
 		pTex = &textinfo[quad[4] & 0x7FFF];
 		drawbak = pTex->drawtype;
@@ -955,9 +955,9 @@ void phd_PutPolygons_train(short* objptr, long x)
 		pTex->drawtype = drawbak;
 	}
 
-	tri = mesh->gt3;
+	tri = static_mesh->gt3;
 
-	for (int i = 0; i < mesh->ngt3; i++, tri += 5)
+	for (int i = 0; i < static_mesh->ngt3; i++, tri += 5)
 	{
 		pTex = &textinfo[tri[3] & 0x7FFF];
 
@@ -1068,7 +1068,7 @@ void S_InitialisePolyList()
 	else
 		col = 0;
 	
-	if (App.dx.Flags & DXF_HWR)
+	if (App.dx.flags & DXF_HWR)
 		DXAttempt(App.dx.lpViewport->Clear2(1, &rect, D3DCLEAR_TARGET, col, 1.0F, 0));
 
 	_BeginScene();
@@ -1078,7 +1078,7 @@ void S_InitialisePolyList()
 
 void phd_PutPolygonsPickup(short* objptr, float x, float y, long color)
 {
-	MESH_DATA* mesh;
+	MESH_DATA* static_mesh;
 	SPRITESTRUCT* envmap_sprite;
 	TEXTURESTRUCT* pTex;
 	D3DVECTOR normals[4];
@@ -1094,7 +1094,7 @@ void phd_PutPolygonsPickup(short* objptr, float x, float y, long color)
 
 	bWaterEffect = 0;
 	SetD3DViewMatrix();
-	mesh = (MESH_DATA*)objptr;
+	static_mesh = (MESH_DATA*)objptr;
 	envmap_sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 11];
 
 	ResetLighting();
@@ -1110,14 +1110,14 @@ void phd_PutPolygonsPickup(short* objptr, float x, float y, long color)
 	f_centerx = x;
 	f_centery = y;
 
-	if (mesh->nVerts)
-		ProcessPickupMeshVertices(mesh);
+	if (static_mesh->nVerts)
+		ProcessPickupMeshVertices(static_mesh);
 
 	f_centerx = fcx;
 	f_centery = fcy;
-	quad = mesh->gt4;
+	quad = static_mesh->gt4;
 
-	for (int i = 0; i < mesh->ngt4; i++, quad += 6)
+	for (int i = 0; i < static_mesh->ngt4; i++, quad += 6)
 	{
 		pTex = &textinfo[quad[4] & 0x7FFF];
 		envmap = 0;
@@ -1131,10 +1131,10 @@ void phd_PutPolygonsPickup(short* objptr, float x, float y, long color)
 			envmap = 1;
 			num = (quad[5] >> 2) & 0x1F;
 			num <<= 3;
-			normals[0] = mesh->Normals[quad[0]];
-			normals[1] = mesh->Normals[quad[1]];
-			normals[2] = mesh->Normals[quad[2]];
-			normals[3] = mesh->Normals[quad[3]];
+			normals[0] = static_mesh->Normals[quad[0]];
+			normals[1] = static_mesh->Normals[quad[1]];
+			normals[2] = static_mesh->Normals[quad[2]];
+			normals[3] = static_mesh->Normals[quad[3]];
 			D3DTransform(&normals[0], &D3DMView);
 			D3DTransform(&normals[1], &D3DMView);
 			D3DTransform(&normals[2], &D3DMView);
@@ -1197,9 +1197,9 @@ void phd_PutPolygonsPickup(short* objptr, float x, float y, long color)
 		pTex->drawtype = drawbak;
 	}
 
-	tri = mesh->gt3;
+	tri = static_mesh->gt3;
 
-	for (int i = 0; i < mesh->ngt3; i++, tri += 5)
+	for (int i = 0; i < static_mesh->ngt3; i++, tri += 5)
 	{
 		pTex = &textinfo[tri[3] & 0x7FFF];
 		envmap = 0;
@@ -1213,9 +1213,9 @@ void phd_PutPolygonsPickup(short* objptr, float x, float y, long color)
 			envmap = 1;
 			num = (tri[4] >> 2) & 0x1F;
 			num <<= 3;
-			normals[0] = mesh->Normals[tri[0]];
-			normals[1] = mesh->Normals[tri[1]];
-			normals[2] = mesh->Normals[tri[2]];
+			normals[0] = static_mesh->Normals[tri[0]];
+			normals[1] = static_mesh->Normals[tri[1]];
+			normals[2] = static_mesh->Normals[tri[2]];
 			D3DTransform(&normals[0], &D3DMView);
 			D3DTransform(&normals[1], &D3DMView);
 			D3DTransform(&normals[2], &D3DMView);
@@ -1273,12 +1273,12 @@ void phd_PutPolygonsPickup(short* objptr, float x, float y, long color)
 void phd_PutPolygonSkyMesh(short* objptr, long clipstatus)
 {
 	TEXTURESTRUCT* pTex;
-	MESH_DATA* mesh;
+	MESH_DATA* static_mesh;
 	short* quad;
 	short* tri;
 	ushort drawbak;
 
-	mesh = (MESH_DATA*)objptr;
+	static_mesh = (MESH_DATA*)objptr;
 	SetD3DViewMatrix();
 	ResetLighting();
 	ambientR = 128;
@@ -1289,10 +1289,10 @@ void phd_PutPolygonSkyMesh(short* objptr, long clipstatus)
 	clip_left = f_left;
 	clip_right = f_right;
 	current_item = 0;
-	ProcessObjectMeshVertices(mesh);
-	quad = mesh->gt4;
+	ProcessObjectMeshVertices(static_mesh);
+	quad = static_mesh->gt4;
 
-	for (int i = 0; i < mesh->ngt4; i++, quad += 6)
+	for (int i = 0; i < static_mesh->ngt4; i++, quad += 6)
 	{
 		pTex = &textinfo[quad[4] & 0x7FFF];
 		drawbak = pTex->drawtype;
@@ -1344,9 +1344,9 @@ void phd_PutPolygonSkyMesh(short* objptr, long clipstatus)
 		pTex->drawtype = drawbak;
 	}
 
-	tri = mesh->gt3;
+	tri = static_mesh->gt3;
 
-	for (int i = 0; i < mesh->ngt3; i++, tri += 5)
+	for (int i = 0; i < static_mesh->ngt3; i++, tri += 5)
 	{
 		pTex = &textinfo[tri[3] & 0x7FFF];
 		drawbak = pTex->drawtype;
@@ -1499,11 +1499,11 @@ HRESULT DDCopyBitmap(LPDIRECTDRAWSURFACEX surf, HBITMAP hbm, long x, long y, lon
 	l = 0;
 	t = 0;
 
-	if (!(App.dx.Flags & DXF_HWR))
+	if (!(App.dx.flags & DXF_HWR))
 	{
 		surf = App.dx.lpPrimaryBuffer;
 
-		if (App.dx.Flags & DXF_WINDOWED)
+		if (App.dx.flags & DXF_WINDOWED)
 		{
 			l = App.dx.rScreen.left;
 			t = App.dx.rScreen.top;

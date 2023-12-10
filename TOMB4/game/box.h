@@ -23,8 +23,7 @@ void CreatureJoint(ITEM_INFO* item, short joint, short required);
 void CreatureFloat(short item_number);
 void CreatureUnderwater(ITEM_INFO* item, long depth);
 short CreatureEffect(ITEM_INFO* item, BITE_INFO* bite, short(*generate)(long x, long y, long z, short speed, short yrot, short room_number));
-short CreatureEffectT(ITEM_INFO* item, BITE_INFO* bite, short damage, short angle,
-	short(*generate)(long x, long y, long z, short damage, short angle, short room_number));
+short CreatureEffectT(ITEM_INFO* item, BITE_INFO* bite, short damage, short angle, short(*generate)(long x, long y, long z, short damage, short angle, short room_number));
 long CreatureVault(short item_number, short angle, long vault, long shift);
 void CreatureKill(ITEM_INFO* item, short kill_anim, short kill_state, short lara_anim);
 void AlertAllGuards(short item_number);
@@ -35,6 +34,8 @@ void GetAITarget(CREATURE_INFO* creature);
 short SameZone(CREATURE_INFO* creature, ITEM_INFO* target_item);
 void CreatureYRot(PHD_3DPOS* srcpos, short angle, short angadd);
 long MoveCreature3DPos(PHD_3DPOS* srcpos, PHD_3DPOS* destpos, long velocity, short angdif, long angadd);
+long GetSectorIndex(ROOM_INFO* r, int x, int z);
+long GetSectorIndex(ROOM_INFO* r, ITEM_INFO* item);
 
 extern BOX_INFO* boxes;
 extern ushort* overlap;

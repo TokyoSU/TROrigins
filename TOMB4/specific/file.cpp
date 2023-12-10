@@ -609,6 +609,7 @@ bool LoadRooms()
 			r->data.gt4[j].vertices[2] = lvr.GetShort();
 			r->data.gt4[j].vertices[3] = lvr.GetShort();
 			r->data.gt4[j].texture = lvr.GetShort();
+			r->data.gt4[j].lighting_effect = lvr.GetShort();
 		}
 
 		r->data.gt3cnt = lvr.GetShort();
@@ -619,6 +620,7 @@ bool LoadRooms()
 			r->data.gt3[j].vertices[1] = lvr.GetShort();
 			r->data.gt3[j].vertices[2] = lvr.GetShort();
 			r->data.gt3[j].texture = lvr.GetShort();
+			r->data.gt3[j].lighting_effect = lvr.GetShort();
 		}
 
 		number_portals = lvr.GetShort();

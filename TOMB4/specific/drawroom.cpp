@@ -302,8 +302,8 @@ void ProcessRoomData(ROOM_INFO* r)
 	r->gt4cnt = r->data.gt4cnt;
 	r->gt3cnt = r->data.gt3cnt;
 	r->verts = (D3DVECTOR*)game_malloc(sizeof(D3DVECTOR) * r->nVerts);
-	faces = (short*)malloc(2 * r->nVerts);
-	prelight = (short*)malloc(2 * r->nVerts);
+	faces = (short*)malloc(sizeof(short) * r->nVerts);
+	prelight = (short*)malloc(sizeof(short) * r->nVerts);
 	nWaterVerts = 0;
 
 	for (int i = 0; i < r->nVerts; i++)	//get water verts
@@ -375,15 +375,15 @@ void ProcessRoomData(ROOM_INFO* r)
 	free(faces);
 
 	CreateVertexNormals(r);
-	r->prelight = (long*)game_malloc(4 * r->nVerts);
-	r->prelightwater = (long*)game_malloc(4 * r->nVerts);
+	r->prelight = (long*)game_malloc(sizeof(long) * r->nVerts);
+	r->prelightwater = (long*)game_malloc(sizeof(long) * r->nVerts);
 	r->watercalc = 0;
 	vb.dwNumVertices = r->nVerts;
 	vb.dwSize = sizeof(D3DVERTEXBUFFERDESC);
 	vb.dwCaps = 0;
 	vb.dwFVF = D3DFVF_VERTEX;
 	DXAttempt(App.dx.lpD3D->CreateVertexBuffer(&vb, &r->SourceVB, D3DDP_DONOTCLIP, 0));
-	r->SourceVB->Lock(DDLOCK_WRITEONLY, (void**)&vptr, 0);
+	r->SourceVB->Lock(DDLOCK_WRITEONLY, (LPVOID*)&vptr, 0);
 	r->posx = (float)r->x;
 	r->posy = (float)r->y;
 	r->posz = (float)r->z;

@@ -429,7 +429,7 @@ void init_new_inventry()
 	compass_settle_thang = 4096;
 	examine_mode = 0;
 	stats_mode = 0;
-	AlterFOV(14560);
+	AlterFOV(CAMERA_FOV);
 	lara.Busy = 0;
 	GLOBAL_inventoryitemchosen = -1;
 	left_debounce = 0;

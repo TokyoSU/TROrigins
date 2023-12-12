@@ -341,7 +341,7 @@ long ControlPhase(long nframes, long demo_mode)
 			{
 				BinocularRange = 0;
 				LaserSight = 0;
-				AlterFOV(14560);
+				AlterFOV(CAMERA_FOV);
 				lara_item->mesh_bits = -1;
 				lara.Busy = 0;
 				camera.type = BinocularOldCamera;

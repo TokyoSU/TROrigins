@@ -43,6 +43,8 @@
 #define MAX_VERTEX_PER_BUCKETS 2048
 #define MAX_BUCKET_VERTEX MAX_VERTEX_PER_BUCKETS + MAX_BUCKETS
 #define MALLOC_SIZE	15000000	// 15MB
+#define CAMERA_CUTSCENE_FOV (short)ANGLE(63)
+#define CAMERA_FOV (short)ANGLE(80)
 
 /********************DX defs********************/
 #define LPDIRECTDRAWX			LPDIRECTDRAW4

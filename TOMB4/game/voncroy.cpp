@@ -83,7 +83,7 @@ void SetCutSceneCamera(ITEM_INFO* item)
 	f = cut->f;
 
 	if (f & 0xFFFF)
-		AlterFOV(182 * (f & 0xFFFF));
+		AlterFOV(ANGLE(f & 0xFFFF));
 
 	if (f & 0x40000)
 	{

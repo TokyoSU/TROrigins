@@ -130,10 +130,10 @@ void handle_cutseq_triggering(long name)
 {
 	long n, goin, fuck;
 
-	if (!cutseq_num)
+	if (cutseq_num == 0)
 		return;
 
-	if (!cutseq_trig)
+	if (cutseq_trig == 0)
 	{
 		if ((lara.gun_status != LG_NO_ARMS || lara.gun_type == WEAPON_FLARE) && cutseq_num != 27 &&
 			(lara.gun_type == WEAPON_FLARE || lara.gun_status != LG_HANDS_BUSY))
@@ -215,7 +215,7 @@ void handle_cutseq_triggering(long name)
 				if (cutseq_control_routines[goin].init_func)
 					cutseq_control_routines[goin].init_func();
 
-				AlterFOV(11488);
+				AlterFOV(CAMERA_CUTSCENE_FOV);
 
 				if (GLOBAL_cutme->audio_track != -1)
 					S_StartSyncedAudio(GLOBAL_cutme->audio_track);
@@ -225,10 +225,6 @@ void handle_cutseq_triggering(long name)
 	else if (cutseq_trig == 3)
 	{
 		SetScreenFadeOut(16, 1);
-
-	//	if (cutseq_num != 1 && gfCurrentLevel)
-			//empty func call here
-
 		cutseq_trig = 4;
 	}
 	else if (cutseq_trig == 4)
@@ -301,7 +297,7 @@ void handle_cutseq_triggering(long name)
 				cutseq_num = 0;
 				GLOBAL_playing_cutseq = 0;
 				cutseq_trig = 0;
-				AlterFOV(14560);
+				AlterFOV(CAMERA_FOV);
 				ScreenFade = 0;
 				dScreenFade = 0;
 				ScreenFadeBack = 0;
@@ -316,12 +312,12 @@ void handle_cutseq_triggering(long name)
 
 				cutseq_num = 0;
 
-				if (gfCurrentLevel)
+				if (gfCurrentLevel != 0)
 					SetFadeClip(0, 1);
 
-				AlterFOV(14560);
+				AlterFOV(CAMERA_FOV);
 
-				if (gfCurrentLevel)
+				if (gfCurrentLevel != 0)
 					S_CDPlay(CurrentAtmosphere, 1);
 
 				IsAtmospherePlaying = 1;

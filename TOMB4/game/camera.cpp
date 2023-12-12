@@ -44,19 +44,18 @@ static GAME_VECTOR static_lookcamt;
 void InitialiseCamera()
 {
 	last_target.x = lara_item->pos.x_pos;
-	camera.target.x = last_target.x;
-	camera.shift = lara_item->pos.y_pos - 1024;
 	last_target.y = camera.shift;
-	camera.target.y = camera.shift;
 	last_target.z = lara_item->pos.z_pos;
-	camera.target.z = last_target.z;
-	camera.pos.y = camera.shift;
 	last_target.room_number = lara_item->room_number;
+	camera.target.x = last_target.x;
+	camera.target.y = camera.shift;
+	camera.target.z = last_target.z;
 	camera.target.room_number = lara_item->room_number;
 	camera.pos.x = last_target.x;
+	camera.pos.y = camera.shift;
 	camera.pos.z = last_target.z - 100;
 	camera.pos.room_number = lara_item->room_number;
-	camera.target_distance = 1536;
+	camera.shift = lara_item->pos.y_pos - 1024;
 	camera.item = 0;
 	camera.number_frames = 1;
 	camera.type = CHASE_CAMERA;
@@ -65,8 +64,9 @@ void InitialiseCamera()
 	camera.bounce = 0;
 	camera.number = -1;
 	camera.fixed_camera = 0;
-	AlterFOV(14560);
+	camera.target_distance = 1536;
 	UseForcedFixedCamera = 0;
+	AlterFOV(CAMERA_FOV);
 	CalculateCamera();
 }
 
@@ -1092,8 +1092,8 @@ void BinocularCamera(ITEM_INFO* item)
 		{
 			ExittingBinos = 0;
 			BinocularRange = 0;
-			AlterFOV(14560);
-			lara_item->mesh_bits = -1;
+			AlterFOV(CAMERA_FOV);
+			lara_item->mesh_bits = MESHBITS_ALL;
 			lara.Busy = 0;
 			lara.head_y_rot = 0;
 			lara.head_x_rot = 0;
@@ -1105,7 +1105,7 @@ void BinocularCamera(ITEM_INFO* item)
 		}
 	}
 
-	lara_item->mesh_bits = 0;
+	lara_item->mesh_bits = MESHBITS_NONE;
 	AlterFOV(short(7 * (2080 - BinocularRange)));
 	hxrot = lara.head_x_rot << 1;
 	hyrot = lara.head_y_rot;
@@ -1156,7 +1156,6 @@ void BinocularCamera(ITEM_INFO* item)
 	}
 
 	camera.target.room_number = lara_item->room_number;
-
 	if (camera.bounce && camera.type == camera.old_type)
 	{
 		if (camera.bounce <= 0)
@@ -1259,14 +1258,12 @@ void CalculateCamera()
 
 	if (BinocularRange)
 	{
-		BinocularOn = 1;
+		BinocularOn = TRUE;
 		BinocularCamera(lara_item);
-
-		if (BinocularRange)
-			return;
+		return;
 	}
 
-	if (BinocularOn == 1)
+	if (BinocularOn == TRUE)
 		BinocularOn = -8;
 
 	old_cam.t.z = camera.target.z;
@@ -1284,14 +1281,10 @@ void CalculateCamera()
 	if (room[camera.pos.room_number].flags & ROOM_UNDERWATER)
 	{
 		SoundEffect(SFX_UNDERWATER, 0, SFX_ALWAYS);
-
-		if (!camera.underwater)
-			//empty func call here
-			camera.underwater = 1;
+		camera.underwater = TRUE;
 	}
-	else if (camera.underwater)
-		//if unused var -> empty func call here
-		camera.underwater = 0;
+	else
+		camera.underwater = FALSE;
 
 	if (camera.type == CINEMATIC_CAMERA)
 	{
@@ -1300,9 +1293,10 @@ void CalculateCamera()
 	}
 
 	item = camera.item;
-
 	if (camera.item && (camera.type == FIXED_CAMERA || camera.type == HEAVY_CAMERA))
+	{
 		fixed_camera = 1;
+	}
 	else
 	{
 		item = lara_item;
@@ -1310,7 +1304,6 @@ void CalculateCamera()
 	}
 
 	bounds = GetBoundsAccurate(item);
-
 	if (fixed_camera)
 		y = item->pos.y_pos + (bounds[2] + bounds[3]) / 2;
 	else

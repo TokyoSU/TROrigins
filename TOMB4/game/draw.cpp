@@ -667,7 +667,7 @@ void DrawRooms(short CurrentRoom)
 		else
 		{
 			if (BinocularRange)
-				AlterFOV(14560 - (short)BinocularRange);
+				AlterFOV(CAMERA_FOV - BinocularRange);
 
 			phd_PushMatrix();
 			phd_TranslateAbs(camera.pos.x, camera.pos.y, camera.pos.z);
@@ -898,7 +898,7 @@ void RenderIt(short CurrentRoom)
 		else
 		{
 			if (BinocularRange)
-				AlterFOV(14560 - (short)BinocularRange);
+				AlterFOV(CAMERA_FOV - BinocularRange);
 
 			phd_PushMatrix();
 			phd_TranslateAbs(camera.pos.x, camera.pos.y, camera.pos.z);

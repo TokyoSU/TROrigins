@@ -121,7 +121,7 @@ LIGHTNING_STRUCT* TriggerLightning(PHD_VECTOR* s, PHD_VECTOR* d, char variation,
 	return 0;
 }
 
-long ExplodingDeath2(short item_number, long mesh_bits, short flags)
+long ExplodingDeath2(short item_number, long mesh_bits, ulong flags)
 {
 	auto* item = &items[item_number];
 	auto* obj = &objects[item->object_number];
@@ -150,7 +150,7 @@ long ExplodingDeath2(short item_number, long mesh_bits, short flags)
 				fx->pos.z_pos = item->pos.z_pos + (long)mMXPtr[M23];
 				fx->room_number = item->room_number;
 				fx->pos.y_rot = (short)(GetRandomControl() << 1);
-				fx->pos.x_rot = 0;
+				fx->pos.x_rot = ANGLE(0);
 
 				if (flags & EDF_NOSPEED)
 					fx->speed = 0;
@@ -169,7 +169,7 @@ long ExplodingDeath2(short item_number, long mesh_bits, short flags)
 				fx->frame_number = obj->mesh_index;
 				fx->object_number = BODY_PART;
 				fx->shade = 0x4210;
-				fx->flag2 = flags;
+				fx->flag2 = (long)flags;
 			}
 
 			item->mesh_bits--;
@@ -1806,10 +1806,6 @@ void TriggerShockwaveHitEffect(long x, long y, long z, long rgb, short dir, long
 
 void UpdateShockwaves()
 {
-	short* bounds;
-	long dx, dz, dist;
-	short dir;
-
 	for (int i = 0; i < 16; i++)
 	{
 		auto* sw = &ShockWaves[i];
@@ -1826,12 +1822,11 @@ void UpdateShockwaves()
 			auto* bounds = GetBestFrame(lara_item);
 			auto dx = lara_item->pos.x_pos - sw->x;
 			auto dz = lara_item->pos.z_pos - sw->z;
-			auto dist = phd_sqrt(SQUARE(dx) + SQUARE(dz));
+			auto dist = (long)phd_sqrt(SQUARE(dx) + SQUARE(dz));
 
 			if (sw->y > lara_item->pos.y_pos + bounds[2] && sw->y < bounds[3] + lara_item->pos.y_pos + 256 && dist > sw->InnerRad && dist < sw->OuterRad)
 			{
-				dir = (short)phd_atan(dz, dx);
-				TriggerShockwaveHitEffect(lara_item->pos.x_pos, sw->y, lara_item->pos.z_pos, RGB_MAKE(sw->r, sw->g, sw->b), dir, sw->Speed);
+				TriggerShockwaveHitEffect(lara_item->pos.x_pos, sw->y, lara_item->pos.z_pos, RGB_MAKE(sw->r, sw->g, sw->b), (short)phd_atan(dz, dx), sw->Speed);
 				lara_item->hit_points -= sw->Speed >> (((sw->flags & SW_DAMAGE_LARA_COUNT) != 0) + 2);
 			}
 			else

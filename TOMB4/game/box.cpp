@@ -1815,3 +1815,56 @@ CREATURE_INFO* GetCreatureInfo(ITEM_INFO* item)
 {
 	return reinterpret_cast<CREATURE_INFO*>(item->data);
 }
+
+void SetAnimation(ITEM_INFO* item, int anim_index, int frame_index)
+{
+	item->anim_number = objects[item->object_number].anim_index + anim_index;
+	auto* anim = &anims[item->anim_number];
+	item->frame_number = anim->frame_base + frame_index;
+	item->current_anim_state = anim->current_anim_state;
+	item->goal_anim_state = item->current_anim_state;
+}
+
+void SetAnimation(ITEM_INFO* item, int anim_index, int state_index, int frame_index)
+{
+	item->anim_number = objects[item->object_number].anim_index + anim_index;
+	item->frame_number = anims[item->anim_number].frame_base + frame_index;
+	item->current_anim_state = state_index;
+	item->goal_anim_state = state_index;
+}
+
+ITEM_INFO* GetNearestTarget(ITEM_INFO* item, long targetedObjNum)
+{
+	ITEM_INFO* new_target = NULL;
+	int maxDist = INT_MAX;
+
+	for (int i = 0; i < 5; i++)
+	{
+		auto* creature = &baddie_slots[i];
+		if (creature->item_num == NO_ITEM || item->item_num == creature->item_num)
+			continue;
+		auto* target = &items[creature->item_num];
+		if (target->object_number == targetedObjNum)
+		{
+			auto x = target->pos.x_pos - item->pos.x_pos;
+			auto z = target->pos.z_pos - item->pos.z_pos;
+			auto dist = SQUARE(x) + SQUARE(z);
+			if (dist < maxDist)
+			{
+				new_target = target;
+				maxDist = dist;
+			}
+		}
+	}
+
+	return new_target;
+}
+
+void DamageTarget(ITEM_INFO* item, ITEM_INFO* target, int damage)
+{
+	if (target != NULL && target->hit_points > 0)
+	{
+		target->hit_points -= damage;
+		target->hit_status = TRUE;
+	}
+}

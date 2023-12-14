@@ -30,6 +30,7 @@
 #define BLOCKED 0x4000
 #define NO_BOX 2047
 #define NO_ITEM -1
+#define NO_ROOM 255
 #define MESHBITS_ALL 0xFFFFFFFF
 #define MESHBITS_NONE 0
 #define MESHBITS(meshIdx) (1 << meshIdx)
@@ -226,6 +227,7 @@ enum zone_type
 	CROC_ZONE,
 	HUMAN_ZONE,
 	FLYER_ZONE,
+	MAX_ZONES
 };
 
 enum height_types
@@ -593,6 +595,7 @@ struct ITEM_LIGHT
 
 struct ITEM_INFO
 {
+	short item_num;
 	long floor;
 	ulong touch_bits;
 	ulong mesh_bits;

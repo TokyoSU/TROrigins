@@ -2,7 +2,7 @@
 #include "../global/types.h"
 
 LIGHTNING_STRUCT* TriggerLightning(PHD_VECTOR* s, PHD_VECTOR* d, char variation, long rgb, uchar flags, uchar size, uchar segments);
-long ExplodingDeath2(short item_number, long mesh_bits, short flags);
+long ExplodingDeath2(short item_number, long mesh_bits, ulong flags);
 void DrawGunshells();
 void TriggerGunSmoke(long x, long y, long z, long xVel, long yVel, long zVel, long notLara, long weaponType, long intensity1);
 void LaraBubbles(ITEM_INFO* item);

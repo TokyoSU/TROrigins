@@ -6,6 +6,7 @@
 #include "control.h"
 #include "effects.h"
 #include "lara.h"
+#include "box.h"
 
 short next_fx_active;
 short next_item_active;
@@ -110,11 +111,8 @@ short CreateItem()
 
 void InitialiseItem(short item_num)
 {
-	ITEM_INFO* item;
-	ROOM_INFO* r;
-	FLOOR_INFO* floor;
-
-	item = &items[item_num];
+	auto* item = &items[item_num];
+	item->item_num = item_num;
 	item->anim_number = objects[item->object_number].anim_index;
 	item->frame_number = anims[item->anim_number].frame_base;
 	item->current_anim_state = anims[item->anim_number].current_anim_state;
@@ -171,10 +169,10 @@ void InitialiseItem(short item_num)
 		item->status = ITEM_ACTIVE;
 	}
 
-	r = &room[item->room_number];
+	auto* r = &room[item->room_number];
 	item->next_item = r->item_number;
 	r->item_number = item_num;
-	floor = &r->floor[((item->pos.z_pos - r->z) >> 10) + r->x_size * ((item->pos.x_pos - r->x) >> 10)];
+	auto* floor = &r->floor[GetSectorIndex(r, item)];
 	item->floor = floor->floor << 8;
 	item->box_number = floor->box;
 

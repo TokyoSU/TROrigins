@@ -38,6 +38,10 @@ long MoveCreature3DPos(PHD_3DPOS* srcpos, PHD_3DPOS* destpos, long velocity, sho
 long GetSectorIndex(ROOM_INFO* r, int x, int z);
 long GetSectorIndex(ROOM_INFO* r, ITEM_INFO* item);
 CREATURE_INFO* GetCreatureInfo(ITEM_INFO* item);
+void SetAnimation(ITEM_INFO* item, int anim_index, int frame_index);
+void SetAnimation(ITEM_INFO* item, int anim_index, int state_index, int frame_index);
+ITEM_INFO* GetNearestTarget(ITEM_INFO* item, long targetedObjNum);
+void DamageTarget(ITEM_INFO* item, ITEM_INFO* target, int damage);
 
 extern BOX_INFO* boxes;
 extern ushort* overlap;

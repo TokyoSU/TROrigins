@@ -25,7 +25,7 @@ void InitialiseItemArray(short num)
 	for (int i = level_items + 1; i < num; i++)
 	{
 		item->next_item = i;
-		item->active = 0;
+		item->activated = false;
 		item++;
 	}
 
@@ -46,8 +46,8 @@ void KillItem(short item_num)
 
 	DetatchSpark(item_num, 128);
 	item = &items[item_num];
-	item->active = 0;
-	item->really_active = 0;
+	item->activated = false;
+	item->really_active = false;
 
 	if (next_item_active == item_num)
 		next_item_active = item->next_active;
@@ -122,31 +122,31 @@ void InitialiseItem(short item_num)
 	item->pos.z_rot = 0;
 	item->fallspeed = 0;
 	item->speed = 0;
-	item->active = 0;
+	item->activated = false;
 	item->status = ITEM_INACTIVE;
-	item->gravity_status = 0;
-	item->hit_status = 0;
-	item->looked_at = 0;
-	item->dynamic_light = 0;
-	item->ai_bits = 0;
-	item->really_active = 0;
+	item->gravity_status = false;
+	item->hit_status = false;
+	item->looked_at = false;
+	item->dynamic_light = false;
+	item->ai_bits = NULL;
+	item->really_active = false;
 	item->item_flags[0] = 0;
 	item->item_flags[1] = 0;
 	item->item_flags[2] = 0;
 	item->item_flags[3] = 0;
 	item->hit_points = objects[item->object_number].hit_points;
-	item->poisoned = 0;
-	item->collidable = 1;
+	item->poisoned = false;
+	item->collidable = true;
 	item->timer = 0;
 
 	if (item->object_number == SIXSHOOTER_ITEM || item->object_number == CROSSBOW_ITEM || item->object_number == SHOTGUN_ITEM)
-		item->mesh_bits = 1;
+		item->mesh_bits = MESHBITS(0); // Show only mesh 0
 	else if (item->object_number == SARCOPHAGUS_CUT)
 		item->mesh_bits = 5;
 	else if (item->object_number == HORUS_STATUE)
 		item->mesh_bits = 1607;
 	else
-		item->mesh_bits = -1;
+		item->mesh_bits = MESHBITS_ALL;
 
 	item->touch_bits = 0;
 	item->after_death = 0;
@@ -191,24 +191,24 @@ void InitialiseItem(short item_num)
 
 void RemoveActiveItem(short item_num)
 {
-	short linknum;
-
-	if (!items[item_num].active)
+	auto* item = &items[item_num];
+	if (!item->activated)
 		return;
 
-	items[item_num].active = 0;
-
+	item->activated = false;
 	if (next_item_active == item_num)
-		next_item_active = items[item_num].next_active;
-	else
 	{
-		for (linknum = next_item_active; linknum != NO_ITEM; linknum = items[linknum].next_active)
+		next_item_active = item->next_active;
+		return;
+	}
+	
+	for (auto linknum = next_item_active; linknum != NO_ITEM; linknum = items[linknum].next_active)
+	{
+		auto* link = &items[linknum];
+		if (link->next_active == item_num)
 		{
-			if (items[linknum].next_active == item_num)
-			{
-				items[linknum].next_active = items[item_num].next_active;
-				break;
-			}
+			link->next_active = item->next_active;
+			break;
 		}
 	}
 }
@@ -238,22 +238,20 @@ void RemoveDrawnItem(short item_num)
 
 void AddActiveItem(short item_num)
 {
-	ITEM_INFO* item;
-
-	item = &items[item_num];
+	auto* item = &items[item_num];
+	auto* obj = &objects[item->object_number];
 	item->flags |= IFL_TRIGGERED;
 
-	if (objects[item->object_number].control)
+	if (obj->control != NULL && !item->activated)
 	{
-		if (!item->active)
-		{
-			item->active = 1;
-			item->next_active = next_item_active;
-			next_item_active = item_num;
-		}
+		item->activated = true;
+		item->next_active = next_item_active;
+		next_item_active = item_num;
 	}
 	else
+	{
 		item->status = ITEM_INACTIVE;
+	}
 }
 
 void ItemNewRoom(short item_num, short room_num)
@@ -271,8 +269,7 @@ void ItemNewRoom(short item_num, short room_num)
 	}
 
 	item = &items[item_num];
-
-	if (item->room_number != 255)
+	if (item->room_number != NO_ROOM)
 	{
 		r = &room[item->room_number];
 		linknum = r->item_number;

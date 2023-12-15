@@ -595,10 +595,11 @@ struct ITEM_LIGHT
 
 struct ITEM_INFO
 {
-	short item_num;
 	long floor;
 	ulong touch_bits;
 	ulong mesh_bits;
+	ulong meshswap_meshbits;
+	short item_num;
 	short object_number;
 	short current_anim_state;
 	short goal_anim_state;
@@ -616,24 +617,23 @@ struct ITEM_INFO
 	short flags;
 	short shade;
 	short ocb;
-	short carried_item;
 	short after_death;
-	ushort fired_weapon;
+	short fired_weapon;
 	long item_flags[4];
 	LPVOID data;
 	PHD_3DPOS pos;
+	int status; // Use ITEM_Xx
+	int ai_bits;
+	bool activated;
+	bool gravity_status;
+	bool hit_status;
+	bool collidable;
+	bool looked_at;
+	bool dynamic_light;
+	bool poisoned;
+	bool really_active;
 	ITEM_LIGHT il;
-	ulong active : 1;
-	ulong status : 2;
-	ulong gravity_status : 1;
-	ulong hit_status : 1;
-	ulong collidable : 1;
-	ulong looked_at : 1;
-	ulong dynamic_light : 1;
-	ulong poisoned : 1;
-	ulong ai_bits : 5;
-	ulong really_active : 1;
-	ulong meshswap_meshbits;
+	VectorList<short> carried_item_list;
 
 	bool IsMeshDrawn(long meshIdx)
 	{
@@ -653,6 +653,26 @@ struct ITEM_INFO
 	void HideMesh(long meshIdx)
 	{
 		mesh_bits &= ~MESHBITS(meshIdx);
+	}
+
+	bool IsMeshSwapDrawn(long meshIdx)
+	{
+		return meshswap_meshbits & MESHBITS(meshIdx);
+	}
+
+	bool IsMeshSwapHidden(long meshIdx)
+	{
+		return !(meshswap_meshbits & MESHBITS(meshIdx));
+	}
+
+	void DrawMeshSwap(long meshIdx)
+	{
+		meshswap_meshbits |= MESHBITS(meshIdx);
+	}
+
+	void HideMeshSwap(long meshIdx)
+	{
+		meshswap_meshbits &= ~MESHBITS(meshIdx);
 	}
 };
 

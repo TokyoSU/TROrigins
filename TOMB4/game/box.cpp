@@ -14,49 +14,44 @@
 #include "effect2.h"
 #include "lara.h"
 #include "../specific/file.h"
+#include "collide.h"
 
 BOX_INFO* boxes;
 ushort* overlap;
 short* ground_zone[5][2];
 long num_boxes;
 
-static void DropBaddyPickups(ITEM_INFO* item)
+void DropBaddyPickups(ITEM_INFO* item)
 {
-	auto pickup_number = item->carried_item;
-	while (pickup_number != NO_ITEM)
+	for (auto& pickup_number : item->carried_item_list)
 	{
 		auto* pickup = &items[pickup_number];
-
-		if (item->object_number == TROOPS && item->ocb == 1)
-		{
-			pickup->pos.x_pos = ((item->pos.x_pos + ((1024 * phd_sin(item->pos.y_rot)) >> W2V_SHIFT)) & -512) | 512;
-			pickup->pos.z_pos = ((item->pos.z_pos + ((1024 * phd_cos(item->pos.y_rot)) >> W2V_SHIFT)) & -512) | 512;
-		}
-		else
-		{
-			pickup->pos.x_pos = (item->pos.x_pos & -512) | 512;
-			pickup->pos.z_pos = (item->pos.z_pos & -512) | 512;
-		}
-
+		auto* bounds = GetBoundsAccurate(pickup);
+		pickup->pos.x_pos = item->pos.x_pos;
+		pickup->pos.y_pos = item->pos.y_pos;
+		pickup->pos.z_pos = item->pos.z_pos;
 		auto room_number = item->room_number;
-		auto* floor = GetFloor(pickup->pos.x_pos, item->pos.y_pos, pickup->pos.z_pos, &room_number);
-		pickup->pos.y_pos = GetHeight(floor, pickup->pos.x_pos, item->pos.y_pos, pickup->pos.z_pos);
-		pickup->pos.y_pos -= GetBoundsAccurate(pickup)[3];
-		ItemNewRoom(pickup_number, item->room_number);
+		auto* floor = GetFloor(pickup->pos.x_pos, pickup->pos.y_pos, pickup->pos.z_pos, &room_number);
+		pickup->pos.y_pos = GetHeight(floor, pickup->pos.x_pos, pickup->pos.y_pos, pickup->pos.z_pos);
+		pickup->pos.y_pos -= bounds[3]; // yMax
+		floor = GetFloor(pickup->pos.x_pos, pickup->pos.y_pos, pickup->pos.z_pos, &room_number); // Redo the room number check just in case the bounds[3] move it to another room !
+		ItemNewRoom(pickup_number, room_number);
+		MoveItemAlongsideSlope(pickup_number);
 		pickup->flags |= IFL_TRIGGERED;
-		pickup_number = pickup->carried_item;
 	}
+	item->carried_item_list.clear(); // Clear the list so it won't be saved when the game reload.
 }
 
 void CreatureDie(short item_number, long explode, long flags)
 {
 	auto* item = &items[item_number];
+	auto* obj = &objects[item->object_number];
 	item->hit_points = NOT_TARGETABLE;
 	item->collidable = FALSE;
 
 	if (explode)
 	{
-		if (objects[item->object_number].hit_effect == 1)
+		if (obj->hit_effect == 1)
 			ExplodingDeath2(item_number, MESHBITS_ALL, flags|EDF_CREATE_EFFECT|EDF_BLOOD);
 		else
 			ExplodingDeath2(item_number, MESHBITS_ALL, flags|EDF_CREATE_EFFECT);
@@ -74,11 +69,9 @@ void CreatureDie(short item_number, long explode, long flags)
 
 void InitialiseCreature(short item_number)
 {
-	ITEM_INFO* item;
-
-	item = &items[item_number];
-	item->collidable = 1;
-	item->data = 0;
+	auto* item = &items[item_number];
+	item->collidable = TRUE;
+	item->data = NULL;
 }
 
 long CreatureActive(short item_number)
@@ -86,20 +79,12 @@ long CreatureActive(short item_number)
 	auto* item = &items[item_number];
 	if (item->flags & IFL_CLEARBODY)
 		return FALSE;
-
 	if (item->status == ITEM_INVISIBLE)
 	{
-		if (EnableBaddieAI(item_number, 0))
-		{
-			item->status = ITEM_ACTIVE;
-			item->really_active = TRUE;
-		}
-		else
-		{
+		if (!EnableBaddieAI(item_number, FALSE))
 			return FALSE;
-		}
+		item->status = ITEM_ACTIVE;
 	}
-
 	return TRUE;
 }
 

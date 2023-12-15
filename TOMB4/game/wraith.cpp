@@ -277,8 +277,7 @@ void WraithControl(short item_number)
 		for (int i = room[item->room_number].item_number; i != NO_ITEM; i = item2->next_item)
 		{
 			item2 = &items[i];
-
-			if (item2->active)
+			if (item2->activated)
 			{
 				if (item->object_number == WRAITH1 && item2->object_number == WRAITH2 ||	//wraith 1 and 2 wanna fite
 					item->object_number == WRAITH2 && item2->object_number == WRAITH1 ||	//wraith 2 and 1 wanna fite

@@ -176,8 +176,10 @@ void PuzzleDone(ITEM_INFO* item, short item_number)
 
 void AnimatingPickUp(short item_number)
 {
-	if ((items[item_number].ocb & 0x3F) == 2)
+	auto* item = &items[item_number];
+	if ((item->ocb & 0x3F) == 2)
 		AnimateItem(&items[item_number]);
+	MoveItemAlongsideSlope(item_number);
 }
 
 short* FindPlinth(ITEM_INFO* item)
@@ -317,9 +319,7 @@ void PickUpCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	short rotx, roty, rotz, ocb;
 
 	item = &items[item_number];
-
-	if (item->status == ITEM_INVISIBLE || (item->object_number == CLOCKWORK_BEETLE && item->item_flags[0] == 1 && item->item_flags[2] != 5) ||
-		(item->object_number == FLARE_ITEM && lara.gun_type == WEAPON_FLARE))
+	if (item->status == ITEM_INVISIBLE || (item->object_number == CLOCKWORK_BEETLE && item->item_flags[0] == 1 && item->item_flags[2] != 5) || (item->object_number == FLARE_ITEM && lara.gun_type == WEAPON_FLARE))
 		return;
 
 	rotx = item->pos.x_rot;

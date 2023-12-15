@@ -787,11 +787,10 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 			if (key >= 2 || ((type == ANTIPAD || type == ANTITRIGGER || type == HEAVYANTITRIGGER) && item->flags & IFL_ANTITRIGGER_ONESHOT) ||
 				(type == SWITCH && item->flags & IFL_SWITCH_ONESHOT) ||
 				(type != SWITCH && type != ANTIPAD && type != ANTITRIGGER && type != HEAVYANTITRIGGER && item->flags & IFL_INVISIBLE) ||
-				((type != ANTIPAD && type != ANTITRIGGER && type != HEAVYANTITRIGGER) && (item->object_number == DART_EMITTER && item->active)))
+				((type != ANTIPAD && type != ANTITRIGGER && type != HEAVYANTITRIGGER) && (item->object_number == DART_EMITTER && item->activated)))
 				break;
 
 			item->timer = timer;
-
 			if (timer != 1)
 				item->timer *= 30;
 
@@ -836,7 +835,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 			if (flags & IFL_INVISIBLE)
 				item->flags |= IFL_INVISIBLE;
 
-			if (!item->active)
+			if (!item->activated)
 			{
 				if (objects[item->object_number].intelligent)
 				{
@@ -855,7 +854,6 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 							item->status = ITEM_ACTIVE;
 						else
 							item->status = ITEM_INVISIBLE;
-
 						AddActiveItem(value);
 					}
 				}

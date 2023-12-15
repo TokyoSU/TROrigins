@@ -2001,28 +2001,20 @@ void InitialiseObjects()
 
 void GetAIPickups()
 {
-	ITEM_INFO* item;
-	AIOBJECT* aiObj;
-	short aiObjNum;
-
 	for (int i = 0; i < level_items; i++)
 	{
-		item = &items[i];
-
+		auto* item = &items[i];
 		if (objects[item->object_number].intelligent)
 		{
-			item->ai_bits = 0;
-
-			for (aiObjNum = 0; aiObjNum < nAIObjects; aiObjNum++)
+			item->ai_bits = NULL;
+			for (auto aiObjNum = 0; aiObjNum < nAIObjects; aiObjNum++)
 			{
-				aiObj = &AIObjects[aiObjNum];
-
-				if (aiObj->x == item->pos.x_pos && aiObj->z == item->pos.z_pos &&
-					aiObj->room_number == item->room_number && aiObj->object_number < AI_PATROL2)
+				auto* aiObj = &AIObjects[aiObjNum];
+				if (aiObj->x == item->pos.x_pos && aiObj->z == item->pos.z_pos && aiObj->room_number == item->room_number && aiObj->object_number < AI_PATROL2)
 				{
 					item->ai_bits |= 1 << (aiObj->object_number - AI_GUARD);
 					item->item_flags[3] = aiObj->ocb;
-					aiObj->room_number = 255;
+					aiObj->room_number = NO_ROOM;
 				}
 			}
 		}
@@ -2031,32 +2023,29 @@ void GetAIPickups()
 
 void GetCarriedItems()
 {
-	ITEM_INFO* baddy;
-	ITEM_INFO* pickup;
-	short item_num;
-
 	for (int i = 0; i < level_items; i++)
 	{
-		baddy = &items[i];
-		baddy->carried_item = NO_ITEM;
-
-		if (objects[baddy->object_number].intelligent && baddy->object_number != SCORPION)
+		auto* baddy = &items[i];
+		auto* baddyObj = &objects[baddy->object_number];
+		baddy->carried_item_list.clear();
+		if (baddyObj->intelligent)
 		{
-			item_num = room[baddy->room_number].item_number;
-
+			auto item_num = room[baddy->room_number].item_number;
 			while (item_num != NO_ITEM)
 			{
-				pickup = &items[item_num];
-
-				if (baddy->pos.x_pos == pickup->pos.x_pos && abs(baddy->pos.y_pos - pickup->pos.y_pos) < 256 &&
-					baddy->pos.z_pos == pickup->pos.z_pos && objects[pickup->object_number].collision == PickUpCollision)
+				auto* pickup = &items[item_num];
+				auto* pickupObj = &objects[pickup->object_number];
+				if (pickupObj->collision != PickUpCollision)
 				{
-					pickup->carried_item = baddy->carried_item;
-					baddy->carried_item = item_num;
-					RemoveDrawnItem(item_num);
-					pickup->room_number = 255;
+					item_num = pickup->next_item;
+					continue;
 				}
-
+				if (baddy->pos.x_pos == pickup->pos.x_pos && abs(baddy->pos.y_pos - pickup->pos.y_pos) < 256 && baddy->pos.z_pos == pickup->pos.z_pos)
+				{
+					baddy->carried_item_list.push_back(item_num);
+					RemoveDrawnItem(item_num);
+					pickup->room_number = NO_ROOM;
+				}
 				item_num = pickup->next_item;
 			}
 		}

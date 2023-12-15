@@ -553,7 +553,6 @@ void DoLevel(uchar Name, uchar Audio)
 		}
 
 		gfStatus = ControlPhase(nFrames, 0);
-
 		if (gfStatus && !gamestatus)
 		{
 			if (lara_item->hit_points < 0)

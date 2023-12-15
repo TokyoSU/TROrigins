@@ -46,7 +46,7 @@ void BaboonControl(short item_number)
 		angle = 0;
 		head = 0;
 		item = &items[item_number];
-		baboon = (CREATURE_INFO*)item->data;
+		baboon = GetCreatureInfo(item);
 
 		if (!item->item_flags[2])
 			FindCrowbarSwitch(item, 1);
@@ -240,17 +240,16 @@ void BaboonControl(short item_number)
 				{
 					if (item2->object_number == KEY_ITEM4 && item->frame_number == anims[item->anim_number].frame_base + 12)
 					{
-						if (item2->room_number != 255 && item2->status != ITEM_INVISIBLE && !(item2->flags & IFL_CLEARBODY))
+						if (item2->room_number != NO_ROOM && item2->status != ITEM_INVISIBLE && !(item2->flags & IFL_CLEARBODY))
 						{
-							item->carried_item = item2 - items;
-							RemoveDrawnItem(item->carried_item);
-							item2->room_number = 255;
-							item2->carried_item = -1;
+							item->carried_item_list.push_back(item2->item_num);
+							RemoveDrawnItem(item2->item_num);
+							item2->room_number = NO_ROOM;
 
 							for (int i = 0; i < 5; i++)
 							{
-								if (baddie_slots[i].item_num != -1 && baddie_slots[i].item_num != item_number && baddie_slots[i].enemy == baboon->enemy)
-									baddie_slots[i].enemy = 0;
+								if (baddie_slots[i].item_num != NO_ITEM && baddie_slots[i].item_num != item_number && baddie_slots[i].enemy == baboon->enemy)
+									baddie_slots[i].enemy = NULL;
 							}
 
 							if (item->ai_bits != MODIFY)
@@ -261,15 +260,10 @@ void BaboonControl(short item_number)
 					}
 					else if (item2->object_number == AI_AMBUSH && item->frame_number == anims[item->anim_number].frame_base + 12)
 					{
-						item->ai_bits = 0;
-						item2 = &items[item->carried_item];
-						item2->pos.x_pos = item->pos.x_pos;
-						item2->pos.y_pos = item->pos.y_pos;
-						item2->pos.z_pos = item->pos.z_pos;
-						ItemNewRoom(item->carried_item, item->room_number);
-						item->carried_item = -1;
+						item->ai_bits = NULL;
+						DropBaddyPickups(item);
 						item2->ai_bits = GUARD;
-						baboon->enemy = 0;
+						baboon->enemy = NULL;
 					}
 					else
 					{

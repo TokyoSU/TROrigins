@@ -752,40 +752,41 @@ long LaraFallen(ITEM_INFO* item, COLL_INFO* coll)
 {
 	if (lara.water_status == LW_WADE || coll->middle.floor <= 384)
 		return 0;
-
 	item->anim_number = ANIM_FALLDOWN;
 	item->current_anim_state = AS_FORWARDJUMP;
 	item->goal_anim_state = AS_FORWARDJUMP;
 	item->frame_number = anims[ANIM_FALLDOWN].frame_base;
 	item->fallspeed = 0;
-	item->gravity_status = 1;
+	item->gravity_status = true;
 	return 1;
+}
+
+short GetSlideAngle(COLL_INFO* coll)
+{
+	if (abs(coll->tilt_x) <= 2 && abs(coll->tilt_z) <= 2) // If it's not slope, then it's false !
+		return -1;
+	short slopeAngle = 0;
+	if (coll->tilt_x > 2)
+		slopeAngle = -ANGLE(90);
+	else if (coll->tilt_x < -2)
+		slopeAngle = ANGLE(90);
+	if (coll->tilt_z > 2 && coll->tilt_z > abs(coll->tilt_x))
+		slopeAngle = -ANGLE(180);
+	else if (coll->tilt_z < -2 && (-coll->tilt_z > abs(coll->tilt_x)))
+		slopeAngle = ANGLE(0);
+	return slopeAngle;
 }
 
 long TestLaraSlide(ITEM_INFO* item, COLL_INFO* coll)
 {
 	static short old_ang = 1;
-	short ang_diff, ang;
-
-	if (abs(coll->tilt_x) <= 2 && abs(coll->tilt_z) <= 2)
-		return 0;
-
-	ang = 0;
-
-	if (coll->tilt_x > 2)
-		ang = -16384;
-	else if (coll->tilt_x < -2)
-		ang = 16384;
-
-	if (coll->tilt_z > 2 && coll->tilt_z > abs(coll->tilt_x))
-		ang = -32768;
-	else if (coll->tilt_z < -2 && (-coll->tilt_z > abs(coll->tilt_x)))
-		ang = 0;
-
+	short ang_diff, ang = GetSlideAngle(coll);
+	if (ang == -1)
+		return FALSE;
 	ang_diff = ang - item->pos.y_rot;
 	ShiftItem(item, coll);
 
-	if (ang_diff >= -16384 && ang_diff <= 16384)
+	if (ang_diff >= -ANGLE(90) && ang_diff <= ANGLE(90))
 	{
 		if (item->current_anim_state != AS_SLIDE || old_ang != ang)
 		{
@@ -810,14 +811,13 @@ long TestLaraSlide(ITEM_INFO* item, COLL_INFO* coll)
 
 	lara.move_angle = ang;
 	old_ang = ang;
-	return 1;
+	return TRUE;
 }
 
 long LaraHitCeiling(ITEM_INFO* item, COLL_INFO* coll)
 {
 	if (coll->coll_type != CT_TOP && coll->coll_type != CT_CLAMP)
 		return 0;
-
 	item->pos.x_pos = coll->old.x;
 	item->pos.y_pos = coll->old.y;
 	item->pos.z_pos = coll->old.z;
@@ -827,7 +827,7 @@ long LaraHitCeiling(ITEM_INFO* item, COLL_INFO* coll)
 	item->frame_number = anims[ANIM_STOP].frame_base;
 	item->speed = 0;
 	item->fallspeed = 0;
-	item->gravity_status = 0;
+	item->gravity_status = false;
 	return 1;
 }
 
@@ -835,21 +835,19 @@ void lara_as_duckl(ITEM_INFO* item, COLL_INFO* coll)
 {
 	if ((input & (IN_DUCK | IN_LEFT)) != (IN_DUCK | IN_LEFT) || item->hit_points <= 0)
 		item->goal_anim_state = AS_DUCK;
-
-	item->pos.y_rot -= 273;
+	item->pos.y_rot -= ANGLE(1);
 }
 
 void lara_as_duckr(ITEM_INFO* item, COLL_INFO* coll)
 {
 	if ((input & (IN_DUCK | IN_LEFT)) != (IN_DUCK | IN_LEFT) || item->hit_points <= 0)
 		item->goal_anim_state = AS_DUCK;
-
-	item->pos.y_rot += 273;
+	item->pos.y_rot += ANGLE(1);
 }
 
 void lara_col_ducklr(ITEM_INFO* item, COLL_INFO* coll)
 {
-	lara.IsDucked = 1;
+	lara.IsDucked = TRUE;
 
 	if (input & IN_LOOK)
 		LookUpDown();
@@ -861,7 +859,7 @@ void lara_col_ducklr(ITEM_INFO* item, COLL_INFO* coll)
 	coll->bad_pos = 384;
 	coll->bad_neg = -384;
 	coll->bad_ceiling = 0;
-	coll->slopes_are_walls = 1;
+	coll->slopes_are_walls = TRUE;
 	GetCollisionInfo(coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 400);
 
 	if (LaraFallen(item, coll))

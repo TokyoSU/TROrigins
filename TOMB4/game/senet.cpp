@@ -409,12 +409,9 @@ void GameStixControl(short item_number)
 
 void GameStixCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 {
-	ITEM_INFO* item;
+	auto* item = &items[item_number];
 
-	item = &items[item_number];
-
-	if (input & IN_ACTION && l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH && lara.gun_status == LG_NO_ARMS && !item->active ||
-		lara.IsMoving && lara.GeneralPtr == (void*)item_number)
+	if (input & IN_ACTION && l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH && lara.gun_status == LG_NO_ARMS && !item->activated || lara.IsMoving && lara.GeneralPtr == (void*)item_number)
 	{
 		item->pos.y_rot ^= 0x8000;
 

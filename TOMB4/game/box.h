@@ -2,6 +2,7 @@
 #include "../global/types.h"
 
 // Use EDF_Xx flags.
+void DropBaddyPickups(ITEM_INFO* item);
 void CreatureDie(short item_number, long explode, long flags = 0);
 void InitialiseCreature(short item_number);
 long CreatureActive(short item_number);

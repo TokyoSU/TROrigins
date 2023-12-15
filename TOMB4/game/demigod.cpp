@@ -269,8 +269,7 @@ void DemigodControl(short item_number)
 	if (objnum)
 	{
 		item2 = &items[objnum];
-
-		if (item2->status == ITEM_ACTIVE && item2->active)
+		if (item2->status == ITEM_ACTIVE && item2->activated)
 		{
 			item->hit_points = objects[item->object_number].hit_points;
 			return;

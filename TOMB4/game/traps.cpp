@@ -2027,12 +2027,10 @@ void DartsControl(short item_number)
 			ItemNewRoom(item_number, room_num);
 
 		item->floor = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
-
 		if (item->pos.y_pos >= item->floor)
 		{
 			for (int i = 0; i < 4; i++)
 				TriggerDartSmoke(x, item->pos.y_pos, z, 0, 0, 1);
-
 			KillItem(item_number);
 		}
 	}
@@ -2046,20 +2044,17 @@ void DartEmitterControl(short item_number)
 	short num;
 
 	item = &items[item_number];
-
-	if (item->active)
+	if (item->activated)
 	{
 		if (item->timer > 0)
 		{
 			item->timer--;
 			return;
 		}
-
 		item->timer = 24;
 	}
 
 	num = CreateItem();
-
 	if (num != NO_ITEM)
 	{
 		x = 0;

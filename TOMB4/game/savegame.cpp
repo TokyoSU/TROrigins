@@ -555,7 +555,7 @@ void SaveLevelData(long FullSave)
 				if (obj->save_flags)
 				{
 					flags = item->flags;
-					flags |= item->active << 16;
+					flags |= item->activated << 16;
 					flags |= item->status << 17;
 					flags |= item->gravity_status << 19;
 					flags |= item->hit_status << 20;
@@ -590,7 +590,12 @@ void SaveLevelData(long FullSave)
 						WriteSG(&item->ocb, sizeof(short));
 
 					if (obj->intelligent)
-						WriteSG(&item->carried_item, sizeof(short));
+					{
+						size_t carried_count = item->carried_item_list.size();
+						WriteSG(&carried_count, sizeof(size_t));
+						for (auto& carrieditem : item->carried_item_list)
+							WriteSG(&carrieditem, sizeof(short));
+					}
 
 					if (flags & 0x80000000)
 					{
@@ -651,7 +656,7 @@ void SaveLevelData(long FullSave)
 
 		for (int i = level_items; i < 256; i++)
 		{
-			if (item->active && (item->object_number == FLARE_ITEM || item->object_number == BURNING_TORCH_ITEM))
+			if (item->activated && (item->object_number == FLARE_ITEM || item->object_number == BURNING_TORCH_ITEM))
 				byte++;
 
 			item++;
@@ -662,7 +667,7 @@ void SaveLevelData(long FullSave)
 
 		for (int i = level_items; i < 256; i++)
 		{
-			if (item->active && (item->object_number == FLARE_ITEM || item->object_number == BURNING_TORCH_ITEM))
+			if (item->activated && (item->object_number == FLARE_ITEM || item->object_number == BURNING_TORCH_ITEM))
 			{
 				if (item->object_number == FLARE_ITEM)
 					byte = 0;
@@ -741,7 +746,7 @@ void SaveLevelData(long FullSave)
 
 		for (int i = level_items; i < 256; i++)
 		{
-			if (item->active && item->object_number == CLOCKWORK_BEETLE)
+			if (item->activated && item->object_number == CLOCKWORK_BEETLE)
 			{
 				byte = 1;
 				break;
@@ -977,12 +982,22 @@ void RestoreLevelData(long FullSave)
 					ReadSG(&item->ocb, sizeof(short));
 
 				if (obj->intelligent)
-					ReadSG(&item->carried_item, sizeof(short));
+				{
+					size_t carried_count = 0;
+					short carrieditem = NO_ITEM;
+					ReadSG(&carried_count, sizeof(size_t));
+					for (int i = 0; i < carried_count; i++)
+					{
+						ReadSG(&carrieditem, sizeof(short));
+						if (carrieditem != NO_ITEM)
+							item->carried_item_list.push_back(carrieditem);
+					}
+				}
 
-				if (flags & 0x10000 && !item->active)
+				if (flags & 0x10000 && !item->activated)
 					AddActiveItem(i);
 
-				item->active = (flags >> 16) & 1;
+				item->activated = (flags >> 16) & 1;
 				item->status = (flags >> 17) & 3;
 				item->gravity_status = (flags >> 19) & 1;
 				item->hit_status = (flags >> 20) & 1;

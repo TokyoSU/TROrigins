@@ -615,7 +615,7 @@ void SkeletonControl(short item_number)
 		floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 		h = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 
-		if (h <= item->pos.y_pos && item->active)
+		if (h <= item->pos.y_pos && item->activated)
 		{
 			ExplodingDeath2(item_number, -1, 929);
 			KillItem(item_number);

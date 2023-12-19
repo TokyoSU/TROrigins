@@ -5,7 +5,7 @@ LIGHTNING_STRUCT* TriggerLightning(PHD_VECTOR* s, PHD_VECTOR* d, char variation,
 long ExplodingDeath2(short item_number, long mesh_bits, ulong flags);
 void DrawGunshells();
 void TriggerGunSmoke(long x, long y, long z, long xVel, long yVel, long zVel, long notLara, long weaponType, long intensity1);
-void LaraBubbles(ITEM_INFO* item);
+void EFF_DoLaraBubble(ITEM_INFO* item);
 void UpdateDrips();
 long GetFreeFireSpark();
 void TriggerGlobalStaticFlame();

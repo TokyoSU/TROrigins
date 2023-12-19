@@ -135,15 +135,41 @@ enum carried_weapon_flags
 	W_AMMO3 =		0x20
 };
 
+enum bubble_projectile_types
+{
+	BP_Seth,
+	BP_SethSecond,
+	BP_Harpy,
+	BP_Demigod3,
+	BP_Demigod2,
+	BP_Demigod1,
+	BP_Crocgod
+};
+
 enum anim_commands
 {
 	ACMD_NULL,
+	// X, Y, Z
 	ACMD_SETPOS,
+	// Fallspeed, Speed
 	ACMD_JUMPVEL,
 	ACMD_FREEHANDS,
 	ACMD_KILL,
+	// FrameAt, SoundIndex
+	// - 0x8000 is water.
+	// - 0x4000 is land.
+	// - 0x3FFF is sound ids.
 	ACMD_PLAYSFX,
-	ACMD_FLIPEFFECT
+	// FrameAt, FlipEffectFlags
+	// - 0x8000 is right foot.
+	// - 0x4000 is left foot.
+	// - 0x3FFF is flip effect ids.
+	ACMD_FLIPEFFECT,
+	// FrameAt, CreatureEffectFlags, Extra (Enum or value for a specific command).
+	// - 0x8000 is right foot. (Water)
+	// - 0x4000 is left foot. (Land)
+	// - 0x3FFF is creature effect ids.
+	ACMD_CREATUREEFFECT
 };
 
 enum ai_bits
@@ -226,7 +252,7 @@ enum mood_type
 	STALK_MOOD,
 };
 
-enum zone_type
+enum ZONE_TYPE
 {
 	SKELLY_ZONE,
 	BASIC_ZONE,
@@ -613,8 +639,8 @@ struct ITEM_LIGHT
 	long room_number;
 	long RoomChange;
 	PHD_VECTOR item_pos;
-	void* pCurrentLights;
-	void* pPrevLights;
+	LPVOID pCurrentLights;
+	LPVOID pPrevLights;
 };
 
 struct ITEM_INFO
@@ -623,7 +649,7 @@ struct ITEM_INFO
 	ulong touch_bits;
 	ulong mesh_bits;
 	ulong meshswap_meshbits;
-	short item_num;
+	short index;
 	short object_number;
 	short current_anim_state;
 	short goal_anim_state;
@@ -727,7 +753,7 @@ struct LOT_INFO
 	ushort is_jumping : 1;
 	ushort is_monkeying : 1;
 	PHD_VECTOR target;
-	zone_type zone;
+	ZONE_TYPE zone;
 };
 
 struct CREATURE_INFO

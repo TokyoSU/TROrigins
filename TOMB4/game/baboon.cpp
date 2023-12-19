@@ -242,8 +242,8 @@ void BaboonControl(short item_number)
 					{
 						if (item2->room_number != NO_ROOM && item2->status != ITEM_INVISIBLE && !(item2->flags & IFL_CLEARBODY))
 						{
-							item->carried_item_list.push_back(item2->item_num);
-							RemoveDrawnItem(item2->item_num);
+							item->carried_item_list.push_back(item2->index);
+							RemoveDrawnItem(item2->index);
 							item2->room_number = NO_ROOM;
 
 							for (int i = 0; i < 5; i++)

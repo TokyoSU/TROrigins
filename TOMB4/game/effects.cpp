@@ -1,7 +1,6 @@
 #include "../tomb4/pch.h"
 #include "effects.h"
-#include "../specific/polyinsert.h"
-#include "../specific/function_table.h"
+#include "box.h"
 #include "sound.h"
 #include "deltapak.h"
 #include "objects.h"
@@ -15,23 +14,27 @@
 #include "control.h"
 #include "draw.h"
 #include "lara_states.h"
-#include "../specific/function_stubs.h"
-#include "../specific/3dmath.h"
-#include "../specific/dxsound.h"
 #include "camera.h"
 #include "lara.h"
 #include "savegame.h"
 #include "pickup.h"
 #include "gameflow.h"
+#include "../specific/function_stubs.h"
+#include "../specific/function_table.h"
+#include "../specific/3dmath.h"
+#include "../specific/dxsound.h"
+#include "../specific/polyinsert.h"
+#include "sphere.h"
+#include "laraswim.h"
 
 FX_INFO* effects;
 OBJECT_VECTOR* sound_effects;
 long GlobalFogOff = 0;
 long number_sound_effects;
 
-long FogTableColor[28] =
+DWORD FogTableColor[28] =
 {
-	0,
+	RGBONLY(0,0,0),
 	RGBONLY(245,200,60),
 	RGBONLY(120,196,112),
 	RGBONLY(202,204,230),
@@ -61,58 +64,109 @@ long FogTableColor[28] =
 	RGBONLY(255,174,0)
 };
 
-void(*effect_routines[47])(ITEM_INFO* item) =
+void(*FlipEffectRoutines[47])(ITEM_INFO* item) =
 {
-	turn180_effect,
-	floor_shake_effect,
-	PoseidonSFX,
-	LaraBubbles,
-	finish_level_effect,
-	ActivateCamera,
-	ActivateKey,
-	RubbleFX,
-	SwapCrowbar,
-	void_effect,
-	SoundFlipEffect,
-	ExplosionFX,
-	lara_hands_free,
-	void_effect,
-	draw_right_gun,
-	draw_left_gun,
-	shoot_right_gun,
-	shoot_left_gun,
-	swap_meshes_with_meshswap1,
-	swap_meshes_with_meshswap2,
-	swap_meshes_with_meshswap3,
-	invisibility_on,
-	invisibility_off,
-	void_effect,
-	void_effect,
-	void_effect,
-	reset_hair,
-	void_effect,
-	SetFog,
-	GhostTrap,
-	LaraLocation,
-	ClearScarabsPatch,
-	AddFootPrint,
-	void_effect,
-	void_effect,
-	void_effect,
-	void_effect,
-	void_effect,
-	void_effect,
-	void_effect,
-	void_effect,
-	void_effect,
-	void_effect,
-	MeshSwapToPour,
-	MeshSwapFromPour,
-	LaraLocationPad,
-	KillActiveBaddies,
+	EFF_Turn180, // 0
+	EFF_RumbleFX,
+	EFF_FloodSFX,
+	EFF_DoLaraBubble,
+	EFF_FinishLevel,
+	EFF_ActivateCamera,
+	EFF_ActivateKey,
+	EFF_RubbleFXLoop,
+	EFF_SwapCrowbar,
+	NULL,
+	EFF_PlaySoundEffect, // 10
+	EFF_PlayExplosionSoundEffect,
+	EFF_FreeLaraHands,
+	NULL,
+	EFF_LaraDrawRightGun,
+	EFF_LaraDrawLeftGun,
+	EFF_LaraShootRightGun,
+	EFF_LaraShootLeftGun,
+	EFF_SwapMeshWithMeshswap1,
+	EFF_SwapMeshWithMeshswap2,
+	EFF_SwapMeshWithMeshswap3, // 20
+	EFF_InvisibilityOn,
+	EFF_InvisibilityOff,
+	NULL,
+	NULL,
+	NULL,
+	EFF_ResetHair,
+	NULL,
+	EFF_SetFogColor,
+	EFF_GhostTrap,
+	EFF_SetLaraLocation, // 30
+	EFF_ClearScarabBeetles,
+	EFF_AddFootprintLeft,
+	EFF_AddFootprintRight,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 40
+	NULL,
+	NULL,
+	EFF_MeshSwapToWaterSkin,
+	EFF_MeshSwapFromWaterSkin,
+	EFF_SetLaraLocationPad,
+	EFF_KillActiveCreatures // 46
 };
 
-void SetFog(ITEM_INFO* item)
+void(*CreatureEffectRoutines[47])(ITEM_INFO* item, short extra) =
+{
+	EFF_ShootProjectileFromItem, // 0, Spawn or do bullet shoot.
+	EFF_DoDamageFromItem, // Do hand to hand (or shockwave effect) damage.
+	EFF_FootSplash, // Do foot splash effect for entity.
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 10
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 20
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 30
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL, // 40
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
+	NULL // 46
+};
+
+void EFF_SetFogColor(ITEM_INFO* item)
 {
 	GlobalFogOff = 0;
 
@@ -135,18 +189,18 @@ void SetFog(ITEM_INFO* item)
 	flipeffect = -1;
 }
 
-void finish_level_effect(ITEM_INFO* item)
+void EFF_FinishLevel(ITEM_INFO* item)
 {
 	gfLevelComplete = gfCurrentLevel + 1;
 }
 
-void turn180_effect(ITEM_INFO* item)
+void EFF_Turn180(ITEM_INFO* item)
 {
-	item->pos.y_rot += 0x8000;
+	item->pos.y_rot += ANGLE(180);
 	item->pos.x_rot = -item->pos.x_rot;
 }
 
-void floor_shake_effect(ITEM_INFO* item)
+void EFF_RumbleFX(ITEM_INFO* item)
 {
 	long dx, dy, dz, dist;
 
@@ -161,13 +215,13 @@ void floor_shake_effect(ITEM_INFO* item)
 	}
 }
 
-void SoundFlipEffect(ITEM_INFO* item)
+void EFF_PlaySoundEffect(ITEM_INFO* item)
 {
 	SoundEffect(TriggerTimer, 0, SFX_DEFAULT);
 	flipeffect = -1;
 }
 
-void RubbleFX(ITEM_INFO* item)
+void EFF_RubbleFXLoop(ITEM_INFO* item)
 {
 	ITEM_INFO* eq;
 
@@ -185,23 +239,23 @@ void RubbleFX(ITEM_INFO* item)
 	flipeffect = -1;
 }
 
-void PoseidonSFX(ITEM_INFO* item)
+void EFF_FloodSFX(ITEM_INFO* item)
 {
 	SoundEffect(SFX_WATER_FLUSHES, 0, SFX_DEFAULT);
 	flipeffect = -1;
 }
 
-void ActivateCamera(ITEM_INFO* item)
+void EFF_ActivateCamera(ITEM_INFO* item)
 {
 	KeyTriggerActive = 2;
 }
 
-void ActivateKey(ITEM_INFO* item)
+void EFF_ActivateKey(ITEM_INFO* item)
 {
 	KeyTriggerActive = 1;
 }
 
-void SwapCrowbar(ITEM_INFO* item)
+void EFF_SwapCrowbar(ITEM_INFO* item)
 {
 	short* tmp;
 
@@ -213,31 +267,29 @@ void SwapCrowbar(ITEM_INFO* item)
 		lara.mesh_ptrs[LM_RHAND] = tmp;
 }
 
-void ExplosionFX(ITEM_INFO* item)
+void EFF_PlayExplosionSoundEffect(ITEM_INFO* item)
 {
 	SoundEffect(SFX_EXPLOSION1, 0, SFX_DEFAULT);
 	camera.bounce = -75;
 	flipeffect = -1;
 }
 
-void LaraLocation(ITEM_INFO* item)
+void EFF_SetLaraLocation(ITEM_INFO* item)
 {
 	lara.location = TriggerTimer;
-
 	if (TriggerTimer > lara.highest_location)
 		lara.highest_location = TriggerTimer;
-
 	flipeffect = -1;
 }
 
-void LaraLocationPad(ITEM_INFO* item)
+void EFF_SetLaraLocationPad(ITEM_INFO* item)
 {
-	flipeffect = -1;
 	lara.locationPad = TriggerTimer;
 	lara.location = TriggerTimer;
+	flipeffect = -1;
 }
 
-void GhostTrap(ITEM_INFO* item)
+void EFF_GhostTrap(ITEM_INFO* item)
 {
 	ITEM_INFO* target_item = NULL;
 	for (short item_num = next_item_active; item_num != NO_ITEM; item_num = target_item->next_active)
@@ -245,7 +297,7 @@ void GhostTrap(ITEM_INFO* item)
 		target_item = &items[item_num];
 		if (target_item->object_number == WRAITH3 && target_item->hit_points <= 0)
 		{
-			target_item->hit_points = item - items;
+			target_item->hit_points = item->index;
 			break;
 		}
 	}
@@ -253,7 +305,7 @@ void GhostTrap(ITEM_INFO* item)
 	flipeffect = -1;
 }
 
-void KillActiveBaddies(ITEM_INFO* item)
+void EFF_KillActiveCreatures(ITEM_INFO* item)
 {
 	ITEM_INFO* target_item = NULL;
 	for (short item_num = next_item_active; item_num != NO_ITEM; item_num = target_item->next_active)
@@ -295,12 +347,12 @@ void KillActiveBaddies(bool doRemoveAndDisable)
 	flipeffect = -1;
 }
 
-void lara_hands_free(ITEM_INFO* item)
+void EFF_FreeLaraHands(ITEM_INFO* item)
 {
 	lara.gun_status = LG_NO_ARMS;
 }
 
-void draw_right_gun(ITEM_INFO* item)
+void EFF_LaraDrawRightGun(ITEM_INFO* item)
 {
 	short* tmp;
 
@@ -313,7 +365,7 @@ void draw_right_gun(ITEM_INFO* item)
 	meshes[objects[PISTOLS_ANIM].mesh_index + LM_RHAND * 2] = tmp;
 }
 
-void draw_left_gun(ITEM_INFO* item)
+void EFF_LaraDrawLeftGun(ITEM_INFO* item)
 {
 	short* tmp;
 
@@ -326,17 +378,17 @@ void draw_left_gun(ITEM_INFO* item)
 	meshes[objects[PISTOLS_ANIM].mesh_index + LM_LHAND * 2] = tmp;
 }
 
-void shoot_right_gun(ITEM_INFO* item)
+void EFF_LaraShootRightGun(ITEM_INFO* item)
 {
 	lara.right_arm.flash_gun = 3;
 }
 
-void shoot_left_gun(ITEM_INFO* item)
+void EFF_LaraShootLeftGun(ITEM_INFO* item)
 {
 	lara.left_arm.flash_gun = 3;
 }
 
-void swap_meshes_with_meshswap1(ITEM_INFO* item)
+void EFF_SwapMeshWithMeshswap1(ITEM_INFO* item)
 {
 	OBJECT_INFO* obj;
 	short* tmp;
@@ -351,7 +403,7 @@ void swap_meshes_with_meshswap1(ITEM_INFO* item)
 	}
 }
 
-void swap_meshes_with_meshswap2(ITEM_INFO* item)
+void EFF_SwapMeshWithMeshswap2(ITEM_INFO* item)
 {
 	OBJECT_INFO* obj;
 	short* tmp;
@@ -366,7 +418,7 @@ void swap_meshes_with_meshswap2(ITEM_INFO* item)
 	}
 }
 
-void swap_meshes_with_meshswap3(ITEM_INFO* item)
+void EFF_SwapMeshWithMeshswap3(ITEM_INFO* item)
 {
 	OBJECT_INFO* obj;
 	short* tmp;
@@ -385,32 +437,32 @@ void swap_meshes_with_meshswap3(ITEM_INFO* item)
 	}
 }
 
-void invisibility_on(ITEM_INFO* item)
+void EFF_InvisibilityOn(ITEM_INFO* item)
 {
 	item->status = ITEM_INVISIBLE;
 }
 
-void invisibility_off(ITEM_INFO* item)
+void EFF_InvisibilityOff(ITEM_INFO* item)
 {
 	item->status = ITEM_ACTIVE;
 }
 
-void reset_hair(ITEM_INFO* item)
+void EFF_ResetHair(ITEM_INFO* item)
 {
 	InitialiseHair();
 }
 
-void ClearScarabsPatch(ITEM_INFO* item)
+void EFF_ClearScarabBeetles(ITEM_INFO* item)
 {
 	ClearScarabs();
 }
 
-void MeshSwapToPour(ITEM_INFO* item)
+void EFF_MeshSwapToWaterSkin(ITEM_INFO* item)
 {
 	lara.mesh_ptrs[LM_LHAND] = meshes[objects[item->item_flags[2]].mesh_index + LM_LHAND * 2];
 }
 
-void MeshSwapFromPour(ITEM_INFO* item)
+void EFF_MeshSwapFromWaterSkin(ITEM_INFO* item)
 {
 	lara.mesh_ptrs[LM_LHAND] = meshes[objects[LARA_SKIN].mesh_index + LM_LHAND * 2];
 }
@@ -432,32 +484,24 @@ void WaterFall(short item_number)
 
 	if (dx >= -0x4000 && dx <= 0x4000 && dz >= -0x4000 && dz <= 0x4000 && dy >= -0x4000 && dy <= 0x4000)
 	{
-		//empty func call here
-
 		if (!(wibble & 0xC))
 		{
 			dx = (136 * phd_sin(item->pos.y_rot)) >> 12;
 			dz = (136 * phd_cos(item->pos.y_rot)) >> 12;
 			TriggerWaterfallMist(item->pos.x_pos + dx, item->pos.y_pos, item->pos.z_pos + dz, item->pos.y_rot >> 4);
 		}
-
 		SoundEffect(SFX_WATERFALL_LOOP, &item->pos, 0);
 	}
 }
 
 void WadeSplash(ITEM_INFO* item, long water, long depth)
 {
-	short* bounds;
-	short room_number;
-
-	room_number = item->room_number;
+	auto room_number = item->room_number;
 	GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
-
 	if (!(room[room_number].flags & ROOM_UNDERWATER))
 		return;
 
-	bounds = GetBestFrame(item);
-
+	auto* bounds = GetBestFrame(item);
 	if (item->pos.y_pos + bounds[2] > water || item->pos.y_pos + bounds[3] < water)
 		return;
 
@@ -489,13 +533,51 @@ void WadeSplash(ITEM_INFO* item, long water, long depth)
 	}
 }
 
+void EFF_FootSplash(ITEM_INFO* item, short extra)
+{
+	if (extra < 0) // Don't allow negative bone !
+		return;
+	PHD_VECTOR pos;
+	GetJointAbsPosition(item, &pos, extra);
+	auto room_number = item->room_number;
+	GetFloor(pos.x, pos.y, pos.z, &room_number);
+	bool isFootUnderwater = room[room_number].flags & ROOM_UNDERWATER;
+	if (!isFootUnderwater)
+		return;
+	long wh = GetWaterHeight(pos.x, pos.y, pos.z, room_number);
+	auto* bounds = GetBestFrame(item);
+	if ((item->pos.y_pos + bounds[2]) > wh || (item->pos.y_pos + bounds[3]) < wh)
+		return;
+	long fallspeed = 140;
+	long wd = GetWaterDepth(pos.x, pos.y, pos.z, room_number);
+	if (wd < 474)
+	{
+		splash_setup.x = pos.x;
+		splash_setup.y = wh;
+		splash_setup.z = pos.z;
+		splash_setup.InnerRad = 16;
+		splash_setup.InnerSize = 12;
+		splash_setup.InnerRadVel = 160;
+		splash_setup.InnerYVel = -40 * fallspeed;
+		splash_setup.pad1 = 24;
+		splash_setup.MiddleRad = 24;
+		splash_setup.MiddleSize = 224;
+		splash_setup.MiddleRadVel = -20 * fallspeed;
+		splash_setup.MiddleYVel = 32;
+		splash_setup.pad2 = 32;
+		splash_setup.OuterRad = 272;
+		SetupSplash(&splash_setup);
+	}
+	else if (!(wibble & 0xF))
+	{
+		SetupRipple(pos.x, wh, pos.z, (GetRandomControl() & 0xF) + 112, 18);
+	}
+}
+
 void Splash(ITEM_INFO* item)
 {
-	short room_number;
-
-	room_number = item->room_number;
+	auto room_number = item->room_number;
 	GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
-
 	if (room[room_number].flags & ROOM_UNDERWATER)
 	{
 		splash_setup.x = item->pos.x_pos;
@@ -522,19 +604,16 @@ short DoBloodSplat(long x, long y, long z, short speed, short ang, short room_nu
 		TriggerUnderwaterBlood(x, y, z, speed);
 	else
 		TriggerBlood(x, y, z, ang >> 4, speed);
-
 	return -1;
 }
 
 void DoLotsOfBlood(long x, long y, long z, short speed, short ang, short room_number, long num)
 {
-	long bx, by, bz;
-
 	for (; num > 0; num--)
 	{
-		bx = x - (GetRandomControl() << 9) / 0x8000 + 256;
-		by = y - (GetRandomControl() << 9) / 0x8000 + 256;
-		bz = z - (GetRandomControl() << 9) / 0x8000 + 256;
+		auto bx = x - (GetRandomControl() << 9) / 0x8000 + 256;
+		auto by = y - (GetRandomControl() << 9) / 0x8000 + 256;
+		auto bz = z - (GetRandomControl() << 9) / 0x8000 + 256;
 		DoBloodSplat(bx, by, bz, speed, ang, room_number);
 	}
 }
@@ -563,8 +642,8 @@ void SoundEffects()
 			SoundEffect(sfx->data, (PHD_3DPOS*)sfx, 0);
 	}
 
-	if (flipeffect != -1)
-		effect_routines[flipeffect](0);
+	if (flipeffect != -1 && FlipEffectRoutines[flipeffect] != NULL)
+		FlipEffectRoutines[flipeffect](NULL);
 
 	if (!sound_active)
 		return;
@@ -572,7 +651,6 @@ void SoundEffects()
 	for (int i = 0; i < 32; i++)
 	{
 		slot = &LaSlot[i];
-
 		if (slot->nSampleInfo < 0)
 			continue;
 
@@ -605,20 +683,14 @@ void SoundEffects()
 
 long ItemNearLara(PHD_3DPOS* pos, long rad)
 {
-	short* bounds;
-	long dx, dy, dz;
-
-	dx = pos->x_pos - lara_item->pos.x_pos;
-	dy = pos->y_pos - lara_item->pos.y_pos;
-	dz = pos->z_pos - lara_item->pos.z_pos;
-
-	if (dx >= -rad && dx <= rad && dz >= -rad && dz <= rad && dy >= -3072 && dy <= 3072 && SQUARE(dx) + SQUARE(dz) <= SQUARE(rad))
+	auto dx = pos->x_pos - lara_item->pos.x_pos;
+	auto dy = pos->y_pos - lara_item->pos.y_pos;
+	auto dz = pos->z_pos - lara_item->pos.z_pos;
+	if (dx >= -rad && dx <= rad && dz >= -rad && dz <= rad && dy >= -SECTOR(3) && dy <= SECTOR(3) && SQUARE(dx) + SQUARE(dz) <= SQUARE(rad))
 	{
-		bounds = GetBoundsAccurate(lara_item);
-
+		auto* bounds = GetBoundsAccurate(lara_item);
 		if (dy >= bounds[2] && dy <= bounds[3] + 100)
-			return 1;
+			return TRUE;
 	}
-
-	return 0;
+	return FALSE;
 }

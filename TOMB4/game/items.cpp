@@ -112,7 +112,7 @@ short CreateItem()
 void InitialiseItem(short item_num)
 {
 	auto* item = &items[item_num];
-	item->item_num = item_num;
+	item->index = item_num;
 	item->anim_number = objects[item->object_number].anim_index;
 	item->frame_number = anims[item->anim_number].frame_base;
 	item->current_anim_state = anims[item->anim_number].current_anim_state;

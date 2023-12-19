@@ -15,6 +15,8 @@
 #include "lara.h"
 #include "../specific/file.h"
 #include "collide.h"
+#include "people.h"
+#include "demigod.h"
 
 BOX_INFO* boxes;
 ushort* overlap;
@@ -88,6 +90,42 @@ long CreatureActive(short item_number)
 	return TRUE;
 }
 
+void SetupBasicAIInfo(ITEM_INFO* item, AI_INFO* info)
+{
+	if (info == NULL)
+		return;
+	auto* creature = GetCreatureInfo(item);
+	if (creature == NULL || creature->enemy == NULL)
+		return;
+	auto* obj = &objects[item->object_number];
+	auto ang = creature->enemy == lara_item ? lara.move_angle : creature->enemy->pos.y_rot;
+	PHD_VECTOR pos;
+	pos.x = creature->enemy->pos.x_pos + (14 * creature->enemy->speed * phd_sin(ang) >> W2V_SHIFT) - (obj->pivot_length * phd_sin(item->pos.y_rot) >> W2V_SHIFT) - item->pos.x_pos;
+	pos.y = item->pos.y_pos - creature->enemy->pos.y_pos;
+	pos.z = creature->enemy->pos.z_pos + (14 * creature->enemy->speed * phd_cos(ang) >> W2V_SHIFT) - (obj->pivot_length * phd_cos(item->pos.y_rot) >> W2V_SHIFT) - item->pos.z_pos;
+	if (pos.z > SECTOR(31) || pos.z < -SECTOR(31) ||
+		pos.x > SECTOR(31) || pos.x < -SECTOR(31))
+		info->distance = INT_MAX;
+	else if (creature->enemy != NULL)
+		info->distance = SQUARE(pos.x) + SQUARE(pos.z);
+	else
+		info->distance = INT_MAX;
+	ang = (short)phd_atan(pos.z, pos.x);
+	info->angle = (ang - item->pos.y_rot);
+	info->enemy_facing = (ang - creature->enemy->pos.y_rot) + ANGLE(180);
+	pos.x = abs(pos.x);
+	pos.z = abs(pos.z);
+	if (creature->enemy == lara_item)
+	{
+		auto state = lara_item->current_anim_state;
+		if (state == AS_DUCK || state == AS_DUCKROLL || state == AS_ALL4S || state == AS_CRAWL || state == AS_ALL4TURNL || state == AS_ALL4TURNR || state == AS_DUCKROTL || state == AS_DUCKROTR)
+			pos.y -= 384;
+	}
+	info->x_angle = pos.x > pos.z ? (short)phd_atan(pos.x + (pos.z >> 1), pos.y) : (short)phd_atan(pos.z + (pos.x >> 1), pos.y);
+	info->ahead = info->angle > -ANGLE(90) && info->angle < ANGLE(90);
+	info->bite = info->ahead && creature->enemy->hit_points > 0 && abs(creature->enemy->pos.y_pos - item->pos.y_pos) <= CLICK(2);
+}
+
 void CreatureAIInfo(ITEM_INFO* item, AI_INFO* info)
 {
 	CREATURE_INFO* creature;
@@ -96,91 +134,33 @@ void CreatureAIInfo(ITEM_INFO* item, AI_INFO* info)
 	ROOM_INFO* r;
 	FLOOR_INFO* floor;
 	short* zone;
-	long x, y, z;
-	short pivot, ang, state;
-
-	creature = (CREATURE_INFO*)item->data;
-
-	if (!creature)
+	creature = GetCreatureInfo(item);
+	if (creature == NULL || info == NULL)
 		return;
-
 	obj = &objects[item->object_number];
-
 	if (item->poisoned)
 	{
 		if (!obj->undead && !(wibble & 0x3F) && item->hit_points > 1)
 			item->hit_points--;
 	}
-
 	enemy = creature->enemy;
-
-	if (!enemy)
+	if (enemy == NULL)
 	{
 		enemy = lara_item;
 		creature->enemy = lara_item;
 	}
-
 	zone = ground_zone[creature->LOT.zone][flip_status];
 	r = &room[item->room_number];
-	floor = &r->floor[((item->pos.z_pos - r->z) >> 10) + r->x_size * ((item->pos.x_pos - r->x) >> 10)];
+	floor = &r->floor[GetSectorIndex(r, item)];
 	item->box_number = floor->box;
 	info->zone_number = zone[item->box_number];
-
 	r = &room[enemy->room_number];
-	floor = &r->floor[((enemy->pos.z_pos - r->z) >> 10) + r->x_size * ((enemy->pos.x_pos - r->x) >> 10)];
+	floor = &r->floor[GetSectorIndex(r, enemy)];
 	enemy->box_number = floor->box;
 	info->enemy_zone = zone[enemy->box_number];
-
 	if (boxes[enemy->box_number].overlap_index & creature->LOT.block_mask || creature->LOT.node[item->box_number].search_number == (creature->LOT.search_number | 0x8000))
 		info->enemy_zone |= 0x4000;
-
-	pivot = obj->pivot_length;
-	if (enemy == lara_item)
-		ang = lara.move_angle;
-	else
-		ang = enemy->pos.y_rot;
-
-	x = enemy->pos.x_pos + (14 * enemy->speed * phd_sin(ang) >> W2V_SHIFT) - (pivot * phd_sin(item->pos.y_rot) >> W2V_SHIFT) - item->pos.x_pos;
-	y = item->pos.y_pos - enemy->pos.y_pos;
-	z = enemy->pos.z_pos + (14 * enemy->speed * phd_cos(ang) >> W2V_SHIFT) - (pivot * phd_cos(item->pos.y_rot) >> W2V_SHIFT) - item->pos.z_pos;
-
-	ang = (short)phd_atan(z, x);
-
-	if (z > 32000 || z < -32000 || x > 32000 || x < -32000)
-		info->distance = INT_MAX;
-	else if (creature->enemy)
-		info->distance = SQUARE(x) + SQUARE(z);
-	else
-		info->distance = INT_MAX;
-
-	info->angle = (ang - item->pos.y_rot);
-	info->enemy_facing = (ang - enemy->pos.y_rot) + ANGLE(180);
-
-	x = abs(x);
-	z = abs(z);
-
-	if (enemy == lara_item)
-	{
-		state = lara_item->current_anim_state;
-		if (state == AS_DUCK || state == AS_DUCKROLL || state == AS_ALL4S || state == AS_CRAWL ||
-			state == AS_ALL4TURNL|| state == AS_ALL4TURNR || state == AS_DUCKROTL || state == AS_DUCKROTR)
-			y -= 384;
-	}
-
-	if (x > z)
-		info->x_angle = (short)phd_atan(x + (z >> 1), y);
-	else
-		info->x_angle = (short)phd_atan(z + (x >> 1), y);
-
-	if (info->angle > -ANGLE(90) && info->angle < ANGLE(90))
-		info->ahead = true;
-	else
-		info->ahead = false;
-
-	if (info->ahead && enemy->hit_points > 0 && abs(enemy->pos.y_pos - item->pos.y_pos) <= 512)
-		info->bite = true;
-	else
-		info->bite = false;
+	SetupBasicAIInfo(item, info);
 }
 
 long SearchLOT(LOT_INFO* LOT, long expansion)
@@ -1271,27 +1251,21 @@ void CreatureTilt(ITEM_INFO* item, short angle)
 
 void CreatureJoint(ITEM_INFO* item, short joint, short required)
 {
-	CREATURE_INFO* creature;
-	short change;
-
-	creature = (CREATURE_INFO*)item->data;
-
-	if (!creature)
+	auto* creature = GetCreatureInfo(item);
+	if (creature == NULL)
 		return;
 
-	change = required - creature->joint_rotation[joint];
-
-	if (change > 546)
-		change = 546;
-	else if (change < -546)
-		change = -546;
+	auto change = required - creature->joint_rotation[joint];
+	if (change > ANGLE(3))
+		change = ANGLE(3);
+	else if (change < -ANGLE(3))
+		change = -ANGLE(3);
 
 	creature->joint_rotation[joint] += change;
-
-	if (creature->joint_rotation[joint] > 0x3000)
-		creature->joint_rotation[joint] = 0x3000;
-	else if (creature->joint_rotation[joint] < -0x3000)
-		creature->joint_rotation[joint] = -0x3000;
+	if (creature->joint_rotation[joint] > ANGLE(67))
+		creature->joint_rotation[joint] = ANGLE(67);
+	else if (creature->joint_rotation[joint] < -ANGLE(67))
+		creature->joint_rotation[joint] = -ANGLE(67);
 }
 
 void CreatureFloat(short item_number)
@@ -1795,7 +1769,7 @@ long GetSectorIndex(ROOM_INFO* r, ITEM_INFO* item)
 
 CREATURE_INFO* GetCreatureInfo(ITEM_INFO* item)
 {
-	return reinterpret_cast<CREATURE_INFO*>(item->data);
+	return static_cast<CREATURE_INFO*>(item->data);
 }
 
 void SetAnimation(ITEM_INFO* item, int anim_index, int frame_index)
@@ -1823,7 +1797,7 @@ ITEM_INFO* GetNearestTarget(ITEM_INFO* item, long targetedObjNum)
 	for (int i = 0; i < 5; i++)
 	{
 		auto* creature = &baddie_slots[i];
-		if (creature->item_num == NO_ITEM || item->item_num == creature->item_num)
+		if (creature->item_num == NO_ITEM || item->index == creature->item_num)
 			continue;
 		auto* target = &items[creature->item_num];
 		if (target->object_number == targetedObjNum)
@@ -1849,4 +1823,46 @@ void DamageTarget(ITEM_INFO* item, ITEM_INFO* target, int damage)
 		target->hit_points -= damage;
 		target->hit_status = TRUE;
 	}
+}
+
+void EFF_ShootProjectileFromItem(ITEM_INFO* item, short extra)
+{
+	if (item->data == NULL)
+		return;
+	short angles[2] = {};
+	AI_INFO info;
+	SetupBasicAIInfo(item, &info);
+	if (!Targetable(item, &info))
+		return;
+	// TODO: Found a way to unhardcode it !
+	switch (item->object_number)
+	{
+	case DEMIGOD1:
+	case DEMIGOD2:
+	case DEMIGOD3:
+		DoDemigodProjectiles(item);
+		break;
+	}
+}
+
+void EFF_DoDamageFromItem(ITEM_INFO* item, short extra)
+{
+	if (item->data == NULL)
+		return;
+	AI_INFO info;
+	SetupBasicAIInfo(item, &info);
+	if (!Targetable(item, &info))
+		return;
+	// TODO: Found a way to unhardcode it !
+	switch (item->object_number)
+	{
+	case DEMIGOD1:
+		DoDemigodHammerSlam(item);
+		break;
+	}
+}
+
+bool IsAnimValid(ITEM_INFO* item, long anim_required)
+{
+	return (item->anim_number - objects[item->object_number].anim_index) == anim_required;
 }

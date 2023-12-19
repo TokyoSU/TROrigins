@@ -6,6 +6,7 @@ void DropBaddyPickups(ITEM_INFO* item);
 void CreatureDie(short item_number, long explode, long flags = 0);
 void InitialiseCreature(short item_number);
 long CreatureActive(short item_number);
+void SetupBasicAIInfo(ITEM_INFO* item, AI_INFO* info);
 void CreatureAIInfo(ITEM_INFO* item, AI_INFO* info);
 long SearchLOT(LOT_INFO* LOT, long expansion);
 long UpdateLOT(LOT_INFO* LOT, long expansion);
@@ -43,6 +44,9 @@ void SetAnimation(ITEM_INFO* item, int anim_index, int frame_index);
 void SetAnimation(ITEM_INFO* item, int anim_index, int state_index, int frame_index);
 ITEM_INFO* GetNearestTarget(ITEM_INFO* item, long targetedObjNum);
 void DamageTarget(ITEM_INFO* item, ITEM_INFO* target, int damage);
+void EFF_ShootProjectileFromItem(ITEM_INFO* item, short extra);
+void EFF_DoDamageFromItem(ITEM_INFO* item, short extra);
+bool IsAnimValid(ITEM_INFO* item, long anim_required);
 
 extern BOX_INFO* boxes;
 extern ushort* overlap;

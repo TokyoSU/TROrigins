@@ -242,12 +242,12 @@ short* FindPlinth(ITEM_INFO* item)
 long KeyTrigger(short item_num)
 {
 	auto* item = &items[item_num];
-	if ((item->status != ITEM_ACTIVE || lara.gun_status == LG_HANDS_BUSY) && (KeyTriggerActive == FALSE || lara.gun_status != LG_HANDS_BUSY))
+	if ((item->status != ITEM_ACTIVE || lara.gun_status == LG_HANDS_BUSY) && (KeyTriggerActive == 0 || lara.gun_status != LG_HANDS_BUSY))
 		return -1;
 	auto oldkey = KeyTriggerActive;
-	if (KeyTriggerActive == FALSE)
+	if (KeyTriggerActive == 0)
 		item->status = ITEM_DEACTIVATED;
-	KeyTriggerActive = FALSE;
+	KeyTriggerActive = 0;
 	return oldkey;
 }
 

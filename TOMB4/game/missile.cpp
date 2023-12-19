@@ -34,12 +34,9 @@ void ControlBodyPart(short fx_number)
 	ox = fx->pos.x_pos;
 	oz = fx->pos.z_pos;
 	oy = fx->pos.y_pos;
-
 	if (fx->speed)
 		fx->pos.x_rot += fx->fallspeed << 2;
-
 	fx->fallspeed += 6;
-
 	fx->pos.x_pos += fx->speed * phd_sin(fx->pos.y_rot) >> W2V_SHIFT;
 	fx->pos.y_pos += fx->fallspeed;
 	fx->pos.z_pos += fx->speed * phd_cos(fx->pos.y_rot) >> W2V_SHIFT;

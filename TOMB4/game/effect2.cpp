@@ -555,18 +555,17 @@ void ControlEnemyMissile(short fx_number)
 	short angles[2];
 
 	fx = &effects[fx_number];
-	phd_GetVectorAngles(lara_item->pos.x_pos - fx->pos.x_pos, lara_item->pos.y_pos - fx->pos.y_pos - 256, lara_item->pos.z_pos - fx->pos.z_pos, angles);
+	phd_GetVectorAngles(lara_item->pos.x_pos - fx->pos.x_pos, lara_item->pos.y_pos - fx->pos.y_pos - CLICK(1), lara_item->pos.z_pos - fx->pos.z_pos, angles);
 
-	if (fx->flag1 == 1)
+	if (fx->flag1 == BP_SethSecond)
 	{
 		max_turn = 512;
 		max_speed = 256;
 	}
-	else if (fx->flag1 == 6)
+	else if (fx->flag1 == BP_Crocgod)
 	{
 		if (fx->counter)
 			fx->counter--;
-
 		max_turn = 768;
 		max_speed = 192;
 	}
@@ -578,18 +577,16 @@ void ControlEnemyMissile(short fx_number)
 
 	if (fx->speed < max_speed)
 	{
-		if (fx->flag1 == 6)
-			fx->speed++;
+		if (fx->flag1 == BP_Crocgod)
+			fx->speed += 1;
 		else
 			fx->speed += 3;
 
 		oy = (ushort)angles[0] - (ushort)fx->pos.y_rot;
-
 		if (abs(oy) > 0x8000)
 			oy = (ushort)fx->pos.y_rot - (ushort)angles[0];
 
 		ox = (ushort)angles[1] - (ushort)fx->pos.x_rot;
-
 		if (abs(ox) > 0x8000)
 			ox = (ushort)fx->pos.x_rot - (ushort)angles[1];
 
@@ -607,14 +604,12 @@ void ControlEnemyMissile(short fx_number)
 			ox = -max_turn;
 
 		fx->pos.x_rot += (short)ox;
-
-		if (fx->flag1 != 4 && (fx->flag1 != 6 || !fx->counter))
+		if (fx->flag1 != BP_Demigod3 && (fx->flag1 != BP_Crocgod || !fx->counter))
 			fx->pos.y_rot += (short)oy;
 	}
 
 	fx->pos.z_rot += fx->speed << 4;
-
-	if (fx->flag1 == 6)
+	if (fx->flag1 == BP_Crocgod)
 		fx->pos.z_rot += fx->speed << 4;
 
 	ox = fx->pos.x_pos;
@@ -634,63 +629,67 @@ void ControlEnemyMissile(short fx_number)
 		fx->pos.x_pos = ox;
 		fx->pos.y_pos = oy;
 		fx->pos.z_pos = oz;
-
-		if (fx->flag1 != 6)
+		if (fx->flag1 != BP_Crocgod)
 			ExplodeFX(fx, 0, -32);
-
-		if (fx->flag1 == 1)
+		switch (fx->flag1)
 		{
+		case BP_Seth:
+			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xA00020, 64, 0x10008040, 0);
+			break;
+		case BP_SethSecond:
 			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xA00020, 64, 0x18008040, (((~room[fx->room_number].flags & 0xFF) >> 4) & 2) << 16);	//decipher me
 			TriggerExplosionSparks(ox, oy, oz, 3, -2, 2, fx->room_number);
-		}
-		else if (fx->flag1 == 0)
-			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xA00020, 64, 0x10008040, 0);
-		else if (fx->flag1 == 3 || fx->flag1 == 4)
+			break;
+		case BP_Demigod1:
+		case BP_Demigod3:
 			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xA00020, 64, 0x10004080, 0);
-		else if (fx->flag1 == 5)
+			break;
+		case BP_Demigod2:
 			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xA00020, 64, 0x10806000, 0);
-		else if (fx->flag1 == 2)
+			break;
+		case BP_Harpy:
 			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xA00020, 64, 0x10808000, 0);
-		else if (fx->flag1 == 6)
-		{
+			break;
+		case BP_Crocgod:
 			TriggerExplosionSparks(ox, oy, oz, 3, -2, 0, fx->room_number);
 			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xF00030, 64, 0x18806000, 0x20000);
 			fx->pos.y_pos -= 128;
 			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xF00030, 48, 0x10807000, 0x20000);
 			fx->pos.y_pos += 256;
 			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xF00030, 48, 0x10807000, 0x20000);
+			break;
 		}
-
 		KillEffect(fx_number);
 		return;
 	}
 
 	if (ItemNearLara(&fx->pos, 200))
 	{
-		lara_item->hit_status = 1;
-
-		if (fx->flag1 != 6)
+		lara_item->hit_status = TRUE;
+		if (fx->flag1 != BP_Crocgod)
 			ExplodeFX(fx, 0, -32);
-
-		KillEffect(fx_number);
-
-		if (fx->flag1 == 1)
+		switch (fx->flag1)
 		{
+		case BP_Seth:
+			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0x580018, 48, 0x10008040, (((~room[fx->room_number].flags & 0xFF) >> 4) & 2) << 16);
+			break;
+		case BP_SethSecond:
 			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xF00030, 64, 0x18008040, 0);
 			TriggerExplosionSparks(ox, oy, oz, 3, -2, 2, fx->room_number);
 			LaraBurn();
-			lara.BurnGreen = 1;
-		}
-		else if (fx->flag1 == 0)
-			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0x580018, 48, 0x10008040, (((~room[fx->room_number].flags & 0xFF) >> 4) & 2) << 16);
-		else if (fx->flag1 == 3 || fx->flag1 == 4)
+			lara.BurnGreen = TRUE;
+			break;
+		case BP_Demigod1:
+		case BP_Demigod3:
 			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xA00020, 64, 0x10004080, 0x10000);
-		else if (fx->flag1 == 5)
+			break;
+		case BP_Demigod2:
 			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xA00020, 64, 0x10806000, 0x20000);
-		else if (fx->flag1 == 2)
+			break;
+		case BP_Harpy:
 			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xA00020, 64, 0x10808000, 0x20000);
-		else if (fx->flag1 == 6)
-		{
+			break;
+		case BP_Crocgod:
 			TriggerExplosionSparks(ox, oy, oz, 3, -2, 0, fx->room_number);
 			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xF00030, 64, 0x18806000, 0);
 			fx->pos.y_pos -= 128;
@@ -698,7 +697,9 @@ void ControlEnemyMissile(short fx_number)
 			fx->pos.y_pos += 256;
 			TriggerShockwave((PHD_VECTOR*)&fx->pos, 0xF00030, 48, 0x10807000, 0);
 			LaraBurn();
+			break;
 		}
+		KillEffect(fx_number);
 	}
 	else
 	{
@@ -709,18 +710,28 @@ void ControlEnemyMissile(short fx_number)
 		oy -= fx->pos.y_pos;
 		oz -= fx->pos.z_pos;
 
-		if (wibble & 4 || fx->flag1 == 1 || fx->flag1 == 5 || fx->flag1 == 2)
+		if ((wibble & 4) || (fx->flag1 == BP_SethSecond || fx->flag1 == BP_Demigod3 || fx->flag1 == BP_Harpy))
 		{
-			if (fx->flag1 == 0)
+			switch (fx->flag1)
+			{
+			case BP_Seth:
 				TriggerSethMissileFlame(fx_number, ox << 4, oy << 4, oz << 4);
-			else if (fx->flag1 == 1)
+				break;
+			case BP_SethSecond:
 				TriggerSethMissileFlame(fx_number, ox << 5, oy << 5, oz << 5);
-			else if (fx->flag1 == 3 || fx->flag1 == 4 || fx->flag1 == 5)
+				break;
+			case BP_Demigod1:
+			case BP_Demigod2:
+			case BP_Demigod3:
 				TriggerDemigodMissileFlame(fx_number, ox << 4, oy << 4, oz << 4);
-			else if (fx->flag1 == 2)
+				break;
+			case BP_Harpy:
 				TriggerHarpyMissileFlame(fx_number, ox << 4, oy << 4, oz << 4);
-			else if (fx->flag1 == 6)
+				break;
+			case BP_Crocgod:
 				TriggerCrocgodMissileFlame(fx_number, ox << 4, oy << 4, oz << 4);
+				break;
+			}
 		}
 	}
 }

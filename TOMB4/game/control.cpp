@@ -2699,8 +2699,8 @@ void AnimateItem(ITEM_INFO* item)
 	ushort type, num;
 
 	anim = &anims[item->anim_number];
-	item->touch_bits = 0;
-	item->hit_status = 0;
+	item->touch_bits = NULL;
+	item->hit_status = false;
 	item->frame_number++;
 
 	if (anim->number_changes > 0)
@@ -2709,7 +2709,6 @@ void AnimateItem(ITEM_INFO* item)
 		{
 			anim = &anims[item->anim_number];
 			item->current_anim_state = anim->current_anim_state;
-
 			if (item->required_anim_state == item->current_anim_state)
 				item->required_anim_state = 0;
 		}
@@ -2720,7 +2719,6 @@ void AnimateItem(ITEM_INFO* item)
 		if (anim->number_commands > 0)
 		{
 			cmd = &commands[anim->command_index];
-
 			for (int i = anim->number_commands; i > 0; i--)
 			{
 				switch (*cmd++)
@@ -2729,25 +2727,23 @@ void AnimateItem(ITEM_INFO* item)
 					TranslateItem(item, cmd[0], cmd[1], cmd[2]);
 					cmd += 3;
 					break;
-
 				case ACMD_JUMPVEL:
 					item->fallspeed = cmd[0];
 					item->speed = cmd[1];
-					item->gravity_status = 1;
+					item->gravity_status = true;
 					cmd += 2;
 					break;
-
 				case ACMD_KILL:
-
 					if (objects[item->object_number].intelligent)
 						item->after_death = 1;
-
 					item->status = ITEM_DEACTIVATED;
 					break;
-
 				case ACMD_PLAYSFX:
 				case ACMD_FLIPEFFECT:
 					cmd += 2;
+					break;
+				case ACMD_CREATUREEFFECT:
+					cmd += 3;
 					break;
 				}
 			}
@@ -2770,7 +2766,6 @@ void AnimateItem(ITEM_INFO* item)
 	if (anim->number_commands > 0)
 	{
 		cmd = &commands[anim->command_index];
-
 		for (int i = anim->number_commands; i > 0; i--)
 		{
 			switch (*cmd++)
@@ -2778,18 +2773,14 @@ void AnimateItem(ITEM_INFO* item)
 			case ACMD_SETPOS:
 				cmd += 3;
 				break;
-
 			case ACMD_JUMPVEL:
 				cmd += 2;
 				break;
-
 			case ACMD_PLAYSFX:
-
-				if (item->frame_number == *cmd)
+				if (item->frame_number == *(cmd + 0))
 				{
-					num = cmd[1] & 0x3FFF;
-					type = cmd[1] & 0xC000;
-
+					num = *(cmd + 1) & 0x3FFF;
+					type = *(cmd + 1) & 0xC000;
 					if (objects[item->object_number].water_creature)
 					{
 						if (room[item->room_number].flags & ROOM_UNDERWATER)
@@ -2797,7 +2788,7 @@ void AnimateItem(ITEM_INFO* item)
 						else
 							SoundEffect(num, &item->pos, SFX_DEFAULT);
 					}
-					else if (item->room_number == 255)
+					else if (item->room_number == NO_ROOM)
 					{
 						item->pos.x_pos = lara_item->pos.x_pos;
 						item->pos.y_pos = lara_item->pos.y_pos - 762;
@@ -2812,33 +2803,39 @@ void AnimateItem(ITEM_INFO* item)
 					else if (type == SFX_LANDANDWATER || type == SFX_LANDONLY)
 						SoundEffect(num, &item->pos, SFX_DEFAULT);
 				}
-
 				cmd += 2;
 				break;
-
 			case ACMD_FLIPEFFECT:
-
-				if (item->frame_number == *cmd)
+				if (item->frame_number == *(cmd + 0))
 				{
-					FXType = cmd[1] & 0xC000;
-					effect_routines[cmd[1] & 0x3FFF](item);
+					num = *(cmd + 1) & 0x3FFF;
+					FXType = *(cmd + 1) & 0xC000;
+					if (FlipEffectRoutines[num] != NULL)
+						FlipEffectRoutines[num](item);
 				}
-
 				cmd += 2;
+				break;
+			case ACMD_CREATUREEFFECT:
+				if (item->frame_number == *(cmd + 0))
+				{
+					num = *(cmd + 1) & 0x3FFF;
+					FXType = *(cmd + 1) & 0xC000;
+					if (CreatureEffectRoutines[num] != NULL)
+						CreatureEffectRoutines[num](item, *(cmd + 2));
+				}
+				cmd += 3;
 				break;
 			}
 		}
 	}
 
 	speed2 = 0;
-
 	if (item->gravity_status)
 	{
 		if (item->fallspeed < 128)
 			item->fallspeed += 6;
 		else
 			item->fallspeed++;
-
 		item->pos.y_pos += item->fallspeed;
 	}
 	else

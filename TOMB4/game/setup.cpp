@@ -3,6 +3,7 @@
 #include "objects.h"
 #include "pickup.h"
 #include "collide.h"
+#include "box.h"
 #include "init.h"
 #include "elements.h"
 #include "ahmet.h"
@@ -1298,11 +1299,10 @@ void BaddyObjects()
 	}
 
 	obj = &objects[DEMIGOD1];
-
 	if (obj->loaded)
 	{
-		obj->initialise = InitialiseDemigod;
-		obj->control = DemigodControl;
+		obj->initialise = InitialiseCreature;
+		obj->control = Demigod1Control;
 		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
@@ -1316,18 +1316,17 @@ void BaddyObjects()
 		obj->hit_effect = 3;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		bones[obj->bone_index + 32] |= 4;
-		bones[obj->bone_index + 32] |= 8;
-		bones[obj->bone_index + 32] |= 16;
-		bones[obj->bone_index + 80] |= 8;
+		bones[obj->bone_index + 8 * 4] |= 4;
+		bones[obj->bone_index + 8 * 4] |= 8;
+		bones[obj->bone_index + 20 * 4] |= 4;
+		bones[obj->bone_index + 20 * 4] |= 8;
 	}
 
 	obj = &objects[DEMIGOD2];
-
 	if (obj->loaded)
 	{
-		obj->initialise = InitialiseDemigod;
-		obj->control = DemigodControl;
+		obj->initialise = InitialiseCreature;
+		obj->control = Demigod2Control;
 		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
@@ -1339,18 +1338,17 @@ void BaddyObjects()
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		bones[obj->bone_index + 32] |= 4;
-		bones[obj->bone_index + 32] |= 8;
-		bones[obj->bone_index + 32] |= 16;
-		bones[obj->bone_index + 80] |= 8;
+		bones[obj->bone_index + 8 * 4] |= 4;
+		bones[obj->bone_index + 8 * 4] |= 8;
+		bones[obj->bone_index + 20 * 4] |= 4;
+		bones[obj->bone_index + 20 * 4] |= 8;
 	}
 
 	obj = &objects[DEMIGOD3];
-
 	if (obj->loaded)
 	{
-		obj->initialise = InitialiseDemigod;
-		obj->control = DemigodControl;
+		obj->initialise = InitialiseCreature;
+		obj->control = Demigod3Control;
 		obj->collision = CreatureCollision;
 		obj->pivot_length = 50;
 		obj->shadow_size = 128;
@@ -1362,10 +1360,10 @@ void BaddyObjects()
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		bones[obj->bone_index + 32] |= 4;
-		bones[obj->bone_index + 32] |= 8;
-		bones[obj->bone_index + 32] |= 16;
-		bones[obj->bone_index + 80] |= 8;
+		bones[obj->bone_index + 8 * 4] |= 4;
+		bones[obj->bone_index + 8 * 4] |= 8;
+		bones[obj->bone_index + 20 * 4] |= 4;
+		bones[obj->bone_index + 20 * 4] |= 8;
 	}
 
 	obj = &objects[MUTANT];

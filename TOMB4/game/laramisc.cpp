@@ -186,7 +186,7 @@ void AnimateLara(ITEM_INFO* item)
 	ANIM_STRUCT* anim;
 	short* cmd;
 	long speed;
-	ushort type;
+	ushort type, num;
 
 	item->frame_number++;
 	anim = &anims[item->anim_number];
@@ -215,31 +215,27 @@ void AnimateLara(ITEM_INFO* item)
 					UpdateLaraRoom(item, -381);
 					cmd += 3;
 					break;
-
 				case ACMD_JUMPVEL:
 					item->fallspeed = cmd[0];
 					item->speed = cmd[1];
-					item->gravity_status = 1;
-
+					item->gravity_status = true;
 					if (lara.calc_fallspeed)
 					{
 						item->fallspeed = lara.calc_fallspeed;
 						lara.calc_fallspeed = 0;
 					}
-
 					cmd += 2;
 					break;
-
 				case ACMD_FREEHANDS:
-
 					if (lara.gun_status != LG_FLARE)
 						lara.gun_status = LG_NO_ARMS;
-
 					break;
-
 				case ACMD_PLAYSFX:
 				case ACMD_FLIPEFFECT:
 					cmd += 2;
+					break;
+				case ACMD_CREATUREEFFECT:
+					cmd += 3;
 					break;
 				}
 			}
@@ -254,7 +250,6 @@ void AnimateLara(ITEM_INFO* item)
 	if (anim->number_commands > 0)
 	{
 		cmd = &commands[anim->command_index];
-
 		for (int i = anim->number_commands; i > 0; i--)
 		{
 			switch (*cmd++)
@@ -262,34 +257,31 @@ void AnimateLara(ITEM_INFO* item)
 			case ACMD_SETPOS:
 				cmd += 3;
 				break;
-
 			case ACMD_JUMPVEL:
 				cmd += 2;
 				break;
-
 			case ACMD_PLAYSFX:
-
 				if (item->frame_number == cmd[0])
 				{
+					num = cmd[1] & 0x3FFF;
 					type = cmd[1] & 0xC000;
-
-					if (type == SFX_LANDANDWATER || (type == SFX_LANDONLY && (lara.water_surface_dist >= 0 || lara.water_surface_dist == NO_HEIGHT)) ||
-						(type == SFX_WATERONLY && lara.water_surface_dist < 0 && lara.water_surface_dist != NO_HEIGHT))
-						SoundEffect(cmd[1] & 0x3FFF, &item->pos, SFX_ALWAYS);
+					if (type == SFX_LANDANDWATER || (type == SFX_LANDONLY && (lara.water_surface_dist >= 0 || lara.water_surface_dist == NO_HEIGHT)) || (type == SFX_WATERONLY && lara.water_surface_dist < 0 && lara.water_surface_dist != NO_HEIGHT))
+						SoundEffect(num, &item->pos, SFX_ALWAYS);
 				}
-
 				cmd += 2;
 				break;
-
 			case ACMD_FLIPEFFECT:
-
-				if (item->frame_number == *cmd)
+				if (item->frame_number == cmd[0])
 				{
+					num = cmd[1] & 0x3FFF;
 					FXType = cmd[1] & 0xC000;
-					effect_routines[cmd[1] & 0x3FFF](item);
+					if (FlipEffectRoutines[num] != NULL)
+						FlipEffectRoutines[num](item);
 				}
-
 				cmd += 2;
+				break;
+			case ACMD_CREATUREEFFECT: // Lara is not a creature !
+				cmd += 3;
 				break;
 			}
 		}
@@ -307,10 +299,8 @@ void AnimateLara(ITEM_INFO* item)
 	else
 	{
 		speed = anim->velocity;
-
 		if (anim->acceleration)
 			speed += anim->acceleration * (item->frame_number - anim->frame_base);
-
 		item->speed = speed >> 16;
 	}
 

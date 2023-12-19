@@ -350,7 +350,7 @@ void TriggerGunSmoke(long x, long y, long z, long xVel, long yVel, long zVel, lo
 	sptr->mirror = gfLevelFlags & GF_MIRROR && lara_item->room_number == gfMirrorRoom;
 }
 
-void LaraBubbles(ITEM_INFO* item)
+void EFF_DoLaraBubble(ITEM_INFO* item)
 {
 	PHD_VECTOR pos;
 

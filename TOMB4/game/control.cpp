@@ -2482,7 +2482,7 @@ long IsRoomOutside(long x, long y, long z)
 	return -2;
 }
 
-long ObjectOnLOS2(GAME_VECTOR* start, GAME_VECTOR* target, PHD_VECTOR* Coord, MESH_INFO** StaticMesh)
+long ObjectOnLOS2(GAME_VECTOR* start, GAME_VECTOR* target, PHD_VECTOR* Coord, MESH_INFO** StaticMesh, bool includeLaraOnSearch)
 {
 	ITEM_INFO* item;
 	MESH_INFO* static_mesh;
@@ -2506,14 +2506,13 @@ long ObjectOnLOS2(GAME_VECTOR* start, GAME_VECTOR* target, PHD_VECTOR* Coord, ME
 		{
 			item = &items[item_number];
 
-			if (item->status != ITEM_DEACTIVATED && item->status != ITEM_INVISIBLE && item->object_number != LARA)
+			if (item->status != ITEM_DEACTIVATED && item->status != ITEM_INVISIBLE && (!includeLaraOnSearch && item->object_number != LARA))
 			{
 				bounds = GetBoundsAccurate(item);
 				ItemPos.x_pos = item->pos.x_pos;
 				ItemPos.y_pos = item->pos.y_pos;
 				ItemPos.z_pos = item->pos.z_pos;
 				ItemPos.y_rot = item->pos.y_rot;
-
 				if (DoRayBox(start, target, bounds, &ItemPos, Coord, item_number))
 					target->room_number = los_rooms[i];
 			}

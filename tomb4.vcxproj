@@ -264,6 +264,7 @@
     <ClInclude Include="TOMB4\specific\function_table.h" />
     <ClInclude Include="TOMB4\specific\gamemain.h" />
     <ClInclude Include="TOMB4\specific\input.h" />
+    <ClInclude Include="TOMB4\game\lasers.h" />
     <ClInclude Include="TOMB4\specific\lighting.h" />
     <ClInclude Include="TOMB4\specific\LoadSave.h" />
     <ClInclude Include="TOMB4\specific\output.h" />
@@ -377,6 +378,7 @@
     <ClCompile Include="TOMB4\specific\function_table.cpp" />
     <ClCompile Include="TOMB4\specific\gamemain.cpp" />
     <ClCompile Include="TOMB4\specific\input.cpp" />
+    <ClCompile Include="TOMB4\game\lasers.cpp" />
     <ClCompile Include="TOMB4\specific\lighting.cpp" />
     <ClCompile Include="TOMB4\specific\LoadSave.cpp" />
     <ClCompile Include="TOMB4\specific\output.cpp" />

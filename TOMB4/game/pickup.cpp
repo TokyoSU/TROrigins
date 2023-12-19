@@ -26,15 +26,15 @@ static short HiddenPickUpBounds[12] = { -256, 256, -100, 100, -800, -256, -1820,
 static short CrowbarPickUpBounds[12] = { -256, 256, -100, 100, 200, 512, -1820, 1820, -5460, 5460, 0, 0 };
 static short PlinthPickUpBounds[12] = { -256, 256, -640, 640, -511, 0, -1820, 1820, -5460, 5460, 0, 0 };
 static short PickUpBounds[12] = { -256, 256, -200, 200, -256, 256, -1820, 1820, 0, 0, 0, 0 };
-static short PickUpBoundsUW[12] = { -512, 512, -512, 512, -512, 512, -8190, 8190, -8190, 8190, -8190, 8190 };
+static short PickUpBoundsUW[12] = { -768, 768, -512, 512, -768, 768, -8190, 8190, -8190, 8190, -8190, 8190 };
 static short PuzzleBounds[12] = { 0, 0, -256, 256, 0, 0, -1820, 1820, -5460, 5460, -1820, 1820 };
-static PHD_VECTOR  SarcophagusPos = { 0, 0, -300 };
+static PHD_VECTOR SarcophagusPos = { 0, 0, -300 };
 static PHD_VECTOR KeyHolePosition = { 0, 0, 362 };
 static PHD_VECTOR HiddenPickUpPosition = { 0, 0, -690 };
 static PHD_VECTOR CrowbarPickUpPosition = { 0, 0, 215 };
 static PHD_VECTOR PlinthPickUpPosition = { 0, 0, -460 };
 static PHD_VECTOR PickUpPosition = { 0, 0, -100 };
-static PHD_VECTOR PickUpPositionUW = { 0, -200, -350 };
+static PHD_VECTOR PickUpPositionUW = { 0, -200, -450 };
 
 void SarcophagusCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 {
@@ -157,7 +157,8 @@ void KeyHoleCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 void PuzzleDoneCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 {
-	if (items[item_num].ocb != 999)
+	auto* item = &items[item_num];
+	if (item->ocb != 999)
 		ObjectCollision(item_num, l, coll);
 }
 
@@ -174,12 +175,18 @@ void PuzzleDone(ITEM_INFO* item, short item_number)
 	item->status = ITEM_ACTIVE;
 }
 
-void AnimatingPickUp(short item_number)
+void AnimatingPickUp(short item_num)
 {
-	auto* item = &items[item_number];
-	if ((item->ocb & 0x3F) == 2)
-		AnimateItem(&items[item_number]);
-	MoveItemAlongsideSlope(item_number);
+	auto* item = &items[item_num];
+	if (item->ocb & 1)
+		AnimateItem(item);
+
+	MoveItemAlongsideSlope(item_num);
+
+	short room_num = item->room_number;
+	GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_num);
+	if (item->room_number != room_num)
+		ItemNewRoom(item_num, room_num);
 }
 
 short* FindPlinth(ITEM_INFO* item)
@@ -234,78 +241,80 @@ short* FindPlinth(ITEM_INFO* item)
 
 long KeyTrigger(short item_num)
 {
-	ITEM_INFO* item;
-	long oldkey;
-
-	item = &items[item_num];
-
-	if ((item->status != ITEM_ACTIVE || lara.gun_status == LG_HANDS_BUSY) && (!KeyTriggerActive || lara.gun_status != LG_HANDS_BUSY))
+	auto* item = &items[item_num];
+	if ((item->status != ITEM_ACTIVE || lara.gun_status == LG_HANDS_BUSY) && (KeyTriggerActive == FALSE || lara.gun_status != LG_HANDS_BUSY))
 		return -1;
-
-	oldkey = KeyTriggerActive;
-
-	if (!KeyTriggerActive)
+	auto oldkey = KeyTriggerActive;
+	if (KeyTriggerActive == FALSE)
 		item->status = ITEM_DEACTIVATED;
-
-	KeyTriggerActive = 0;
+	KeyTriggerActive = FALSE;
 	return oldkey;
 }
 
 long PickupTrigger(short item_num)
 {
-	ITEM_INFO* item;
-
-	item = &items[item_num];
-
+	auto* item = &items[item_num];
 	if (item->flags & IFL_CLEARBODY || item->status != ITEM_INVISIBLE || item->item_flags[3] != 1 || item->ocb & 128)
 		return 0;
-
 	KillItem(item_num);
 	return 1;
 }
 
 void RegeneratePickups()
 {
-	ITEM_INFO* item;
-	short* ammo;
-	short objnum;
-
 	for (int i = 0; i < NumRPickups; i++)
 	{
-		item = &items[RPickups[i]];
-
-		if (item->status == ITEM_INVISIBLE)
+		if (RPickups[i] == NO_ITEM)
+			continue;
+		auto* item = &items[RPickups[i]];
+		if (item->status != ITEM_INVISIBLE)
+			continue;
+		switch (item->object_number)
 		{
-			objnum = item->object_number;
-
-			if (objnum >= CROSSBOW_AMMO1_ITEM && objnum <= CROSSBOW_AMMO3_ITEM)
-			{
-				ammo = &lara.num_crossbow_ammo1;
-
-				if (!ammo[objnum - CROSSBOW_AMMO1_ITEM])
-					item->status = ITEM_INACTIVE;
-			}
-			else if (objnum >= GRENADE_GUN_AMMO1_ITEM && objnum <= GRENADE_GUN_AMMO3_ITEM)
-			{
-				ammo = &lara.num_grenade_ammo1;
-
-				if (!ammo[objnum - GRENADE_GUN_AMMO1_ITEM])
-					item->status = ITEM_INACTIVE;
-			}
-			else if (objnum >= SHOTGUN_AMMO1_ITEM && objnum <= SHOTGUN_AMMO2_ITEM)
-			{
-				ammo = &lara.num_shotgun_ammo1;
-
-				if (!ammo[objnum - SHOTGUN_AMMO1_ITEM])
-					item->status = ITEM_INACTIVE;
-			}
-			else if (objnum == SIXSHOOTER_AMMO_ITEM)
-			{
-				ammo = &lara.num_revolver_ammo;
-
-				if (!*ammo)
-					item->status = ITEM_INACTIVE;
-			}
+		case PISTOLS_AMMO_ITEM:
+			if (lara.num_pistols_ammo <= 0)
+				item->status = ITEM_INACTIVE;
+			break;
+		case UZI_AMMO_ITEM:
+			if (lara.num_uzi_ammo <= 0)
+				item->status = ITEM_INACTIVE;
+			break;
+		case SIXSHOOTER_AMMO_ITEM:
+			if (lara.num_revolver_ammo <= 0)
+				item->status = ITEM_INACTIVE;
+			break;
+		case SHOTGUN_AMMO1_ITEM:
+			if (lara.num_shotgun_ammo1 <= 0)
+				item->status = ITEM_INACTIVE;
+			break;
+		case SHOTGUN_AMMO2_ITEM:
+			if (lara.num_shotgun_ammo2 <= 0)
+				item->status = ITEM_INACTIVE;
+			break;
+		case CROSSBOW_AMMO1_ITEM:
+			if (lara.num_crossbow_ammo1 <= 0)
+				item->status = ITEM_INACTIVE;
+			break;
+		case CROSSBOW_AMMO2_ITEM:
+			if (lara.num_crossbow_ammo2 <= 0)
+				item->status = ITEM_INACTIVE;
+			break;
+		case CROSSBOW_AMMO3_ITEM:
+			if (lara.num_crossbow_ammo3 <= 0)
+				item->status = ITEM_INACTIVE;
+			break;
+		case GRENADE_GUN_AMMO1_ITEM:
+			if (lara.num_grenade_ammo1 <= 0)
+				item->status = ITEM_INACTIVE;
+			break;
+		case GRENADE_GUN_AMMO2_ITEM:
+			if (lara.num_grenade_ammo2 <= 0)
+				item->status = ITEM_INACTIVE;
+			break;
+		case GRENADE_GUN_AMMO3_ITEM:
+			if (lara.num_grenade_ammo3 <= 0)
+				item->status = ITEM_INACTIVE;
+			break;
 		}
 	}
 }
@@ -314,6 +323,7 @@ void PickUpCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 {
 	ITEM_INFO* item;
 	ITEM_INFO* itemme;
+	PHD_3DPOS pos;
 	short* bounds;
 	long flag;
 	short rotx, roty, rotz, ocb;
@@ -325,9 +335,9 @@ void PickUpCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	rotx = item->pos.x_rot;
 	roty = item->pos.y_rot;
 	rotz = item->pos.z_rot;
-	ocb = item->ocb & 0x3F;
 	item->pos.y_rot = l->pos.y_rot;
 	item->pos.z_rot = 0;
+	ocb = item->ocb & 0x3F;
 
 	if (lara.water_status == LW_ABOVE_WATER || lara.water_status == LW_WADE)
 	{
@@ -573,9 +583,7 @@ void PickUpCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	{
 		item->pos.x_rot = -4550;
 
-		if (input & IN_ACTION && item->object_number != BURNING_TORCH_ITEM && l->current_anim_state == AS_TREAD &&
-			lara.gun_status == LG_NO_ARMS && TestLaraPosition(PickUpBoundsUW, item, l) ||
-			lara.IsMoving && lara.GeneralPtr == (void*)item_number)
+		if (((input & IN_ACTION) && item->object_number != BURNING_TORCH_ITEM && l->current_anim_state == AS_TREAD && lara.gun_status == LG_NO_ARMS && TestLaraPosition(PickUpBoundsUW, item, l)) || (lara.IsMoving && lara.GeneralPtr == (void*)item_number))
 		{
 			if (TestLaraPosition(PickUpBoundsUW, item, l))
 			{

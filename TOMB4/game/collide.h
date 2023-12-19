@@ -27,5 +27,6 @@ void StargateCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 void CogCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll);
 void GetCollisionInfo(COLL_INFO* coll, long x, long y, long z, short room_number, long hite);
 void MoveItemAlongsideSlope(short item_number);
+void MoveItemAlongsideSlopeLooped(short item_number);
 
 extern short GlobalCollisionBounds[6];

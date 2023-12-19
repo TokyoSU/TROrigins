@@ -29,12 +29,14 @@
 #define BLOCKABLE 0x8000
 #define BLOCKED 0x4000
 #define NO_BOX 2047
+#define NO_LOS 999
 #define NO_ITEM -1
 #define NO_ROOM 255
 #define MESHBITS_ALL 0xFFFFFFFF
 #define MESHBITS_NONE 0
 #define MESHBITS(meshIdx) (1 << meshIdx)
-#define ANGLE(x) (x * 182)
+#define ONE_DEGREE 182
+#define ANGLE(x) ((x) * ONE_DEGREE)
 #define FVF (D3DFVF_TEX2 | D3DFVF_SPECULAR | D3DFVF_DIFFUSE | D3DFVF_XYZRHW)
 #define WALL_SHIFT 10
 #define W2V_SHIFT 14
@@ -46,6 +48,10 @@
 #define MALLOC_SIZE	15000000	// 15MB
 #define CAMERA_CUTSCENE_FOV (short)ANGLE(63)
 #define CAMERA_FOV (short)ANGLE(80)
+#define CLICK_SIZE 256
+#define WALL_SIZE 1024
+#define CLICK(x) ((x) * CLICK_SIZE)
+#define SECTOR(x) ((x) * WALL_SIZE)
 
 /********************DX defs********************/
 #define LPDIRECTDRAWX			LPDIRECTDRAW4
@@ -495,6 +501,12 @@ struct PHD_3DPOS
 	short x_rot;
 	short y_rot;
 	short z_rot;
+	PHD_3DPOS()
+		: x_pos(0), y_pos(0), z_pos(0), x_rot(0), y_rot(0), z_rot(0)
+	{}
+	PHD_3DPOS(long x_pos, long y_pos, long z_pos, short x_rot, short y_rot, short z_rot)
+		: x_pos(x_pos), y_pos(y_pos), z_pos(z_pos), x_rot(x_rot), y_rot(y_rot), z_rot(z_rot)
+	{}
 };
 
 struct GAME_VECTOR
@@ -504,6 +516,18 @@ struct GAME_VECTOR
 	long z;
 	short room_number;
 	short box_number;
+	GAME_VECTOR()
+		: x(0), y(0), z(0), room_number(0), box_number(0)
+	{}
+	GAME_VECTOR(long x, long y, long z)
+		: x(x), y(y), z(z)
+	{}
+	GAME_VECTOR(long x, long y, long z, short room_number)
+		: x(x), y(y), z(z), room_number(room_number)
+	{}
+	GAME_VECTOR(long x, long y, long z, short room_number, short box_number)
+		: x(x), y(y), z(z), room_number(room_number), box_number(box_number)
+	{}
 };
 
 struct OBJECT_VECTOR
@@ -1837,15 +1861,15 @@ struct AI_INFO
 	short zone_number;
 	short enemy_zone;
 	long distance;
-	long ahead;
-	long bite;
 	short angle;
 	short x_angle;
 	short enemy_facing;
+	bool ahead;
+	bool bite;
 	AI_INFO()
 		: zone_number(0), enemy_zone(0), distance(0), ahead(0), bite(0), angle(0), x_angle(0), enemy_facing(0)
 	{}
-	AI_INFO(short zone_number, short enemy_zone, long distance, long ahead, long bite, short angle, short x_angle, short enemy_facing)
+	AI_INFO(short zone_number, short enemy_zone, long distance, bool ahead, bool bite, short angle, short x_angle, short enemy_facing)
 		: zone_number(zone_number), enemy_zone(enemy_zone), distance(distance), ahead(ahead), bite(bite), angle(angle), x_angle(x_angle), enemy_facing(enemy_facing)
 	{}
 };

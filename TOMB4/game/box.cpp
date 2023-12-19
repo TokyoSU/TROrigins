@@ -131,12 +131,10 @@ void CreatureAIInfo(ITEM_INFO* item, AI_INFO* info)
 	enemy->box_number = floor->box;
 	info->enemy_zone = zone[enemy->box_number];
 
-	if (boxes[enemy->box_number].overlap_index & creature->LOT.block_mask ||
-		creature->LOT.node[item->box_number].search_number == (creature->LOT.search_number | 0x8000))
+	if (boxes[enemy->box_number].overlap_index & creature->LOT.block_mask || creature->LOT.node[item->box_number].search_number == (creature->LOT.search_number | 0x8000))
 		info->enemy_zone |= 0x4000;
 
 	pivot = obj->pivot_length;
-
 	if (enemy == lara_item)
 		ang = lara.move_angle;
 	else
@@ -149,14 +147,14 @@ void CreatureAIInfo(ITEM_INFO* item, AI_INFO* info)
 	ang = (short)phd_atan(z, x);
 
 	if (z > 32000 || z < -32000 || x > 32000 || x < -32000)
-		info->distance = 0x7FFFFFFF;
+		info->distance = INT_MAX;
 	else if (creature->enemy)
 		info->distance = SQUARE(x) + SQUARE(z);
 	else
-		info->distance = 0x7FFFFFFF;
+		info->distance = INT_MAX;
 
-	info->angle = ang - item->pos.y_rot;
-	info->enemy_facing = ang - enemy->pos.y_rot + 0x8000;
+	info->angle = (ang - item->pos.y_rot);
+	info->enemy_facing = (ang - enemy->pos.y_rot) + ANGLE(180);
 
 	x = abs(x);
 	z = abs(z);
@@ -164,7 +162,6 @@ void CreatureAIInfo(ITEM_INFO* item, AI_INFO* info)
 	if (enemy == lara_item)
 	{
 		state = lara_item->current_anim_state;
-
 		if (state == AS_DUCK || state == AS_DUCKROLL || state == AS_ALL4S || state == AS_CRAWL ||
 			state == AS_ALL4TURNL|| state == AS_ALL4TURNR || state == AS_DUCKROTL || state == AS_DUCKROTR)
 			y -= 384;
@@ -175,15 +172,15 @@ void CreatureAIInfo(ITEM_INFO* item, AI_INFO* info)
 	else
 		info->x_angle = (short)phd_atan(z + (x >> 1), y);
 
-	if (info->angle > -0x4000 && info->angle < 0x4000)
-		info->ahead = 1;
+	if (info->angle > -ANGLE(90) && info->angle < ANGLE(90))
+		info->ahead = true;
 	else
-		info->ahead = 0;
+		info->ahead = false;
 
 	if (info->ahead && enemy->hit_points > 0 && abs(enemy->pos.y_pos - item->pos.y_pos) <= 512)
-		info->bite = 1;
+		info->bite = true;
 	else
-		info->bite = 0;
+		info->bite = false;
 }
 
 long SearchLOT(LOT_INFO* LOT, long expansion)

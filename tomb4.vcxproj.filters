@@ -367,6 +367,7 @@
     </ClInclude>
     <ClInclude Include="TOMB4\specific\drawbars.h" />
     <ClInclude Include="TOMB4\tomb4\level_loader.h" />
+    <ClInclude Include="TOMB4\game\lasers.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TOMB4\game\lara.cpp">
@@ -709,6 +710,9 @@
       <Filter>TOMB4</Filter>
     </ClCompile>
     <ClCompile Include="TOMB4\tomb4\level_loader.cpp">
+      <Filter>TOMB4</Filter>
+    </ClCompile>
+    <ClCompile Include="TOMB4\game\lasers.cpp">
       <Filter>TOMB4</Filter>
     </ClCompile>
   </ItemGroup>

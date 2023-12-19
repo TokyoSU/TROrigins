@@ -40,6 +40,7 @@
 #include "tomb4fx.h"
 #include "draw.h"
 #include "hair.h"
+#include "lasers.h"
 #include "items.h"
 #include "../specific/function_stubs.h"
 #include "flmtorch.h"
@@ -812,6 +813,36 @@ void TrapObjects()
 	obj->save_flags = 1;
 	obj->using_drawanimating_item = 0;
 	obj->save_mesh = 1;
+
+	obj = &objects[LASER_NORMAL];
+	if (obj->loaded)
+	{
+		obj->initialise = InitialiseLaser;
+		obj->draw_routine = DrawLaser;
+		obj->control = LaserControl;
+		obj->semi_transparent = TRUE;
+		obj->using_drawanimating_item = FALSE;
+	}
+
+	obj = &objects[LASER_DAMAGE];
+	if (obj->loaded)
+	{
+		obj->initialise = InitialiseLaser;
+		obj->draw_routine = DrawLaser;
+		obj->control = LaserControl;
+		obj->semi_transparent = TRUE;
+		obj->using_drawanimating_item = FALSE;
+	}
+
+	obj = &objects[LASER_KILL];
+	if (obj->loaded)
+	{
+		obj->initialise = InitialiseLaser;
+		obj->draw_routine = DrawLaser;
+		obj->control = LaserControl;
+		obj->semi_transparent = TRUE;
+		obj->using_drawanimating_item = FALSE;
+	}
 }
 
 void BaddyObjects()

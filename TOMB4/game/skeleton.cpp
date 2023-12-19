@@ -164,11 +164,8 @@ void SkeletonControl(short item_number)
 	floor = GetFloor(x, y, z, &room_number);
 	farheight = GetHeight(floor, x, y, z);
 
-	jump_ahead = (item->box_number != lara_item->box_number || !(item->mesh_bits & 0x200)) &&
-		y < nearheight - 384 && y < midheight + 256 && y > midheight - 256;
-
-	long_jump_ahead = (item->box_number != lara_item->box_number || !(item->mesh_bits & 0x200)) &&
-		y < nearheight - 384 && y < midheight - 384 && y < farheight + 256 && y > farheight - 256;
+	jump_ahead = (item->box_number != lara_item->box_number || !(item->mesh_bits & 0x200)) && y < nearheight - 384 && y < midheight + 256 && y > midheight - 256;
+	long_jump_ahead = (item->box_number != lara_item->box_number || !(item->mesh_bits & 0x200)) && y < nearheight - 384 && y < midheight - 384 && y < farheight + 256 && y > farheight - 256;
 
 	if (item->ai_bits)
 		GetAITarget(skelly);

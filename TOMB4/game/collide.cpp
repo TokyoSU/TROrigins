@@ -1589,3 +1589,48 @@ void MoveItemAlongsideSlope(short item_number)
 	// If the item change room then update it !
 	ItemNewRoom(item_number, room_number);
 }
+
+// Need to be in a loop so the item will move down the full slope until there is no slope anymore.
+// Looped so it can move if this function is called only 1 time.
+void MoveItemAlongsideSlopeLooped(short item_number)
+{
+	ITEM_INFO* item = &items[item_number];
+	COLL_INFO coll;
+
+	while (true)
+	{
+		// Get slope collision information...
+		short room_number = item->room_number;
+		GetCollisionInfo(&coll, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 0);
+
+		// Get slide angle...
+		short angle = GetSlideAngle(&coll);
+		if (angle == -1) // It's not a slope anymore !
+			break;
+		// From slide angle move alongslide it.
+		switch (angle)
+		{
+		case ANGLE(0):
+			item->pos.z_pos++;
+			break;
+		case ANGLE(90):
+			item->pos.x_pos++;
+			break;
+		case -ANGLE(90):
+			item->pos.x_pos--;
+			break;
+		case -ANGLE(180):
+			item->pos.z_pos--;
+			break;
+		}
+
+		// Move the item pos y to the floor (based on the bound) !
+		auto* bounds = GetBoundsAccurate(item);
+		auto* floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number); // Redo the room number check just in case the bounds[3] move it to another room !
+		long height = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
+		item->pos.y_pos = height - bounds[3];
+
+		// If the item change room then update it !
+		ItemNewRoom(item_number, room_number);
+	}
+}

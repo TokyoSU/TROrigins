@@ -29,7 +29,7 @@ void SetupSplash(SPLASH_SETUP* setup);
 void UpdateSplashes();
 
 extern DYNAMIC dynamics[MAX_DYNAMICS * 2];
-extern SPLASH_STRUCT splashes[4];
+extern SPLASH_STRUCT splashes[MAX_SPLASHES];
 extern RIPPLE_STRUCT ripples[16];
 extern SPLASH_SETUP splash_setup;
 extern SPARKS spark[256];

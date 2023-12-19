@@ -19,7 +19,7 @@
 #include "gameflow.h"
 
 DYNAMIC dynamics[MAX_DYNAMICS * 2];
-SPLASH_STRUCT splashes[4];
+SPLASH_STRUCT splashes[MAX_SPLASHES];
 RIPPLE_STRUCT ripples[16];
 SPLASH_SETUP splash_setup;
 SPARKS spark[256];
@@ -1899,54 +1899,40 @@ void TriggerRocketSmoke(long x, long y, long z, long col)
 
 void SetupSplash(SPLASH_SETUP* setup)
 {
-	SPLASH_STRUCT* splash;
-	long n;
-
-	splash = splashes;
-	n = 0;
-
-	while (splash->flags & 1)
+	for (int i = 0; i < MAX_SPLASHES; i++)
 	{
-		splash++;
-		n++;
-
-		if (n >= 4)
+		auto* splash = &splashes[i];
+		if (!(splash->flags & 1))
 		{
+			splash->flags = 1;
+			splash->x = setup->x;
+			splash->y = setup->y;
+			splash->z = setup->z;
+			splash->life = 62;
+			splash->InnerRad = setup->InnerRad;
+			splash->InnerSize = setup->InnerSize;
+			splash->InnerRadVel = setup->InnerRadVel;
+			splash->InnerYVel = setup->InnerYVel;
+			splash->InnerY = setup->InnerYVel >> 2;
+			splash->MiddleRad = setup->pad1;
+			splash->MiddleSize = setup->MiddleRad;
+			splash->MiddleRadVel = setup->MiddleSize;
+			splash->MiddleYVel = setup->MiddleRadVel;
+			splash->MiddleY = setup->MiddleRadVel >> 2;
+			splash->OuterRad = setup->MiddleYVel;
+			splash->OuterSize = setup->pad2;
+			splash->OuterRadVel = setup->OuterRad;
 			SoundEffect(SFX_LARA_SPLASH, (PHD_3DPOS*)setup, SFX_DEFAULT);
-			return;
+			break;
 		}
 	}
-
-	splash->flags = 1;
-	splash->x = setup->x;
-	splash->y = setup->y;
-	splash->z = setup->z;
-	splash->life = 62;
-	splash->InnerRad = setup->InnerRad;
-	splash->InnerSize = setup->InnerSize;
-	splash->InnerRadVel = setup->InnerRadVel;
-	splash->InnerYVel = setup->InnerYVel;
-	splash->InnerY = setup->InnerYVel >> 2;
-	splash->MiddleRad = setup->pad1;
-	splash->MiddleSize = setup->MiddleRad;
-	splash->MiddleRadVel = setup->MiddleSize;
-	splash->MiddleYVel = setup->MiddleRadVel;
-	splash->MiddleY = setup->MiddleRadVel >> 2;
-	splash->OuterRad = setup->MiddleYVel;
-	splash->OuterSize = setup->pad2;
-	splash->OuterRadVel = setup->OuterRad;
-	SoundEffect(SFX_LARA_SPLASH, (PHD_3DPOS*)setup, SFX_DEFAULT);
 }
 
-void UpdateSplashes()	//(and ripples)
+void UpdateSplashes()	// (and ripples)
 {
-	SPLASH_STRUCT* splash;
-	RIPPLE_STRUCT* ripple;
-
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < MAX_SPLASHES; i++)
 	{
-		splash = &splashes[i];
-
+		auto* splash = &splashes[i];
 		if (!(splash->flags & 1))
 			continue;
 
@@ -1961,7 +1947,6 @@ void UpdateSplashes()	//(and ripples)
 		splash->OuterRadVel -= splash->OuterRadVel >> 6;
 		splash->InnerY += splash->InnerYVel >> 4;
 		splash->InnerYVel += 0x400;
-
 		if (splash->InnerYVel > 0x4000)
 			splash->InnerYVel = 0x4000;
 
@@ -1975,9 +1960,11 @@ void UpdateSplashes()	//(and ripples)
 			splash->InnerY = 0;
 			splash->flags |= 4;
 			splash->life -= 2;
-
-			if (!splash->life)
+			if (splash->life <= 0)
+			{
 				splash->flags = 0;
+				break;
+			}
 		}
 
 		splash->MiddleY += splash->MiddleYVel >> 4;
@@ -2000,8 +1987,7 @@ void UpdateSplashes()	//(and ripples)
 
 	for (int i = 0; i < 16; i++)
 	{
-		ripple = &ripples[i];
-
+		auto* ripple = &ripples[i];
 		if (!(ripple->flags & 1))
 			continue;
 
@@ -2021,7 +2007,6 @@ void UpdateSplashes()	//(and ripples)
 					ripple->init += 8;
 				else
 					ripple->init += 4;
-
 				if (ripple->init >= ripple->life)
 					ripple->init = 0;
 			}
@@ -2029,7 +2014,6 @@ void UpdateSplashes()	//(and ripples)
 		else
 		{
 			ripple->life -= 3;
-
 			if (ripple->life > 250)
 				ripple->flags = 0;
 		}

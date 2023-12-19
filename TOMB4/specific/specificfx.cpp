@@ -3195,10 +3195,9 @@ void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ri
 	v = MyVertexBuffer;
 	offsets = (long*)&tsv_buffer[1024];
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < MAX_SPLASHES; i++)
 	{
 		splash = &splashes[i];
-
 		if (!(splash->flags & 1))
 			continue;
 
@@ -3330,7 +3329,6 @@ void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ri
 	for (int i = 0; i < 16; i++)
 	{
 		ripple = &ripples[i];
-
 		if (!(ripple->flags & 1))
 			continue;
 

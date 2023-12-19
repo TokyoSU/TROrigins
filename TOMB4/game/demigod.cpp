@@ -284,6 +284,8 @@ void Demigod1Control(short item_number)
 
 	auto* item = &items[item_number];
 	auto* god = GetCreatureInfo(item);
+	if (god == NULL)
+		return;
 	auto* obj = &objects[item->object_number];
 	if (item->ocb & 1) // Immortal state.
 		item->hit_points = obj->hit_points;

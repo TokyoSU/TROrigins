@@ -981,7 +981,7 @@ bool LoadItems()
 	Log(2, "LoadItems");
 
 	num_items = lvr.GetLong();
-	if (num_items == 0)
+	if (num_items <= 0)
 		return 1;
 
 	items = (ITEM_INFO*)game_malloc(256 * sizeof(ITEM_INFO));
@@ -1036,72 +1036,59 @@ bool LoadItems()
 	return 1;
 }
 
-bool LoadCinematic()
-{
-	lvr.GetShort();
-	return 1;
-}
-
 bool LoadAIInfo()
 {
 	long num_ai = lvr.GetLong();
-	if (num_ai)
+	if (num_ai > 0)
 	{
 		nAIObjects = (short)num_ai;
 		AIObjects = lvr.GetStructGameMalloc<AIOBJECT>(num_ai);
 	}
+	return 1;
+}
 
+bool LoadCinematic()
+{
+	// No cinematic think !
 	return 1;
 }
 
 bool LoadSamples()
 {
-	long num_samples, uncomp_size, comp_size;
-	static long num_sample_infos;
-
-	Log(2, "LoadSamples");
-	sample_lut = lvr.GetStructGameMalloc<short>(MAX_SAMPLES);
-	num_sample_infos = lvr.GetLong();
-	Log(8, "Number Of Sample Infos %d", num_sample_infos);
-
-	if (!num_sample_infos)
+	int finalSoundMapSize = lvr.GetInt();
+	if (finalSoundMapSize != MAX_SAMPLES)
 	{
-		Log(1, "No Sample Infos");
-		return 0;
+		Log(1, "Failed to load sound maps, size is wrong: %d, expected: %d", finalSoundMapSize, MAX_SAMPLES);
+		return FALSE;
 	}
-	sample_infos = lvr.GetStructGameMalloc<SAMPLE_INFO>(num_sample_infos);
+	sample_lut = lvr.GetStructGameMalloc<short>(finalSoundMapSize);
 
-	num_samples = lvr.GetLong();
-	if (!num_samples)
+	long finalSoundInfoListSize = lvr.GetShort();
+	sample_infos = lvr.GetStructGameMalloc<SAMPLE_INFO>(finalSoundInfoListSize);
+
+	long soundIndicesSize = lvr.GetLong();
+	if (soundIndicesSize > 0)
 	{
-		Log(1, "No Samples");
-		return 0;
+		for (int i = 0; i < soundIndicesSize; i++)
+			lvr.GetInt();
 	}
 
-	Log(8, "Number Of Samples %d", num_samples);
-	num_samples = lvr.GetLong();
 	InitSampleDecompress();
-
-	if (num_samples <= 0)
+	int sampleListSize = lvr.GetInt();
+	for (int i = 0; i < sampleListSize; i++)
 	{
-		FreeSampleDecompress();
-		return 1;
-	}
-
-	for (int i = 0; i < num_samples; i++)
-	{
-		uncomp_size = lvr.GetLong();
-		comp_size = lvr.GetLong();
+		int uncomp_size = lvr.GetInt();
+		int comp_size = lvr.GetInt();
 		lvr.GetCopyToPtr(samples_buffer, comp_size);
 		if (!DXCreateSampleADPCM(samples_buffer, comp_size, uncomp_size, i))
 		{
 			FreeSampleDecompress();
-			return 0;
+			return FALSE;
 		}
 	}
 
 	FreeSampleDecompress();
-	return 1;
+	return TRUE;
 }
 
 void S_GetUVRotateTextures()

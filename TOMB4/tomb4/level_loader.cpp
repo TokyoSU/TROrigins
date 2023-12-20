@@ -127,5 +127,5 @@ char* CLevelReader::GetCompressedData(int uncompressedSize, int compressedSize)
 
 void CLevelReader::GetCopyToPtr(LPVOID dest, int size)
 {
-    fread(dest, size, 1, s_dataFile);
+    fread(dest, 1, size, s_dataFile);
 }

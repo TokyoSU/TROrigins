@@ -73,6 +73,7 @@ void* game_malloc(long size)
 
 void Log(ulong type, const char* s, ...)
 {
+#define DO_LOG
 #ifdef DO_LOG
 	va_list list;
 	char buf[4096];

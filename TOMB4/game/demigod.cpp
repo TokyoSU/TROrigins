@@ -401,7 +401,127 @@ void Demigod1Control(short item_number)
 
 void Demigod2Control(short item_number)
 {
+	if (!CreatureActive(item_number))
+		return;
 
+	auto* item = &items[item_number];
+	auto* god = GetCreatureInfo(item);
+	if (god == NULL)
+		return;
+	auto* obj = &objects[item->object_number];
+	if (item->ocb & 1) // Immortal state.
+		item->hit_points = obj->hit_points;
+	short angle = 0;
+	short head_x = 0;
+	short head_y = 0;
+	short torso_x = 0;
+	short torso_y = 0;
+	short tilt = 0;
+
+	if (item->hit_points <= 0)
+	{
+		if (item->current_anim_state != DMGOD_STATE_DEATH && item->current_anim_state != DMGOD_STATE_WALK_RUN_DEATH)
+		{
+			if (item->current_anim_state == DMGOD_STATE_WALK || item->current_anim_state == DMGOD_STATE_RUN)
+				SetAnimation(item, DEMIGOD_ANIM_WALK_RUN_DEATH, DMGOD_STATE_WALK_RUN_DEATH);
+			else
+				SetAnimation(item, DEMIGOD_ANIM_NORMAL_DEATH, DMGOD_STATE_DEATH);
+		}
+	}
+	else
+	{
+		if (item->ai_bits != 0)
+			GetAITarget(god);
+		AI_INFO info;
+		CreatureAIInfo(item, &info);
+		GetCreatureMood(item, &info, TRUE);
+		CreatureMood(item, &info, TRUE);
+		angle = CreatureTurn(item, god->maximum_turn);
+
+		switch (item->current_anim_state)
+		{
+		case DMGOD_STATE_IDLE:
+			god->maximum_turn = DEMIGOD_NO_ANGLE;
+			if (info.ahead)
+			{
+				head_y = info.angle;
+				head_x = info.x_angle;
+			}
+
+			if (info.distance < DEMIGOD_ATTACK_RANGE && info.zone_number == info.enemy_zone)
+			{
+				if (info.bite || (lara_item->current_anim_state >= AS_CLIMBSTNC && (lara_item->current_anim_state <= AS_CLIMBDOWN || lara_item->current_anim_state == AS_HANG)))
+				{
+					item->goal_anim_state = DMGOD_STATE_AIM_HAMMER;
+					break;
+				}
+			}
+
+			item->goal_anim_state = DMGOD_STATE_WALK;
+			break;
+
+		case DMGOD_STATE_WALK:
+			god->maximum_turn = DEMIGOD_WALK_RUN_ANGLE;
+			tilt = angle / 2;
+			if (info.ahead)
+			{
+				head_y = info.angle;
+				head_x = info.x_angle;
+			}
+
+			if (info.distance < DEMIGOD_ATTACK_RANGE && info.zone_number == info.enemy_zone)
+				item->goal_anim_state = DMGOD_STATE_IDLE;
+			else if (info.distance > DEMIGOD_RUN_RANGE)
+				item->goal_anim_state = DMGOD_STATE_RUN;
+
+			break;
+
+		case DMGOD_STATE_RUN:
+			god->maximum_turn = DEMIGOD_WALK_RUN_ANGLE;
+			tilt = angle / 2;
+			if (info.ahead)
+			{
+				head_y = info.angle;
+				head_x = info.x_angle;
+			}
+			if (info.distance < DEMIGOD_RUN_RANGE)
+				item->goal_anim_state = DMGOD_STATE_IDLE;
+			break;
+		case DMGOD_STATE_AIM_HAMMER:
+			god->maximum_turn = DEMIGOD_NO_ANGLE;
+			if (info.ahead)
+			{
+				head_y = info.angle;
+				head_x = info.x_angle;
+				torso_y = info.angle / 2;
+				torso_x = info.x_angle / 2;
+			}
+
+			if (info.distance < DEMIGOD_ATTACK_RANGE && (info.bite || ((lara_item->current_anim_state >= AS_CLIMBSTNC && (lara_item->current_anim_state <= AS_CLIMBDOWN || lara_item->current_anim_state == AS_HANG)))))
+				item->goal_anim_state = DMGOD_STATE_HAMMER_SLAM;
+			else
+				item->goal_anim_state = DMGOD_STATE_IDLE;
+
+			break;
+		case DMGOD_STATE_HAMMER_SLAM:
+			god->maximum_turn = DEMIGOD_NO_ANGLE;
+			if (info.ahead)
+			{
+				head_y = info.angle;
+				head_x = info.x_angle;
+				torso_y = info.angle / 2;
+				torso_x = info.x_angle / 2;
+			}
+			break;
+		}
+	}
+
+	CreatureTilt(item, tilt);
+	CreatureJoint(item, 0, torso_y);
+	CreatureJoint(item, 1, torso_x);
+	CreatureJoint(item, 2, head_y);
+	CreatureJoint(item, 3, head_x);
+	CreatureAnimation(item_number, angle, tilt);
 }
 
 void Demigod3Control(short item_number)

@@ -548,12 +548,30 @@ void EFF_FootSplash(ITEM_INFO* item, short extra)
 	auto* bounds = GetBestFrame(item);
 	if ((item->pos.y_pos + bounds[2]) > wh || (item->pos.y_pos + bounds[3]) < wh)
 		return;
-	long fallspeed = 140;
+	long fallspeed = 70;
 	long wd = GetWaterDepth(pos.x, pos.y, pos.z, room_number);
-	if (wd < 474)
+	if (wd <= CLICK(1))
 	{
 		splash_setup.x = pos.x;
-		splash_setup.y = wh;
+		splash_setup.y = wh + 10;
+		splash_setup.z = pos.z;
+		splash_setup.InnerRad = 16;
+		splash_setup.InnerSize = 12;
+		splash_setup.InnerRadVel = 160;
+		splash_setup.InnerYVel = -72 * fallspeed;
+		splash_setup.pad1 = 24;
+		splash_setup.MiddleRad = 24;
+		splash_setup.MiddleSize = 224;
+		splash_setup.MiddleRadVel = -36 * fallspeed;
+		splash_setup.MiddleYVel = 32;
+		splash_setup.pad2 = 32;
+		splash_setup.OuterRad = 272;
+		SetupSplash(&splash_setup);
+	}
+	else if (!(wibble & 0xF))
+	{
+		splash_setup.x = pos.x;
+		splash_setup.y = wh + 10;
 		splash_setup.z = pos.z;
 		splash_setup.InnerRad = 16;
 		splash_setup.InnerSize = 12;
@@ -567,10 +585,6 @@ void EFF_FootSplash(ITEM_INFO* item, short extra)
 		splash_setup.pad2 = 32;
 		splash_setup.OuterRad = 272;
 		SetupSplash(&splash_setup);
-	}
-	else if (!(wibble & 0xF))
-	{
-		SetupRipple(pos.x, wh, pos.z, (GetRandomControl() & 0xF) + 112, 18);
 	}
 }
 

@@ -98,32 +98,31 @@ void SetupBasicAIInfo(ITEM_INFO* item, AI_INFO* info)
 	if (creature == NULL || creature->enemy == NULL)
 		return;
 	auto* obj = &objects[item->object_number];
-	auto ang = creature->enemy == lara_item ? lara.move_angle : creature->enemy->pos.y_rot;
-	PHD_VECTOR pos;
-	pos.x = creature->enemy->pos.x_pos + (14 * creature->enemy->speed * phd_sin(ang) >> W2V_SHIFT) - (obj->pivot_length * phd_sin(item->pos.y_rot) >> W2V_SHIFT) - item->pos.x_pos;
-	pos.y = item->pos.y_pos - creature->enemy->pos.y_pos;
-	pos.z = creature->enemy->pos.z_pos + (14 * creature->enemy->speed * phd_cos(ang) >> W2V_SHIFT) - (obj->pivot_length * phd_cos(item->pos.y_rot) >> W2V_SHIFT) - item->pos.z_pos;
-	if (pos.z > SECTOR(31) || pos.z < -SECTOR(31) ||
-		pos.x > SECTOR(31) || pos.x < -SECTOR(31))
+	auto* enemy = creature->enemy;
+	auto ang = enemy == lara_item ? lara.move_angle : enemy->pos.y_rot;
+	auto x = enemy->pos.x_pos + (14 * enemy->speed * phd_sin(ang) >> W2V_SHIFT) - (obj->pivot_length * phd_sin(item->pos.y_rot) >> W2V_SHIFT) - item->pos.x_pos;
+	auto y = enemy->pos.y_pos - item->pos.y_pos;
+	auto z = enemy->pos.z_pos + (14 * enemy->speed * phd_cos(ang) >> W2V_SHIFT) - (obj->pivot_length * phd_cos(item->pos.y_rot) >> W2V_SHIFT) - item->pos.z_pos;
+	ang = (short)phd_atan(z, x);
+	if (z > SECTOR(31) || z < -SECTOR(31) || x > SECTOR(31) || x < -SECTOR(31))
 		info->distance = INT_MAX;
-	else if (creature->enemy != NULL)
-		info->distance = SQUARE(pos.x) + SQUARE(pos.z);
+	else if (enemy != NULL)
+		info->distance = SQUARE(x) + SQUARE(z);
 	else
 		info->distance = INT_MAX;
-	ang = (short)phd_atan(pos.z, pos.x);
-	info->angle = (ang - item->pos.y_rot);
-	info->enemy_facing = (ang - creature->enemy->pos.y_rot) + ANGLE(180);
-	pos.x = abs(pos.x);
-	pos.z = abs(pos.z);
-	if (creature->enemy == lara_item)
+	info->angle = ang - item->pos.y_rot;
+	info->enemy_facing = ang - enemy->pos.y_rot + ANGLE(180);
+	x = abs(x);
+	z = abs(z);
+	if (enemy == lara_item)
 	{
 		auto state = lara_item->current_anim_state;
 		if (state == AS_DUCK || state == AS_DUCKROLL || state == AS_ALL4S || state == AS_CRAWL || state == AS_ALL4TURNL || state == AS_ALL4TURNR || state == AS_DUCKROTL || state == AS_DUCKROTR)
-			pos.y -= 384;
+			y -= 384;
 	}
-	info->x_angle = pos.x > pos.z ? (short)phd_atan(pos.x + (pos.z >> 1), pos.y) : (short)phd_atan(pos.z + (pos.x >> 1), pos.y);
-	info->ahead = info->angle > -ANGLE(90) && info->angle < ANGLE(90);
-	info->bite = info->ahead && creature->enemy->hit_points > 0 && abs(creature->enemy->pos.y_pos - item->pos.y_pos) <= CLICK(2);
+	info->x_angle = (x > z) ? (short)phd_atan(x + (z >> 1), y) : (short)phd_atan(z + (x >> 1), y);
+	info->ahead = info->angle >= -ANGLE(90) && info->angle <= ANGLE(90);
+	info->bite = info->ahead && enemy->hit_points > 0 && abs(enemy->pos.y_pos - item->pos.y_pos) <= CLICK(2);
 }
 
 void CreatureAIInfo(ITEM_INFO* item, AI_INFO* info)
@@ -310,24 +309,20 @@ long EscapeBox(ITEM_INFO* item, ITEM_INFO* enemy, short box_number)
 
 long ValidBox(ITEM_INFO* item, short zone_number, short box_number)
 {
-	CREATURE_INFO* creature;
-	BOX_INFO* box;
+	auto* creature = GetCreatureInfo(item);
+	auto* zone = ground_zone[creature->LOT.zone][flip_status];
+	if (creature->LOT.fly == 0 && zone[box_number] != zone_number)
+		return FALSE;
 
-	creature = (CREATURE_INFO*)item->data;
-
-	if (!creature->LOT.fly && ground_zone[creature->LOT.zone][flip_status][box_number] != zone_number)
-		return 0;
-
-	box = &boxes[box_number];
-
+	auto* box = &boxes[box_number];
 	if (creature->LOT.block_mask & box->overlap_index)
-		return 0;
+		return FALSE;
 
-	if (item->pos.z_pos > box->left << 10 && item->pos.z_pos < box->right << 10 &&
-		item->pos.x_pos > box->top << 10 && item->pos.x_pos < box->bottom << 10)
-		return 0;
+	if (item->pos.z_pos > box->left << WALL_SHIFT && item->pos.z_pos < box->right << WALL_SHIFT &&
+		item->pos.x_pos > box->top << WALL_SHIFT && item->pos.x_pos < box->bottom << WALL_SHIFT)
+		return FALSE;
 
-	return 1;
+	return TRUE;
 }
 
 long StalkBox(ITEM_INFO* item, ITEM_INFO* enemy, short box_number)
@@ -586,11 +581,10 @@ void CreatureMood(ITEM_INFO* item, AI_INFO* info, long violent)
 	ITEM_INFO* enemy;
 	LOT_INFO* LOT;
 	static target_type type;
-	short index, box_no;
+	short index, box_no, room_number;
 
-	creature = (CREATURE_INFO*)item->data;
-
-	if (!creature)
+	creature = GetCreatureInfo(item);
+	if (creature == NULL)
 		return;
 
 	enemy = creature->enemy;
@@ -608,7 +602,7 @@ void CreatureMood(ITEM_INFO* item, AI_INFO* info, long violent)
 				TargetBox(&creature->LOT, box_no);
 				creature->mood = BORED_MOOD;
 			}
-			else if (creature->LOT.required_box == 2047)
+			else if (creature->LOT.required_box == NO_BOX)
 				TargetBox(&creature->LOT, box_no);
 		}
 
@@ -619,19 +613,19 @@ void CreatureMood(ITEM_INFO* item, AI_INFO* info, long violent)
 		creature->LOT.target.y = enemy->pos.y_pos;
 		creature->LOT.target.z = enemy->pos.z_pos;
 		creature->LOT.required_box = enemy->box_number;
-
-		if (creature->LOT.fly && lara.water_status == LW_ABOVE_WATER)
+		if (creature->LOT.fly != 0 && lara.water_status == LW_ABOVE_WATER)
 			creature->LOT.target.y += GetBestFrame(enemy)[2];
-
 		break;
 
 	case ESCAPE_MOOD:
 		box_no = LOT->node[(creature->LOT.zone_count * GetRandomControl()) >> 15].box_number;
 
-		if (ValidBox(item, info->zone_number, box_no) && creature->LOT.required_box == 2047)
+		if (ValidBox(item, info->zone_number, box_no) && creature->LOT.required_box == NO_BOX)
 		{
 			if (EscapeBox(item, enemy, box_no))
+			{
 				TargetBox(&creature->LOT, box_no);
+			}
 			else if (info->zone_number == info->enemy_zone && StalkBox(item, enemy, box_no) && !violent)
 			{
 				TargetBox(&creature->LOT, box_no);
@@ -726,26 +720,20 @@ void GetCreatureMood(ITEM_INFO* item, AI_INFO* info, long violent)
 			{
 			case BORED_MOOD:
 			case STALK_MOOD:
-
 				if (info->zone_number == info->enemy_zone)
 					creature->mood = ATTACK_MOOD;
 				else if (item->hit_status)
 					creature->mood = ESCAPE_MOOD;
-
 				break;
 
 			case ATTACK_MOOD:
-
 				if (info->zone_number != info->enemy_zone)
 					creature->mood = BORED_MOOD;
-
 				break;
 
 			case ESCAPE_MOOD:
-
 				if (info->zone_number == info->enemy_zone)
 					creature->mood = ATTACK_MOOD;
-
 				break;
 			}
 		}
@@ -833,32 +821,21 @@ long CreatureCreature(short item_number)
 
 long BadFloor(long x, long y, long z, long box_height, long next_height, short room_number, LOT_INFO* LOT)
 {
-	FLOOR_INFO* floor;
-	BOX_INFO* box;
-
-	floor = GetFloor(x, y, z, &room_number);
-
-	if (floor->box == 2047)
-		return 1;
-
+	auto* floor = GetFloor(x, y, z, &room_number);
+	if (floor->box == NO_BOX)
+		return TRUE;
 	if (LOT->is_jumping)
-		return 0;
-
-	box = &boxes[floor->box];
-
+		return FALSE;
+	auto* box = &boxes[floor->box];
 	if (box->overlap_index & LOT->block_mask)
-		return 1;
-
+		return TRUE;
 	if (box_height - box->height > LOT->step || box_height - box->height < LOT->drop)
-		return 1;
-
+		return TRUE;
 	if (box_height - box->height < -LOT->step && box->height > next_height)
-		return 1;
-
-	if (LOT->fly && y > box->height + LOT->fly)
-		return 1;
-
-	return 0;
+		return TRUE;
+	if (LOT->fly != 0 && y > box->height + LOT->fly)
+		return TRUE;
+	return FALSE;
 }
 
 long CreatureAnimation(short item_number, short angle, short tilt)
@@ -874,9 +851,8 @@ long CreatureAnimation(short item_number, short angle, short tilt)
 	short room_number, rad;
 
 	item = &items[item_number];
-	creature = (CREATURE_INFO*)item->data;
-
-	if (!creature)
+	creature = GetCreatureInfo(item);
+	if (creature == NULL)
 		return 0;
 
 	LOT = &creature->LOT;
@@ -1829,18 +1805,12 @@ void EFF_ShootProjectileFromItem(ITEM_INFO* item, short extra)
 {
 	if (item->data == NULL)
 		return;
-	short angles[2] = {};
-	AI_INFO info;
-	SetupBasicAIInfo(item, &info);
-	if (!Targetable(item, &info))
-		return;
 	// TODO: Found a way to unhardcode it !
 	switch (item->object_number)
 	{
-	case DEMIGOD1:
 	case DEMIGOD2:
 	case DEMIGOD3:
-		DoDemigodProjectiles(item);
+		DoDemigodProjectiles(item, extra);
 		break;
 	}
 }
@@ -1849,15 +1819,11 @@ void EFF_DoDamageFromItem(ITEM_INFO* item, short extra)
 {
 	if (item->data == NULL)
 		return;
-	AI_INFO info;
-	SetupBasicAIInfo(item, &info);
-	if (!Targetable(item, &info))
-		return;
 	// TODO: Found a way to unhardcode it !
 	switch (item->object_number)
 	{
 	case DEMIGOD1:
-		DoDemigodHammerSlam(item);
+		DoDemigodHammerSlam(item, extra);
 		break;
 	}
 }

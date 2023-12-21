@@ -1316,8 +1316,8 @@ void BaddyObjects()
 		obj->hit_effect = 3;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		bones[obj->bone_index + 8 * 4] |= 4;
 		bones[obj->bone_index + 8 * 4] |= 8;
+		bones[obj->bone_index + 8 * 4] |= 16;
 		bones[obj->bone_index + 20 * 4] |= 4;
 		bones[obj->bone_index + 20 * 4] |= 8;
 	}
@@ -1338,8 +1338,8 @@ void BaddyObjects()
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		bones[obj->bone_index + 8 * 4] |= 4;
 		bones[obj->bone_index + 8 * 4] |= 8;
+		bones[obj->bone_index + 8 * 4] |= 16;
 		bones[obj->bone_index + 20 * 4] |= 4;
 		bones[obj->bone_index + 20 * 4] |= 8;
 	}
@@ -1360,8 +1360,8 @@ void BaddyObjects()
 		obj->save_anim = 1;
 		obj->save_hitpoints = 1;
 		obj->save_position = 1;
-		bones[obj->bone_index + 8 * 4] |= 4;
 		bones[obj->bone_index + 8 * 4] |= 8;
+		bones[obj->bone_index + 8 * 4] |= 16;
 		bones[obj->bone_index + 20 * 4] |= 4;
 		bones[obj->bone_index + 20 * 4] |= 8;
 	}

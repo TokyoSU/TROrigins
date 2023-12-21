@@ -17,6 +17,8 @@
 #include "gameflow.h"
 #include "senet.h"
 
+#define EXPLODE_SHOCKWAVE_DAMAGE 4
+
 NODEOFFSET_INFO NodeOffsets[16] =
 {
 	{ -16, 40, 160, -14, 0 },
@@ -1718,11 +1720,12 @@ void TriggerShockwave(PHD_VECTOR* pos, long InnerOuterRads, long speed, long bgr
 		sw->g = CLRG(bgrl);
 		sw->b = CLRR(bgrl);
 		sw->life = CLRA(bgrl);
+		sw->Damage = 2;
 		SoundEffect(SFX_DEMI_SIREN_SWAVE, (PHD_3DPOS*)pos, SFX_DEFAULT);
 	}
 }
 
-void TriggerShockwave(PHD_VECTOR* pos, uchar life, short inner, short outer, short xRot, short flags, short speed, DWORD color)
+void TriggerShockwave(PHD_VECTOR* pos, uchar life, short inner, short outer, short xRot, short flags, short speed, short damage, DWORD color)
 {
 	auto swn = GetFreeShockwave();
 	if (swn != NO_ITEM)
@@ -1740,7 +1743,8 @@ void TriggerShockwave(PHD_VECTOR* pos, uchar life, short inner, short outer, sho
 		sw->g = RGB_GETGREEN(color);
 		sw->b = RGB_GETBLUE(color);
 		sw->life = life;
-		SoundEffect(SFX_DEMI_SIREN_SWAVE, (PHD_3DPOS*)pos, SFX_DEFAULT);
+		sw->Damage = damage;
+		SoundEffect(SFX_DEMI_SIREN_SWAVE, (PHD_3DPOS*)pos, SFX_ALWAYS);
 	}
 }
 
@@ -1811,7 +1815,6 @@ void UpdateShockwaves()
 		auto* sw = &ShockWaves[i];
 		if (sw->life <= 0)
 			continue;
-
 		sw->life--;
 		sw->OuterRad += sw->Speed;
 		sw->InnerRad += sw->Speed >> 1;
@@ -1823,11 +1826,10 @@ void UpdateShockwaves()
 			auto dx = lara_item->pos.x_pos - sw->x;
 			auto dz = lara_item->pos.z_pos - sw->z;
 			auto dist = (long)phd_sqrt(SQUARE(dx) + SQUARE(dz));
-
 			if (sw->y > lara_item->pos.y_pos + bounds[2] && sw->y < bounds[3] + lara_item->pos.y_pos + 256 && dist > sw->InnerRad && dist < sw->OuterRad)
 			{
 				TriggerShockwaveHitEffect(lara_item->pos.x_pos, sw->y, lara_item->pos.z_pos, RGB_MAKE(sw->r, sw->g, sw->b), (short)phd_atan(dz, dx), sw->Speed);
-				lara_item->hit_points -= sw->Speed >> (((sw->flags & SW_DAMAGE_LARA_COUNT) != 0) + 2);
+				lara_item->hit_points -= sw->Speed >> sw->Damage;
 			}
 			else
 			{
@@ -2300,16 +2302,16 @@ void TriggerExplosion(ITEM_INFO* item, int height, long extras, bool isSmallObj)
 		auto gAmb = CLRG(r->ambient);
 		auto bAmb = CLRB(r->ambient);
 		pos.y = item->pos.y_pos - new_height;
-		TriggerShockwave(&pos, 24, 128, 64, ANGLE(0), SW_DAMAGE_LARA, 96, RGB_MAKE(rAmb, gAmb, bAmb));
+		TriggerShockwave(&pos, 24, 128, 64, ANGLE(0), SW_DAMAGE_LARA, 96, EXPLODE_SHOCKWAVE_DAMAGE, RGB_MAKE(rAmb, gAmb, bAmb));
 	}
 	else
 	{
 		pos.y = item->pos.y_pos - (new_height + 64);
-		TriggerShockwave(&pos, 16, 64, 32, ANGLE(5), SW_DAMAGE_LARA, 64, RGB_MAKE(0, 128, 128));
+		TriggerShockwave(&pos, 16, 64, 32, ANGLE(5), SW_DAMAGE_LARA, 64, EXPLODE_SHOCKWAVE_DAMAGE, RGB_MAKE(0, 128, 128));
 		pos.y = item->pos.y_pos - new_height;
-		TriggerShockwave(&pos, 24, 128, 64, ANGLE(0), SW_DAMAGE_LARA, 96, RGB_MAKE(0, 128, 128));
+		TriggerShockwave(&pos, 24, 128, 64, ANGLE(0), SW_DAMAGE_LARA, 96, EXPLODE_SHOCKWAVE_DAMAGE, RGB_MAKE(0, 128, 128));
 		pos.y = item->pos.y_pos - (new_height - 64);
-		TriggerShockwave(&pos, 16, 64, 32, -ANGLE(5), SW_DAMAGE_LARA, 64, RGB_MAKE(0, 128, 128));
+		TriggerShockwave(&pos, 16, 64, 32, -ANGLE(5), SW_DAMAGE_LARA, 64, EXPLODE_SHOCKWAVE_DAMAGE, RGB_MAKE(0, 128, 128));
 	}
 }
 
@@ -2334,15 +2336,15 @@ void TriggerExplosion(FX_INFO* fx, int height, long extras, bool isSmallObj)
 		auto gAmb = CLRG(r->ambient);
 		auto bAmb = CLRB(r->ambient);
 		pos.y = fx->pos.y_pos - new_height;
-		TriggerShockwave(&pos, 24, 128, 64, ANGLE(0), SW_DAMAGE_LARA, 96, RGB_MAKE(rAmb, gAmb, bAmb));
+		TriggerShockwave(&pos, 24, 128, 64, ANGLE(0), SW_DAMAGE_LARA, 96, EXPLODE_SHOCKWAVE_DAMAGE, RGB_MAKE(rAmb, gAmb, bAmb));
 	}
 	else
 	{
 		pos.y = fx->pos.y_pos - (new_height + 64);
-		TriggerShockwave(&pos, 16, 64, 32, ANGLE(5), SW_DAMAGE_LARA, 64, RGB_MAKE(0, 128, 128));
+		TriggerShockwave(&pos, 16, 64, 32, ANGLE(5), SW_DAMAGE_LARA, 64, EXPLODE_SHOCKWAVE_DAMAGE, RGB_MAKE(0, 128, 128));
 		pos.y = fx->pos.y_pos - new_height;
-		TriggerShockwave(&pos, 24, 128, 64, ANGLE(0), SW_DAMAGE_LARA, 96, RGB_MAKE(0, 128, 128));
+		TriggerShockwave(&pos, 24, 128, 64, ANGLE(0), SW_DAMAGE_LARA, 96, EXPLODE_SHOCKWAVE_DAMAGE, RGB_MAKE(0, 128, 128));
 		pos.y = fx->pos.y_pos - (new_height - 64);
-		TriggerShockwave(&pos, 16, 64, 32, -ANGLE(5), SW_DAMAGE_LARA, 64, RGB_MAKE(0, 128, 128));
+		TriggerShockwave(&pos, 16, 64, 32, -ANGLE(5), SW_DAMAGE_LARA, 64, EXPLODE_SHOCKWAVE_DAMAGE, RGB_MAKE(0, 128, 128));
 	}
 }

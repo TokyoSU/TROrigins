@@ -37,7 +37,7 @@ long GetFreeDrip();
 void TriggerLaraDrips();
 long GetFreeShockwave();
 void TriggerShockwave(PHD_VECTOR* pos, long InnerOuterRads, long speed, long rgb, long XRotFlags);
-void TriggerShockwave(PHD_VECTOR* pos, uchar life, short inner, short outer, short xRot, short flags, short speed, DWORD color);
+void TriggerShockwave(PHD_VECTOR* pos, uchar life, short inner, short outer, short xRot, short flags, short speed, short damage, DWORD color);
 void TriggerShockwaveHitEffect(long x, long y, long z, long rgb, short dir, long speed);
 void UpdateShockwaves();
 void UpdateLightning();

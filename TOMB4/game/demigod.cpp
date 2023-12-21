@@ -15,6 +15,7 @@
 #include "effects.h"
 #include "lara.h"
 #include "gameflow.h"
+#include "sound.h"
 
 enum DEMIGOD_STATE
 {
@@ -36,11 +37,19 @@ enum DEMIGOD_STATE
 	DMGOD_STATE_WALK_RUN_DEATH
 };
 
-#define DEMIGOD_HAMMER_MESH_INDEX 17 // NOTE: Not right (should be 16) but it work ...
+// DEMIGOD 2 & 3
+// item->item_flags[0] = torso y rotation (for projectile y angle starting point)
+
 #define DEMIGOD_ANIM_IDLE 0
-#define DEMIGOD_ANIM_NORMAL_DEATH 12
-#define DEMIGOD_ANIM_HAMMER_SLAM 23
-#define DEMIGOD_ANIM_WALK_RUN_DEATH 27
+#define DEMIGOD1_ANIM_HAMMER_SLAM 23
+#define DEMIGOD_HAMMER_MESH_INDEX 17 // NOTE: Not right (should be 16) but it work ...
+#define DEMIGOD_HAMMER_SHOCKWAVE_DAMAGE 3
+#define DEMIGOD1_ANIM_NORMAL_DEATH 5
+#define DEMIGOD1_ANIM_WALK_RUN_DEATH 13
+#define DEMIGOD2_ANIM_NORMAL_DEATH 12
+#define DEMIGOD2_ANIM_WALK_RUN_DEATH 16
+#define DEMIGOD3_ANIM_NORMAL_DEATH 8
+#define DEMIGOD3_ANIM_WALK_RUN_DEATH 19
 #define DEMIGOD_ATTACK_RANGE SQUARE(SECTOR(4))
 #define DEMIGOD_RUN_RANGE SQUARE(SECTOR(9))
 #define DEMIGOD_NO_ANGLE ANGLE(0)
@@ -49,7 +58,23 @@ enum DEMIGOD_STATE
 #define DEMIGOD_HAMMER_SHOCKWAVE_INNER_SIZE 256
 #define DEMIGOD_HAMMER_SHOCKWAVE_OUTER_SIZE 64
 #define DEMIGOD_HAMMER_SHOCKWAVE_SPEED 230
-#define DEMIGOD_HAMMER_SHOCKWAVE_COLOR RGB_MAKE(255, 255, 255) // White.
+#define DEMIGOD_HAMMER_SHOCKWAVE_COLOR RGB_MAKE(255, 255, 0) // White.
+
+static void SwitchToFloorMode(ITEM_INFO* item, CREATURE_INFO* creature)
+{
+	creature->LOT.step = 256;
+	creature->LOT.drop = -512;
+	creature->LOT.fly = 0;
+	creature->LOT.zone = BASIC_ZONE;
+}
+
+static void SwitchToFlyMode(ITEM_INFO* item, CREATURE_INFO* creature)
+{
+	creature->LOT.step = 20480;
+	creature->LOT.drop = -20480;
+	creature->LOT.fly = 16;
+	creature->LOT.zone = FLYER_ZONE;
+}
 
 void TriggerDemigodMissile(PHD_3DPOS* pos, short room_number, short type)
 {
@@ -193,7 +218,7 @@ void TriggerHammerSmoke(long x, long y, long z, long num)
 	}
 }
 
-void DoDemigodProjectiles(ITEM_INFO* item)
+void DoDemigodProjectiles(ITEM_INFO* item, short extra)
 {
 	PHD_3DPOS pos;
 	PHD_VECTOR pos1;
@@ -202,49 +227,60 @@ void DoDemigodProjectiles(ITEM_INFO* item)
 
 	switch (item->object_number)
 	{
-	case DEMIGOD1:
+	case DEMIGOD2: // Only 2 and 3 can shoot.
 	case DEMIGOD3:
-		pos1.x = -544;
-		pos1.y = 96;
-		pos1.z = 0;
-		GetJointAbsPosition(item, &pos1, 16);
-		pos2.x = -900;
-		pos2.y = 96;
-		pos2.z = 0;
-		GetJointAbsPosition(item, &pos2, 16);
-		pos.z_pos = pos1.z;
-		pos.y_pos = pos1.y;
-		pos.x_pos = pos1.x;
-		phd_GetVectorAngles(pos2.x - pos1.x, pos2.y - pos1.y, pos2.z - pos1.z, angles);
-		pos.x_rot = angles[1];
-		pos.y_rot = angles[0];
-
-		if (item->object_number == DEMIGOD3)
-			TriggerDemigodMissile(&pos, item->room_number, BP_Demigod3);
-		else
-			TriggerDemigodMissile(&pos, item->room_number, BP_Demigod1);
-		break;
-	case DEMIGOD2:
-		pos1.x = 0;
-		pos1.y = 0;
-		pos1.z = 192;
-		pos2.x = 0;
-		pos2.y = 0;
-		pos2.z = 384;
-		GetJointAbsPosition(item, &pos1, GlobalCounter & 1 ? 18 : 17);
-		GetJointAbsPosition(item, &pos2, GlobalCounter & 1 ? 18 : 17);
-		pos.z_pos = pos1.z;
-		pos.y_pos = pos1.y;
-		pos.x_pos = pos1.x;
-		phd_GetVectorAngles(pos2.x - pos1.x, pos2.y - pos1.y, pos2.z - pos1.z, angles);
-		pos.x_rot = angles[1];
-		pos.y_rot = angles[0];
-		TriggerDemigodMissile(&pos, item->room_number, BP_Demigod2);
+		switch (extra)
+		{
+		case 0:
+			pos1.x = -544;
+			pos1.y = 96;
+			pos1.z = 0;
+			GetJointAbsPosition(item, &pos1, 16);
+			pos2.x = -900;
+			pos2.y = 96;
+			pos2.z = 0;
+			GetJointAbsPosition(item, &pos2, 16);
+			pos.z_pos = pos1.z;
+			pos.y_pos = pos1.y;
+			pos.x_pos = pos1.x;
+			phd_GetVectorAngles(pos2.x - pos1.x, pos2.y - pos1.y, pos2.z - pos1.z, angles);
+			pos.x_rot = angles[1];
+			pos.y_rot = angles[0];
+			// NOTE: Include the torso rotation to avoid the projectile to targeting correctly (also random between left or right to avoid lara being safe near triangle wall).
+			if (GetRandomControl() & 1)
+				pos.y_rot += (short)item->item_flags[0];
+			else
+				pos.y_rot -= (short)item->item_flags[0];
+			TriggerDemigodMissile(&pos, item->room_number, BP_Demigod2);
+			break;
+		case 1:
+			pos1.x = 0;
+			pos1.y = 0;
+			pos1.z = 192;
+			pos2.x = 0;
+			pos2.y = 0;
+			pos2.z = 384;
+			GetJointAbsPosition(item, &pos1, (GetRandomControl() & 1) ? 18 : 17);
+			GetJointAbsPosition(item, &pos2, (GetRandomControl() & 1) ? 18 : 17);
+			pos.x_pos = pos1.x;
+			pos.y_pos = pos1.y;
+			pos.z_pos = pos1.z;
+			phd_GetVectorAngles(pos2.x - pos1.x, pos2.y - pos1.y, pos2.z - pos1.z, angles);
+			pos.x_rot = angles[1];
+			pos.y_rot = angles[0];
+			if (GetRandomControl() & 1)
+				pos.y_rot += (short)item->item_flags[0];
+			else
+				pos.y_rot -= (short)item->item_flags[0];
+			TriggerDemigodMissile(&pos, item->room_number, BP_Demigod2);
+			SoundEffect(SFX_DEMI_TUT_PLASMA_SPRAY, &item->pos, SFX_ALWAYS);
+			break;
+		}
 		break;
 	}
 }
 
-void DoDemigodHammerSlam(ITEM_INFO* item)
+void DoDemigodHammerSlam(ITEM_INFO* item, short extra)
 {
 	PHD_VECTOR pos;
 	pos.x = 80;
@@ -259,7 +295,7 @@ void DoDemigodHammerSlam(ITEM_INFO* item)
 		pos.y -= click;
 	else
 		pos.y = h - click;
-	TriggerShockwave(&pos, DEMIGOD_HAMMER_SHOCKWAVE_LIFE, DEMIGOD_HAMMER_SHOCKWAVE_INNER_SIZE, DEMIGOD_HAMMER_SHOCKWAVE_OUTER_SIZE, ANGLE(0), SW_DAMAGE_LARA, DEMIGOD_HAMMER_SHOCKWAVE_SPEED, DEMIGOD_HAMMER_SHOCKWAVE_COLOR);
+	TriggerShockwave(&pos, DEMIGOD_HAMMER_SHOCKWAVE_LIFE, DEMIGOD_HAMMER_SHOCKWAVE_INNER_SIZE, DEMIGOD_HAMMER_SHOCKWAVE_OUTER_SIZE, ANGLE(0), SW_DAMAGE_LARA, DEMIGOD_HAMMER_SHOCKWAVE_SPEED, DEMIGOD_HAMMER_SHOCKWAVE_DAMAGE, DEMIGOD_HAMMER_SHOCKWAVE_COLOR);
 	TriggerHammerSmoke(pos.x, pos.y + click, pos.z, 8);
 	camera.bounce = -128;
 	if (lara_item->current_anim_state >= AS_CLIMBSTNC && (lara_item->current_anim_state <= AS_CLIMBDOWN || lara_item->current_anim_state == AS_HANG))
@@ -275,6 +311,16 @@ void DoDemigodHammerSlam(ITEM_INFO* item)
 		lara_item->speed = 2;
 		lara_item->fallspeed = 1;
 	}
+}
+
+static bool IsTargetUnderwater(CREATURE_INFO* creature)
+{
+	if (creature == NULL || creature->enemy == NULL)
+		return false;
+	auto* enemy = creature->enemy;
+	short room_number = enemy->room_number;
+	GetFloor(enemy->pos.x_pos, enemy->pos.y_pos, enemy->pos.z_pos, &room_number);
+	return room[room_number].flags & ROOM_UNDERWATER;
 }
 
 void Demigod1Control(short item_number)
@@ -300,9 +346,9 @@ void Demigod1Control(short item_number)
 		if (item->current_anim_state != DMGOD_STATE_DEATH && item->current_anim_state != DMGOD_STATE_WALK_RUN_DEATH)
 		{
 			if (item->current_anim_state == DMGOD_STATE_WALK || item->current_anim_state == DMGOD_STATE_RUN)
-				SetAnimation(item, DEMIGOD_ANIM_WALK_RUN_DEATH, DMGOD_STATE_WALK_RUN_DEATH);
+				SetAnimation(item, DEMIGOD1_ANIM_WALK_RUN_DEATH, DMGOD_STATE_WALK_RUN_DEATH);
 			else
-				SetAnimation(item, DEMIGOD_ANIM_NORMAL_DEATH, DMGOD_STATE_DEATH);
+				SetAnimation(item, DEMIGOD1_ANIM_NORMAL_DEATH, DMGOD_STATE_DEATH);
 		}
 	}
 	else
@@ -392,8 +438,8 @@ void Demigod1Control(short item_number)
 	}
 
 	CreatureTilt(item, 0);
-	CreatureJoint(item, 0, torso_y);
-	CreatureJoint(item, 1, torso_x);
+	CreatureJoint(item, 0, torso_x);
+	CreatureJoint(item, 1, torso_y);
 	CreatureJoint(item, 2, head_y);
 	CreatureJoint(item, 3, head_x);
 	CreatureAnimation(item_number, angle, 0);
@@ -416,24 +462,30 @@ void Demigod2Control(short item_number)
 	short head_y = 0;
 	short torso_x = 0;
 	short torso_y = 0;
-	short tilt = 0;
 
 	if (item->hit_points <= 0)
 	{
 		if (item->current_anim_state != DMGOD_STATE_DEATH && item->current_anim_state != DMGOD_STATE_WALK_RUN_DEATH)
 		{
 			if (item->current_anim_state == DMGOD_STATE_WALK || item->current_anim_state == DMGOD_STATE_RUN)
-				SetAnimation(item, DEMIGOD_ANIM_WALK_RUN_DEATH, DMGOD_STATE_WALK_RUN_DEATH);
+				SetAnimation(item, DEMIGOD2_ANIM_WALK_RUN_DEATH, DMGOD_STATE_WALK_RUN_DEATH);
 			else
-				SetAnimation(item, DEMIGOD_ANIM_NORMAL_DEATH, DMGOD_STATE_DEATH);
+				SetAnimation(item, DEMIGOD2_ANIM_NORMAL_DEATH, DMGOD_STATE_DEATH);
 		}
 	}
 	else
 	{
 		if (item->ai_bits != 0)
 			GetAITarget(god);
+
 		AI_INFO info;
+		SwitchToFloorMode(item, god);
 		CreatureAIInfo(item, &info);
+		if (info.zone_number != info.enemy_zone && !IsTargetUnderwater(god) && item->current_anim_state == DMGOD_STATE_FLY)
+		{
+			SwitchToFlyMode(item, god);
+			CreatureAIInfo(item, &info);
+		}
 		GetCreatureMood(item, &info, TRUE);
 		CreatureMood(item, &info, TRUE);
 		angle = CreatureTurn(item, god->maximum_turn);
@@ -446,382 +498,250 @@ void Demigod2Control(short item_number)
 			{
 				head_y = info.angle;
 				head_x = info.x_angle;
+				item->item_flags[0] = 0;
 			}
-
-			if (info.distance < DEMIGOD_ATTACK_RANGE && info.zone_number == info.enemy_zone)
-			{
-				if (info.bite || (lara_item->current_anim_state >= AS_CLIMBSTNC && (lara_item->current_anim_state <= AS_CLIMBDOWN || lara_item->current_anim_state == AS_HANG)))
-				{
-					item->goal_anim_state = DMGOD_STATE_AIM_HAMMER;
-					break;
-				}
-			}
-
-			item->goal_anim_state = DMGOD_STATE_WALK;
+			if (Targetable(item, &info))
+				item->goal_anim_state = DMGOD_STATE_AIM;
+			else if (info.zone_number != info.enemy_zone && !IsTargetUnderwater(god))
+				item->goal_anim_state = DMGOD_STATE_IDLE_TO_FLY;
+			else
+				item->goal_anim_state = DMGOD_STATE_WALK;
 			break;
-
 		case DMGOD_STATE_WALK:
 			god->maximum_turn = DEMIGOD_WALK_RUN_ANGLE;
-			tilt = angle / 2;
 			if (info.ahead)
 			{
 				head_y = info.angle;
 				head_x = info.x_angle;
+				item->item_flags[0] = 0;
 			}
-
-			if (info.distance < DEMIGOD_ATTACK_RANGE && info.zone_number == info.enemy_zone)
+			if (Targetable(item, &info) || (info.zone_number != info.enemy_zone && !IsTargetUnderwater(god)))
 				item->goal_anim_state = DMGOD_STATE_IDLE;
 			else if (info.distance > DEMIGOD_RUN_RANGE)
 				item->goal_anim_state = DMGOD_STATE_RUN;
-
 			break;
 
 		case DMGOD_STATE_RUN:
 			god->maximum_turn = DEMIGOD_WALK_RUN_ANGLE;
-			tilt = angle / 2;
 			if (info.ahead)
 			{
 				head_y = info.angle;
 				head_x = info.x_angle;
+				item->item_flags[0] = 0;
 			}
-			if (info.distance < DEMIGOD_RUN_RANGE)
+			if (Targetable(item, &info) || (info.zone_number != info.enemy_zone && !IsTargetUnderwater(god)))
 				item->goal_anim_state = DMGOD_STATE_IDLE;
+			else if (info.distance < DEMIGOD_RUN_RANGE)
+				item->goal_anim_state = DMGOD_STATE_WALK;
 			break;
-		case DMGOD_STATE_AIM_HAMMER:
+		case DMGOD_STATE_AIM:
 			god->maximum_turn = DEMIGOD_NO_ANGLE;
 			if (info.ahead)
 			{
-				head_y = info.angle;
-				head_x = info.x_angle;
-				torso_y = info.angle / 2;
-				torso_x = info.x_angle / 2;
+				head_y = info.angle / 2;
+				head_x = info.x_angle / 2;
+				torso_y = info.angle;
+				torso_x = info.x_angle;
+				item->item_flags[0] = torso_y;
 			}
-
-			if (info.distance < DEMIGOD_ATTACK_RANGE && (info.bite || ((lara_item->current_anim_state >= AS_CLIMBSTNC && (lara_item->current_anim_state <= AS_CLIMBDOWN || lara_item->current_anim_state == AS_HANG)))))
-				item->goal_anim_state = DMGOD_STATE_HAMMER_SLAM;
-			else
-				item->goal_anim_state = DMGOD_STATE_IDLE;
-
-			break;
-		case DMGOD_STATE_HAMMER_SLAM:
-			god->maximum_turn = DEMIGOD_NO_ANGLE;
-			if (info.ahead)
-			{
-				head_y = info.angle;
-				head_x = info.x_angle;
-				torso_y = info.angle / 2;
-				torso_x = info.x_angle / 2;
-			}
-			break;
-		}
-	}
-
-	CreatureTilt(item, tilt);
-	CreatureJoint(item, 0, torso_y);
-	CreatureJoint(item, 1, torso_x);
-	CreatureJoint(item, 2, head_y);
-	CreatureJoint(item, 3, head_x);
-	CreatureAnimation(item_number, angle, tilt);
-}
-
-void Demigod3Control(short item_number)
-{
-	ITEM_INFO* item;
-	ITEM_INFO* item2;
-	CREATURE_INFO* god;
-	FLOOR_INFO* floor;
-	AI_INFO info;
-	PHD_VECTOR pos;
-	long h;
-	short objnum, angle, torso_x, torso_y, torso_z, head, room_number;
-
-	item = &items[item_number];
-	objnum = item->item_flags[0];
-	if (objnum)
-	{
-		item2 = &items[objnum];
-		if (item2->status == ITEM_ACTIVE && item2->activated)
-		{
-			item->hit_points = objects[item->object_number].hit_points;
-			return;
-		}
-	}
-
-	if (!CreatureActive(item_number))
-		return;
-
-	god = GetCreatureInfo(item);
-	objnum = item->object_number;
-	angle = 0;
-	head = 0;
-	torso_x = 0;
-	torso_y = 0;
-	torso_z = 0;
-
-	if (item->hit_points <= 0)
-	{
-		item->hit_points = 0;
-
-		if (item->current_anim_state != DMGOD_STATE_DEATH && item->current_anim_state != DMGOD_STATE_WALK_RUN_DEATH)
-		{
-			if (item->current_anim_state == DMGOD_STATE_WALK || item->current_anim_state == DMGOD_STATE_RUN)
-				SetAnimation(item, DEMIGOD_ANIM_WALK_RUN_DEATH, DMGOD_STATE_WALK_RUN_DEATH);
-			else
-				SetAnimation(item, DEMIGOD_ANIM_NORMAL_DEATH, DMGOD_STATE_DEATH);
-		}
-	}
-	else
-	{
-		if (item->ai_bits != 0)
-			GetAITarget(god);
-		CreatureAIInfo(item, &info);
-		GetCreatureMood(item, &info, TRUE);
-		CreatureMood(item, &info, TRUE);
-		angle = CreatureTurn(item, god->maximum_turn);
-
-		switch (item->current_anim_state)
-		{
-		case DMGOD_STATE_IDLE:
-			god->maximum_turn = ANGLE(0);
-			if (info.ahead)
-				torso_x = -info.x_angle;
-
-			if (objnum == DEMIGOD1)
-			{
-				if (info.distance < ((0x900000 / 1024) / 1024))
-				{
-					if (info.bite || ((lara_item->current_anim_state >= AS_CLIMBSTNC && lara_item->current_anim_state <= AS_CLIMBDOWN || lara_item->current_anim_state == AS_HANG) && !lara.location && lara_item->room_number > 114))
-					{
-						item->goal_anim_state = 13;
-						break;
-					}
-				}
-			}
-			else
-			{
-				if (Targetable(item, &info))
-				{
-					god->flags = 1;
-					if (objnum == DEMIGOD2)
-						item->goal_anim_state = 3;
-					else
-						item->goal_anim_state = 11;
-
-					break;
-				}
-
-				if (objnum == DEMIGOD3)
-				{
-					if (info.distance > 0x400000 && info.distance < 0x1900000)
-					{
-						if (!(GetRandomControl() & 3))
-						{
-							item->goal_anim_state = 9;
-							break;
-						}
-					}
-				}
-			}
-
-			if (info.distance > 0x900000 && objnum == DEMIGOD2)
-				item->goal_anim_state = 5;
-			else
-				item->goal_anim_state = 1;
-
-			break;
-
-		case 1:
-			god->maximum_turn = 1274;
-
-			if (info.distance < 0x400000)
-			{
-				item->goal_anim_state = 0;
-				break;
-			}
-
-			if (objnum == DEMIGOD1)
-			{
-				if (info.distance < DEMIGOD_RUN_RANGE)
-				{
-					item->goal_anim_state = 0;
-					break;
-				}
-			}
-			else if (Targetable(item, &info))
-			{
-				item->goal_anim_state = 0;
-				break;
-			}
-
-			if (info.distance > 0x900000)
-			{
-				if (objnum == DEMIGOD2)
-					item->goal_anim_state = 5;
-				else
-					item->goal_anim_state = 2;
-			}
-
-			break;
-
-		case 2:
-			god->maximum_turn = 1274;
-
-			if (info.distance < 0x400000)
-			{
-				item->goal_anim_state = 0;
-				break;
-			}
-
-			if (objnum == DEMIGOD1)
-			{
-				if (info.distance < 0x900000)
-				{
-					item->goal_anim_state = 0;
-					break;
-				}
-			}
-			else
-			{
-				if (Targetable(item, &info) || objnum == DEMIGOD3 && info.distance > 0x400000)
-				{
-					item->goal_anim_state = 0;
-					break;
-				}
-
-				if (info.distance < 0x900000)
-					item->goal_anim_state = 1;
-			}
-
-			break;
-
-		case 3:
-			if (info.ahead)
-				torso_x = -info.x_angle;
-
-			god->maximum_turn = 0;
-			if (item->anim_number == objects[objnum].anim_index + 6)
-			{
-				if (abs(info.angle) < 1274)
-					item->pos.y_rot += info.angle;
-				else if (info.angle < 0)
-					item->pos.y_rot -= 1274;
-				else
-					item->pos.y_rot += 1274;
-			}
-
-			if (Targetable(item, &info) || god->flags)
-				item->goal_anim_state = 4;
-			else
-				item->goal_anim_state = 0;
-
-			god->flags = 0;
-
-			break;
-
-		case 4:
-		case 12:
-			if (!Targetable(item, &info) || info.distance < 0x1900000 || !(GetRandomControl() & 0xFF))
-				item->goal_anim_state = 0;
-			break;
-
-		case 6:
-			god->maximum_turn = 1274;
 			if (Targetable(item, &info))
-				item->goal_anim_state = 7;
-
+				item->goal_anim_state = DMGOD_STATE_SHOOT;
+			else
+				item->goal_anim_state = DMGOD_STATE_IDLE;
 			break;
-
-		case 9:
-			god->maximum_turn = 1274;
-			if (!Targetable(item, &info) && info.distance < 0x1900000)
-				item->goal_anim_state = 10;
-
-			break;
-
-		case 10:
-			god->maximum_turn = 1274;
-			if (!Targetable(item, &info) || info.distance < 0x1900000 || !(GetRandomControl() & 0xFF))
-				item->goal_anim_state = 0;
-
-			break;
-
-		case 11:
-			torso_y = info.angle;
-			torso_z = 0;
-
+		case DMGOD_STATE_SHOOT:
+			god->maximum_turn = DEMIGOD_NO_ANGLE;
 			if (info.ahead)
-				torso_x = -info.x_angle;
-
-			god->maximum_turn = 0;
-
-			if (item->anim_number == objects[objnum].anim_index + 6)
 			{
-				if (abs(info.angle) < 1274)
-					item->pos.y_rot += info.angle;
-				else if (info.angle < 0)
-					item->pos.y_rot -= 1274;
-				else
-					item->pos.y_rot += 1274;
+				head_y = info.angle / 2;
+				head_x = info.x_angle / 2;
+				torso_y = info.angle;
+				torso_x = info.x_angle;
+				item->item_flags[0] = torso_y;
 			}
-
-			if (Targetable(item, &info) || god->flags)
-				item->goal_anim_state = 12;
-			else
-				item->goal_anim_state = 0;
-
-			god->flags = 0;
 			break;
-
-		case 13:
-			god->maximum_turn = ANGLE(0);
-			if (info.distance < 0x900000 && (info.bite || (lara_item->current_anim_state >= AS_CLIMBSTNC && (lara_item->current_anim_state <= AS_CLIMBDOWN || lara_item->current_anim_state == AS_HANG))))
-				item->goal_anim_state = 14;
-			else
-				item->goal_anim_state = 0;
-
+		case DMGOD_STATE_FLY_TO_IDLE:
+			god->maximum_turn = DEMIGOD_NO_ANGLE; // Reset angle to avoid problem.
+			item->pos.x_rot = 0;
+			item->pos.z_rot = 0;
 			break;
-
-		case 14:
-
-			if (item->frame_number - anims[item->anim_number].frame_base == 26)
-			{
-				pos.x = 80;
-				pos.y = -8;
-				pos.z = -40;
-				GetJointAbsPosition(item, &pos, 17);
-				room_number = item->room_number;
-				floor = GetFloor(pos.x, pos.y, pos.z, &room_number);
-				h = GetHeight(floor, pos.x, pos.y, pos.z);
-				if (h == NO_HEIGHT)
-					pos.y -= 128;
-				else
-					pos.y = h - 128;
-				TriggerShockwave(&pos, 0x580018, 256, 0x20808080, 0x20000);
-				TriggerHammerSmoke(pos.x, pos.y + 128, pos.z, 8);
-				camera.bounce = -128;
-				if (lara_item->current_anim_state >= AS_CLIMBSTNC && (lara_item->current_anim_state <= AS_CLIMBDOWN || lara_item->current_anim_state == AS_HANG))
-				{
-					SetAnimation(lara_item, ANIM_FALLDOWN, AS_FORWARDJUMP);
-					lara.gun_status = LG_NO_ARMS;
-					lara_item->pos.x_pos += -50 * phd_sin(lara_item->pos.y_rot) >> W2V_SHIFT;
-					lara.torso_x_rot = 0;
-					lara.torso_y_rot = 0;
-					lara.head_x_rot = 0;
-					lara.head_y_rot = 0;
-					lara_item->gravity_status = true;
-					lara_item->speed = 2;
-					lara_item->fallspeed = 1;
-				}
-			}
-
+		case DMGOD_STATE_FLY:
+			god->maximum_turn = DEMIGOD_WALK_RUN_ANGLE;
+			if (god->LOT.fly == 0)
+				item->goal_anim_state = DMGOD_STATE_FLY_TO_IDLE;
 			break;
 		}
 	}
 
 	CreatureTilt(item, 0);
-	CreatureJoint(item, 0, torso_z);
-	CreatureJoint(item, 1, torso_x);
-	CreatureJoint(item, 2, torso_y);
-	CreatureJoint(item, 3, head);
+	CreatureJoint(item, 0, torso_x);
+	CreatureJoint(item, 1, torso_y);
+	CreatureJoint(item, 2, head_y);
+	CreatureJoint(item, 3, head_x);
+	CreatureAnimation(item_number, angle, 0);
+}
+
+void Demigod3Control(short item_number)
+{
+	if (!CreatureActive(item_number))
+		return;
+
+	auto* item = &items[item_number];
+	auto* god = GetCreatureInfo(item);
+	if (god == NULL)
+		return;
+	auto* obj = &objects[item->object_number];
+	if (item->ocb & 1) // Immortal state.
+		item->hit_points = obj->hit_points;
+	short angle = 0;
+	short head_x = 0;
+	short head_y = 0;
+	short torso_x = 0;
+	short torso_y = 0;
+
+	if (item->hit_points <= 0)
+	{
+		if (item->current_anim_state != DMGOD_STATE_DEATH && item->current_anim_state != DMGOD_STATE_WALK_RUN_DEATH)
+		{
+			if (item->current_anim_state == DMGOD_STATE_WALK || item->current_anim_state == DMGOD_STATE_RUN)
+				SetAnimation(item, DEMIGOD3_ANIM_WALK_RUN_DEATH, DMGOD_STATE_WALK_RUN_DEATH);
+			else
+				SetAnimation(item, DEMIGOD3_ANIM_NORMAL_DEATH, DMGOD_STATE_DEATH);
+		}
+	}
+	else
+	{
+		if (item->ai_bits != 0)
+			GetAITarget(god);
+
+		AI_INFO info;
+		SwitchToFloorMode(item, god);
+		CreatureAIInfo(item, &info);
+		if (info.zone_number != info.enemy_zone && !IsTargetUnderwater(god) && item->current_anim_state == DMGOD_STATE_FLY)
+		{
+			SwitchToFlyMode(item, god);
+			CreatureAIInfo(item, &info);
+		}
+		GetCreatureMood(item, &info, TRUE);
+		CreatureMood(item, &info, TRUE);
+		angle = CreatureTurn(item, god->maximum_turn);
+
+		switch (item->current_anim_state)
+		{
+		case DMGOD_STATE_IDLE:
+			god->maximum_turn = DEMIGOD_NO_ANGLE;
+			item->item_flags[0] = 0;
+			if (info.ahead)
+			{
+				head_y = info.angle;
+				head_x = info.x_angle;
+			}
+			if (info.zone_number != info.enemy_zone && !IsTargetUnderwater(god))
+				item->goal_anim_state = DMGOD_STATE_IDLE_TO_FLY;
+			else if (!(GetRandomControl() & 3))
+				item->goal_anim_state = DMGOD_STATE_IDLE_TO_SHOWER;
+			else if (Targetable(item, &info))
+				item->goal_anim_state = DMGOD_STATE_AIM2;
+			else
+				item->goal_anim_state = DMGOD_STATE_WALK;
+			break;
+		case DMGOD_STATE_WALK:
+			god->maximum_turn = DEMIGOD_WALK_RUN_ANGLE;
+			item->item_flags[0] = 0;
+			if (info.ahead)
+			{
+				head_y = info.angle;
+				head_x = info.x_angle;
+			}
+			if (info.zone_number != info.enemy_zone && !IsTargetUnderwater(god))
+				item->goal_anim_state = DMGOD_STATE_IDLE;
+			else if (Targetable(item, &info))
+				item->goal_anim_state = DMGOD_STATE_IDLE;
+			else if (info.distance > DEMIGOD_RUN_RANGE)
+				item->goal_anim_state = DMGOD_STATE_RUN;
+			break;
+
+		case DMGOD_STATE_RUN:
+			god->maximum_turn = DEMIGOD_WALK_RUN_ANGLE;
+			item->item_flags[0] = 0;
+			if (info.ahead)
+			{
+				head_y = info.angle;
+				head_x = info.x_angle;
+			}
+			if (info.zone_number != info.enemy_zone && !IsTargetUnderwater(god))
+				item->goal_anim_state = DMGOD_STATE_IDLE;
+			else if (Targetable(item, &info))
+				item->goal_anim_state = DMGOD_STATE_IDLE;
+			else if (info.distance < DEMIGOD_RUN_RANGE)
+				item->goal_anim_state = DMGOD_STATE_WALK;
+			break;
+		case DMGOD_STATE_AIM:
+			god->maximum_turn = DEMIGOD_NO_ANGLE;
+			item->item_flags[0] = torso_y;
+			if (info.ahead)
+			{
+				head_y = info.angle / 2;
+				head_x = info.x_angle / 2;
+				torso_y = info.angle;
+				torso_x = info.x_angle;
+			}
+			if (Targetable(item, &info))
+				item->goal_anim_state = DMGOD_STATE_SHOOT;
+			else
+				item->goal_anim_state = DMGOD_STATE_IDLE;
+			break;
+		case DMGOD_STATE_AIM2:
+			god->maximum_turn = DEMIGOD_NO_ANGLE;
+			item->item_flags[0] = torso_y;
+			if (info.ahead)
+			{
+				head_y = info.angle / 2;
+				head_x = info.x_angle / 2;
+			}
+			if (Targetable(item, &info))
+				item->goal_anim_state = DMGOD_STATE_SHOOT2;
+			else
+				item->goal_anim_state = DMGOD_STATE_IDLE;
+			break;
+		case DMGOD_STATE_SHOOT:
+		case DMGOD_STATE_SHOOT2:
+			god->maximum_turn = DEMIGOD_NO_ANGLE;
+			item->item_flags[0] = torso_y;
+			if (info.ahead)
+			{
+				head_y = info.angle / 2;
+				head_x = info.x_angle / 2;
+			}
+			break;
+		case DMGOD_STATE_FLY_TO_IDLE:
+			god->maximum_turn = DEMIGOD_NO_ANGLE; // Reset angle to avoid problem.
+			item->pos.x_rot = 0;
+			item->pos.z_rot = 0;
+			break;
+		case DMGOD_STATE_FLY:
+			god->maximum_turn = DEMIGOD_WALK_RUN_ANGLE;
+			if (god->LOT.fly == 0)
+				item->goal_anim_state = DMGOD_STATE_FLY_TO_IDLE;
+			break;
+		case DMGOD_STATE_IDLE_TO_SHOWER:
+			god->maximum_turn = DEMIGOD_NO_ANGLE;
+			if (!Targetable(item, &info) && info.distance < DEMIGOD_RUN_RANGE)
+				item->goal_anim_state = DMGOD_STATE_SHOWER;
+			break;
+		case DMGOD_STATE_SHOWER:
+			god->maximum_turn = DEMIGOD_NO_ANGLE;
+			item->item_flags[0] = info.angle;
+			if (!Targetable(item, &info) || info.distance > DEMIGOD_RUN_RANGE || !(GetRandomControl() & 0xFF))
+				item->goal_anim_state = DMGOD_STATE_IDLE;
+			break;
+		}
+	}
+
+	CreatureTilt(item, 0);
+	CreatureJoint(item, 0, torso_x);
+	CreatureJoint(item, 1, torso_y);
+	CreatureJoint(item, 2, head_y);
+	CreatureJoint(item, 3, head_x);
 	CreatureAnimation(item_number, angle, 0);
 }

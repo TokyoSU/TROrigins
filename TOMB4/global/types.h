@@ -2225,6 +2225,7 @@ struct SHOCKWAVE_STRUCT
 	uchar b;
 	uchar life;
 	short Speed;
+	short Damage;
 	short Temp;
 };
 

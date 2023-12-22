@@ -32,6 +32,7 @@
 #define NO_LOS 999
 #define NO_ITEM -1
 #define NO_ROOM 255
+#define NO_FOOTPRINT -1
 #define MESHBITS_ALL 0xFFFFFFFF
 #define MESHBITS_NONE 0
 #define MESHBITS(meshIdx) (1 << meshIdx)
@@ -41,6 +42,7 @@
 #define WALL_SHIFT 10
 #define W2V_SHIFT 14
 #define MAX_SAMPLES 370
+#define MAX_FOOTPRINTS 64
 #define MAX_DYNAMICS 64
 #define MAX_SPLASHES 32
 #define MAX_BUCKETS 32
@@ -1785,11 +1787,12 @@ struct WATERTAB
 
 struct FOOTPRINT
 {
+	bool On;
 	long x;
 	long y;
 	long z;
 	short YRot;
-	short Active;
+	short Life;
 };
 
 struct DISPLAYPU

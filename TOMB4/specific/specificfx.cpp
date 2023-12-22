@@ -2669,11 +2669,6 @@ void S_DrawLaser(ITEM_INFO* item, GAME_VECTOR* src, GAME_VECTOR* target, uchar c
 			v[0].rhw = f_mpersp / v[0].sz * f_moneopersp;
 			v[0].color = RGBA(r, g, b, a);
 			v[0].specular = RGBA(0, 0, 0, 255);
-
-			r >>= 1;
-			g >>= 1;
-			b >>= 1;
-
 			v[1].sx = (float)x1;
 			v[1].sy = (float)y1;
 			v[1].sz = (float)z1;
@@ -2681,7 +2676,7 @@ void S_DrawLaser(ITEM_INFO* item, GAME_VECTOR* src, GAME_VECTOR* target, uchar c
 			v[1].color = RGBA(r, g, b, a);
 			v[1].specular = RGBA(0, 0, 0, 255);
 
-			AddLineSorted(&v[0], &v[1], 6);
+			AddLineSorted(&v[0], &v[1], DT_DRAW_NOZ_NOAL_TEX_LINE);
 		}
 
 		x += dx;
@@ -2789,7 +2784,7 @@ void DrawDrips()
 			v[1].color = RGBA(r, g, b, 255);
 			v[1].specular = RGBA(0, 0, 0, 255);
 
-			AddLineSorted(&v[0], &v[1], 6);
+			AddLineSorted(&v[0], &v[1], DT_DRAW_NOZ_NOAL_TEX_LINE);
 		}
 	}
 
@@ -2896,7 +2891,7 @@ void DrawBubbles()
 		v[1].specular = 0xFF000000;
 		v[2].specular = 0xFF000000;
 		v[3].specular = 0xFF000000;
-		tex.drawtype = 2;
+		tex.drawtype = DT_DRAW_NOZ_NOATSP_TEX_TRI;
 		tex.flag = 0;
 		tex.tpage = sprite->tpage;
 		tex.u1 = sprite->x1;
@@ -2907,7 +2902,7 @@ void DrawBubbles()
 		tex.u3 = sprite->x2;
 		tex.u4 = sprite->x1;
 		tex.v4 = sprite->y2;
-		AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+		AddQuadSorted(v, 0, 1, 2, 3, &tex, FALSE);
 		bubble++;
 	}
 
@@ -2924,11 +2919,10 @@ void DrawShockwaves()
 	long* XY;
 	long* Z;
 	long* offsets;
-	long v, x1, y1, x2, y2, x3, y3, x4, y4, r, g, b, c;
+	long v, x1, y1, x2, y2, x3, y3, x4, y4, r, g, b;
 	short rad;
 
 	vtx = MyVertexBuffer;
-
 	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 8];
 	offsets = (long*)&tsv_buffer[1024];
 
@@ -3026,17 +3020,15 @@ void DrawShockwaves()
 				b = (b * wave->life) >> 3;
 			}
 
-			c = RGBA(b, g, r, 0xFF);
-			vtx[0].color = c;
-			vtx[1].color = c;
-			vtx[2].color = c;
-			vtx[3].color = c;
-			vtx[0].specular = 0xFF000000;
-			vtx[1].specular = 0xFF000000;
-			vtx[2].specular = 0xFF000000;
-			vtx[3].specular = 0xFF000000;
-
-			tex.drawtype = 2;
+			vtx[0].color = RGBA(r, g, b, 255);
+			vtx[1].color = RGBA(r, g, b, 255);
+			vtx[2].color = RGBA(r, g, b, 255);
+			vtx[3].color = RGBA(r, g, b, 255);
+			vtx[0].specular = RGBA(0, 0, 0, 255);
+			vtx[1].specular = RGBA(0, 0, 0, 255);
+			vtx[2].specular = RGBA(0, 0, 0, 255);
+			vtx[3].specular = RGBA(0, 0, 0, 255);
+			tex.drawtype = DT_DRAW_NOZ_NOATSP_TEX_TRI;
 			tex.flag = 0;
 			tex.tpage = sprite->tpage;
 			tex.u1 = sprite->x1;
@@ -3047,7 +3039,7 @@ void DrawShockwaves()
 			tex.v3 = sprite->y1;
 			tex.u4 = sprite->x1;
 			tex.v4 = sprite->y1;
-			AddQuadSorted(vtx, 0, 1, 2, 3, &tex, 1);
+			AddQuadSorted(vtx, 0, 1, 2, 3, &tex, TRUE);
 
 			XY += 2;
 			Z++;
@@ -3153,23 +3145,23 @@ void DrawTrainFloorStrip(long x, long z, TEXTURESTRUCT* tex, long y_and_flags)
 			y4 = XY[17];
 
 			if (j < 7)
-				spec = (j + 1) * 0x101010;
+				spec = (j + 1) * RGB(16, 16, 16);
 			else if (j >= 33)
-				spec = (40 - j) * 0x101010;
+				spec = (40 - j) * RGB(16, 16, 16);
 			else
-				spec = 0x808080;
+				spec = RGB(128, 128, 128);
 
 			setXYZ4(v, x1, y1, z1, x2, y2, z2, x4, y4, z4, x3, y3, z3, clipflags);
-			spec = ((spec & 0xFF) - 1) << 25;
-			v[0].color = 0xFFFFFFFF;
-			v[1].color = 0xFFFFFFFF;
-			v[2].color = 0xFFFFFFFF;
-			v[3].color = 0xFFFFFFFF;
+			spec = ((spec & 255) - 1) << 25;
+			v[0].color = RGBA(255, 255, 255, 255);
+			v[1].color = RGBA(255, 255, 255, 255);
+			v[2].color = RGBA(255, 255, 255, 255);
+			v[3].color = RGBA(255, 255, 255, 255);
 			v[0].specular = spec;
 			v[1].specular = spec;
 			v[2].specular = spec;
 			v[3].specular = spec;
-			AddQuadSorted(v, 0, 1, 2, 3, tex, 0);
+			AddQuadSorted(v, 0, 1, 2, 3, tex, FALSE);
 		}
 
 		num += 20;
@@ -3285,7 +3277,7 @@ void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ri
 				if (b > 255)
 					b = 255;
 
-				c0 = RGBA(r, g, b, 0xFF);
+				c0 = RGBA(r, g, b, 255);
 
 				r = (splash->life - (splash->life >> 2)) << 1;
 				g = (splash->life - (splash->life >> 2)) << 1;
@@ -3300,16 +3292,15 @@ void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ri
 				if (b > 255)
 					b = 255;
 
-				c1 = RGBA(r, g, b, 0xFF);
-
+				c1 = RGBA(r, g, b, 255);
 				v[0].color = c0;
 				v[1].color = c0;
 				v[2].color = c1;
 				v[3].color = c1;
-				v[0].specular = 0xFF000000;
-				v[1].specular = 0xFF000000;
-				v[2].specular = 0xFF000000;
-				v[3].specular = 0xFF000000;
+				v[0].specular = RGBA(0, 0, 0, 255);
+				v[1].specular = RGBA(0, 0, 0, 255);
+				v[2].specular = RGBA(0, 0, 0, 255);
+				v[3].specular = RGBA(0, 0, 0, 255);
 				tex.drawtype = 2;
 				tex.flag = 0;
 				tex.tpage = sprite->tpage;
@@ -3321,7 +3312,7 @@ void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ri
 				tex.u3 = sprite->x2;
 				tex.u4 = sprite->x1;
 				tex.v4 = sprite->y2;
-				AddQuadSorted(v, 0, 1, 2, 3, &tex, 1);
+				AddQuadSorted(v, 0, 1, 2, 3, &tex, TRUE);
 			}
 		}
 	}
@@ -3453,23 +3444,20 @@ void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ri
 
 		if (r > 255)
 			r = 255;
-
 		if (g > 255)
 			g = 255;
-
 		if (b > 255)
 			b = 255;
 
-		c0 = RGBA(r, g, b, 0xFF);
-
+		c0 = RGBA(r, g, b, 255);
 		v[0].color = c0;
 		v[1].color = c0;
 		v[2].color = c0;
 		v[3].color = c0;
-		v[0].specular = 0xFF000000;
-		v[1].specular = 0xFF000000;
-		v[2].specular = 0xFF000000;
-		v[3].specular = 0xFF000000;
+		v[0].specular = RGBA(0, 0, 0, 255);
+		v[1].specular = RGBA(0, 0, 0, 255);
+		v[2].specular = RGBA(0, 0, 0, 255);
+		v[3].specular = RGBA(0, 0, 0, 255);
 		tex.drawtype = 2;
 		tex.flag = 0;
 		tex.tpage = sprite->tpage;
@@ -3481,20 +3469,17 @@ void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ri
 		tex.u3 = sprite->x2;
 		tex.u4 = sprite->x1;
 		tex.v4 = sprite->y2;
-		AddQuadSorted(v, 0, 1, 2, 3, &tex, 1);
+		AddQuadSorted(v, 0, 1, 2, 3, &tex, TRUE);
 	}
 }
 
 bool ClipLine(long& x1, long& y1, long z1, long& x2, long& y2, long z2, long xMin, long yMin, long w, long h)
 {
 	float clip;
-
 	if (z1 < 20 || z2 < 20)
 		return 0;
-
 	if (x1 < xMin && x2 < xMin || y1 < yMin && y2 < yMin)
 		return 0;
-
 	if (x1 > w && x2 > w || y1 > h && y2 > h)
 		return 0;
 
@@ -3581,14 +3566,12 @@ void S_DrawFireSparks(long size, long life)
 	for (int i = 0; i < 20; i++)
 	{
 		sptr = &fire_spark[i];
-
 		if (!sptr->On)
 			continue;
 
 		dx = sptr->x >> (2 - size);
 		dy = sptr->y >> (2 - size);
 		dz = sptr->z >> (2 - size);
-
 		if (dx < -0x5000 || dx > 0x5000 || dy < -0x5000 || dy > 0x5000 || dz < -0x5000 || dz > 0x5000)
 			continue;
 
@@ -3608,18 +3591,16 @@ void S_DrawFireSparks(long size, long life)
 			continue;
 
 		newSize = (((phd_persp * sptr->Size) << 2) / Z[0]) >> (2 - size);
-
 		if (newSize > (sptr->Size << 2))
 			newSize = (sptr->Size << 2);
 		else if (newSize < 4)
 			newSize = 4;
-
 		newSize >>= 1;
 
 		if (XY[0] + newSize < phd_winxmin || XY[0] - newSize >= phd_winxmax || XY[1] + newSize < phd_winymin || XY[1] - newSize >= phd_winymax)
 			continue;
 
-		if (sptr->flags & 0x10)
+		if (sptr->flags & 16)
 		{
 			ang = sptr->RotAng << 1;
 			s = rcossin_tbl[ang];
@@ -3666,15 +3647,14 @@ void S_DrawFireSparks(long size, long life)
 		g = (g * life) >> 8;
 		b = (b * life) >> 8;
 		col = RGBA(r, g, b, 0xFF);
-
 		v[0].color = col;
 		v[1].color = col;
 		v[2].color = col;
 		v[3].color = col;
-		v[0].specular = 0xFF000000;
-		v[1].specular = 0xFF000000;
-		v[2].specular = 0xFF000000;
-		v[3].specular = 0xFF000000;
+		v[0].specular = RGBA(0, 0, 0, 255);
+		v[1].specular = RGBA(0, 0, 0, 255);
+		v[2].specular = RGBA(0, 0, 0, 255);
+		v[3].specular = RGBA(0, 0, 0, 255);
 		tex.drawtype = 2;
 		tex.flag = 0;
 		tex.tpage = sprite->tpage;
@@ -3844,7 +3824,6 @@ void DrawBlood()
 	for (int i = 0; i < 32; i++)
 	{
 		bptr = &blood[i];
-
 		if (!bptr->On)
 			continue;
 
@@ -3918,7 +3897,7 @@ void DrawBlood()
 		tex.v3 = sprite->y2;
 		tex.u4 = sprite->x1;
 		tex.v4 = sprite->y2;
-		AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
+		AddQuadSorted(v, 0, 1, 2, 3, &tex, FALSE);
 	}
 
 	phd_PopMatrix();
@@ -4155,7 +4134,6 @@ void DoUwEffect()
 	for (int i = 0; i < 256; i++)
 	{
 		p = &uwdust[i];
-
 		if (!p->pos.x)
 			continue;
 
@@ -4177,7 +4155,6 @@ void DoUwEffect()
 		{
 			if (p->life > 16)
 				p->life = 16;
-
 			continue;
 		}
 
@@ -4185,7 +4162,6 @@ void DoUwEffect()
 			continue;
 
 		size = (phd_persp * (p->yvel >> 3)) / (Z[0] >> 4);
-
 		if (size < 1)
 			size = 6;
 		else if (size > 12)
@@ -4213,9 +4189,9 @@ void DoUwEffect()
 		v[0].color = col;
 		v[1].color = col;
 		v[2].color = col;
-		v[0].specular = 0xFF000000;
-		v[1].specular = 0xFF000000;
-		v[2].specular = 0xFF000000;
+		v[0].specular = RGBA(0, 0, 0, 255);
+		v[1].specular = RGBA(0, 0, 0, 255);
+		v[2].specular = RGBA(0, 0, 0, 255);
 		tex.drawtype = 2;
 		tex.flag = 0;
 		tex.tpage = sprite->tpage;
@@ -4225,7 +4201,7 @@ void DoUwEffect()
 		tex.v2 = sprite->y2;
 		tex.u3 = sprite->x1;
 		tex.v3 = sprite->y2;
-		AddTriSorted(v, 0, 1, 2, &tex, 0);
+		AddTriSorted(v, 0, 1, 2, &tex, FALSE);
 	}
 
 	phd_PopMatrix();
@@ -4423,10 +4399,10 @@ void DrawLightning()
 					v[1].color = c;
 					v[2].color = c;
 					v[3].color = c;
-					v[0].specular = 0xFF000000;
-					v[1].specular = 0xFF000000;
-					v[2].specular = 0xFF000000;
-					v[3].specular = 0xFF000000;
+					v[0].specular = RGBA(0, 0, 0, 255);
+					v[1].specular = RGBA(0, 0, 0, 255);
+					v[2].specular = RGBA(0, 0, 0, 255);
+					v[3].specular = RGBA(0, 0, 0, 255);
 					tex.drawtype = 2;
 					tex.flag = 0;
 					tex.tpage = sprite->tpage;

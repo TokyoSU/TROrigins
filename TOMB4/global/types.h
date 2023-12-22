@@ -149,6 +149,61 @@ enum bubble_projectile_types
 	BP_Crocgod
 };
 
+enum draw_types
+{
+	// Triangle.
+	// Texture.
+	// No alpha test and alpha blend.
+	// Depth test (only if ZBuffer enabled).
+	// Src/Dest blend alpha.
+	DT_DRAW_Z_NOALBL_TEX_TRI,
+	// Triangle.
+	// Texture.
+	// Alpha test + alpha blend.
+	// Src/Dest blend alpha.
+	DT_DRAW_NOZ_ALBL_TEX_TRI,
+	// Triangle.
+	// Texture.
+	// No alpha test.
+	// No depth test.
+	// No specular.
+	// Src/Dest one.
+	DT_DRAW_NOZ_NOATSP_TEX_TRI,
+	// Triangle.
+	// Texture.
+	// Alpha test.
+	// No depth test.
+	// Src/Dest alpha.
+	// Texture modulate.
+	DT_DRAW_NOZ_AL_MODULATE_TEX_TRI,
+	// Triangle.
+	// Texture.
+	// No depth.
+	DT_DRAW_NOZ_TEX_TRI,
+	// Triangle.
+	// Texture.
+	// Alpha test.
+	// No depth test.
+	// Src zero.
+	// Dest invcolor.
+	// Alpha modulate.
+	// Color modulate4x.
+	DT_DRAW_NOZ_ALZEROINV_MODULATE4_TEX_TRI,
+	// Line.
+	// Texture.
+	// No depth test.
+	// No alpha test.
+	// Src/Dest one.
+	DT_DRAW_NOZ_NOAL_TEX_LINE,
+	// Triangle.
+	// Texture.
+	// Depth.
+	// Alpha test.
+	// Src/Dest alpha.
+	// Alpha texture modulate.
+	DT_DRAW_Z_AL_SRCALPHA_MODULATE_TEX_TRI,
+};
+
 enum anim_commands
 {
 	ACMD_NULL,
@@ -873,7 +928,8 @@ struct LARA_INFO
 	short torso_z_rot;
 	LARA_ARM left_arm;
 	LARA_ARM right_arm;
-	ushort holster;
+	ushort holster_l;
+	ushort holster_r;
 	CREATURE_INFO* creature;
 	long CornerX;
 	long CornerZ;

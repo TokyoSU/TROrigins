@@ -20,7 +20,9 @@ static BITE_INFO guide_lighter = { 30, 80, 50, 15 };
 
 void InitialiseGuide(short item_number)
 {
-	ITEM_INFO* item = &items[item_number];
+	ITEM_INFO* item;
+
+	item = &items[item_number];
 	InitialiseCreature(item_number);
 	item->anim_number = objects[GUIDE].anim_index + 4;
 	item->frame_number = anims[item->anim_number].frame_base;
@@ -28,9 +30,7 @@ void InitialiseGuide(short item_number)
 	item->goal_anim_state = 1;
 
 	if (!objects[WRAITH1].loaded)
-	{
 		item->meshswap_meshbits = 0x40000;
-	}
 	else
 	{
 		item->meshswap_meshbits = 0;
@@ -122,6 +122,7 @@ void GuideControl(short item_number)
 			if (baddie_slots[i].item_num != NO_ITEM && baddie_slots[i].item_num != item_number)
 			{
 				candidate = &items[baddie_slots[i].item_num];
+
 				if (candidate->object_number != GUIDE && abs(candidate->pos.y_pos - item->pos.y_pos) <= 512)
 				{
 					x = candidate->pos.x_pos - item->pos.x_pos;
@@ -133,7 +134,7 @@ void GuideControl(short item_number)
 						dist = SQUARE(x) + SQUARE(z);
 
 					if (dist < bestdist && dist < 0x400000 &&
-						(abs(item->pos.y_pos - candidate->pos.y_pos) < 256 || iDistance < 0x400000 || candidate->object_number == DOG))
+						(abs(item->pos.y_pos - candidate->pos.y_pos) < 256 || iDistance < 0x400000 || candidate->object_number == FUCKED_UP_DOG))
 					{
 						target = candidate;
 						bestdist = dist;
@@ -144,6 +145,7 @@ void GuideControl(short item_number)
 	}
 
 	enemy = guide->enemy;
+
 	if (target)
 		guide->enemy = target;
 
@@ -620,7 +622,7 @@ void GuideControl(short item_number)
 				item->ai_bits = FOLLOW;
 				item->item_flags[3]++;
 			}
-			else if (item->ocb <= 999)
+			else if (item->trigger_flags <= 999)
 				item->goal_anim_state = 1;
 			else
 			{

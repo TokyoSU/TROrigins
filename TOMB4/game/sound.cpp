@@ -138,12 +138,14 @@ long SoundEffect(long sfx, PHD_3DPOS* pos, long flags)
 		}
 	}
 
-	if (!sound_active || (!(flags & SFX_ALWAYS) && (flags & SFX_WATER) != (room[camera.pos.room_number].flags & ROOM_UNDERWATER)) || sample_lut == NULL)
+	if (!sound_active || !(flags & SFX_ALWAYS) && (flags & SFX_WATER) != (room[camera.pos.room_number].flags & ROOM_UNDERWATER))
 		return 0;
 
 	lut = sample_lut[sfx];
+
 	if (lut == -1)
 	{
+		//empty func call here
 		sample_lut[sfx] = -2;
 		return 0;
 	}

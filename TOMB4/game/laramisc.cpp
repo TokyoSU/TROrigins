@@ -160,31 +160,25 @@ void InitialiseLaraAnims(ITEM_INFO* item)
 
 void LaraInitialiseMeshes()
 {
-	for (int i = 0; i < NUM_LARA_MESHES; i++)
+	for (int i = 0; i < 15; i++)
 	{
 		meshes[objects[LARA].mesh_index + i * 2] = meshes[objects[LARA_SKIN].mesh_index + i * 2];
 		lara.mesh_ptrs[i] = meshes[objects[LARA].mesh_index + i * 2];
 	}
 
-	if (lara.gun_type == WEAPON_SHOTGUN)
-		lara.back_gun = SHOTGUN_ANIM;
-	else if (lara.gun_type == WEAPON_CROSSBOW)
-		lara.back_gun = CROSSBOW_ANIM;
-	else if (lara.gun_type == WEAPON_GRENADE)
+	if (lara.gun_type == WEAPON_GRENADE)
 		lara.back_gun = GRENADE_GUN_ANIM;
 	else if (lara.shotgun_type_carried)
 		lara.back_gun = SHOTGUN_ANIM;
-	else if (lara.crossbow_type_carried)
-		lara.back_gun = CROSSBOW_ANIM;
 	else if (lara.grenade_type_carried)
 		lara.back_gun = GRENADE_GUN_ANIM;
-	
+
 	lara.gun_status = LG_NO_ARMS;
 	lara.left_arm.frame_number = 0;
 	lara.right_arm.frame_number = 0;
-	lara.target = NULL;
-	lara.right_arm.lock = FALSE;
-	lara.left_arm.lock = FALSE;
+	lara.target = 0;
+	lara.right_arm.lock = 0;
+	lara.left_arm.lock = 0;
 }
 
 void AnimateLara(ITEM_INFO* item)
@@ -192,7 +186,7 @@ void AnimateLara(ITEM_INFO* item)
 	ANIM_STRUCT* anim;
 	short* cmd;
 	long speed;
-	ushort type, num;
+	ushort type;
 
 	item->frame_number++;
 	anim = &anims[item->anim_number];
@@ -221,27 +215,31 @@ void AnimateLara(ITEM_INFO* item)
 					UpdateLaraRoom(item, -381);
 					cmd += 3;
 					break;
+
 				case ACMD_JUMPVEL:
 					item->fallspeed = cmd[0];
 					item->speed = cmd[1];
-					item->gravity_status = true;
+					item->gravity_status = 1;
+
 					if (lara.calc_fallspeed)
 					{
 						item->fallspeed = lara.calc_fallspeed;
 						lara.calc_fallspeed = 0;
 					}
+
 					cmd += 2;
 					break;
+
 				case ACMD_FREEHANDS:
+
 					if (lara.gun_status != LG_FLARE)
 						lara.gun_status = LG_NO_ARMS;
+
 					break;
+
 				case ACMD_PLAYSFX:
 				case ACMD_FLIPEFFECT:
 					cmd += 2;
-					break;
-				case ACMD_CREATUREEFFECT:
-					cmd += 3;
 					break;
 				}
 			}
@@ -256,6 +254,7 @@ void AnimateLara(ITEM_INFO* item)
 	if (anim->number_commands > 0)
 	{
 		cmd = &commands[anim->command_index];
+
 		for (int i = anim->number_commands; i > 0; i--)
 		{
 			switch (*cmd++)
@@ -263,31 +262,34 @@ void AnimateLara(ITEM_INFO* item)
 			case ACMD_SETPOS:
 				cmd += 3;
 				break;
+
 			case ACMD_JUMPVEL:
 				cmd += 2;
 				break;
+
 			case ACMD_PLAYSFX:
+
 				if (item->frame_number == cmd[0])
 				{
-					num = cmd[1] & 0x3FFF;
 					type = cmd[1] & 0xC000;
-					if (type == SFX_LANDANDWATER || (type == SFX_LANDONLY && (lara.water_surface_dist >= 0 || lara.water_surface_dist == NO_HEIGHT)) || (type == SFX_WATERONLY && lara.water_surface_dist < 0 && lara.water_surface_dist != NO_HEIGHT))
-						SoundEffect(num, &item->pos, SFX_ALWAYS);
+
+					if (type == SFX_LANDANDWATER || (type == SFX_LANDONLY && (lara.water_surface_dist >= 0 || lara.water_surface_dist == NO_HEIGHT)) ||
+						(type == SFX_WATERONLY && lara.water_surface_dist < 0 && lara.water_surface_dist != NO_HEIGHT))
+						SoundEffect(cmd[1] & 0x3FFF, &item->pos, SFX_ALWAYS);
 				}
+
 				cmd += 2;
 				break;
+
 			case ACMD_FLIPEFFECT:
-				if (item->frame_number == cmd[0])
+
+				if (item->frame_number == *cmd)
 				{
-					num = cmd[1] & 0x3FFF;
 					FXType = cmd[1] & 0xC000;
-					if (FlipEffectRoutines[num] != NULL)
-						FlipEffectRoutines[num](item);
+					effect_routines[cmd[1] & 0x3FFF](item);
 				}
+
 				cmd += 2;
-				break;
-			case ACMD_CREATUREEFFECT: // Lara is not a creature !
-				cmd += 3;
 				break;
 			}
 		}
@@ -305,8 +307,10 @@ void AnimateLara(ITEM_INFO* item)
 	else
 	{
 		speed = anim->velocity;
+
 		if (anim->acceleration)
 			speed += anim->acceleration * (item->frame_number - anim->frame_base);
+
 		item->speed = speed >> 16;
 	}
 
@@ -566,9 +570,9 @@ void LaraControl(short item_number)
 	}
 
 	if (tomb4.reverb == 2)
-		S_SetReverbType(room[l->room_number].reverb_type);
+		S_SetReverbType(room[l->room_number].ReverbType);
 	else
-		S_SetReverbType(room[camera.pos.room_number].reverb_type);
+		S_SetReverbType(room[camera.pos.room_number].ReverbType);
 
 	if (l->hit_points <= 0)
 	{

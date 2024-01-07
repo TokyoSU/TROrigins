@@ -19,42 +19,18 @@
 #define	CLRB(clr)	((clr) & 0xFF)			//and 0xFF
 
 /*misc*/
-#define GetScriptText(num) &gfStringWad[gfStringOffset[num]]
-#define SetCutPlayed(num) (CutSceneTriggered |= 1 << (num))
-#define SetCutNotPlayed(num) (CutSceneTriggered &= ~(1 << (num)))
-#define CheckCutPlayed(num) (CutSceneTriggered & (1 << (num)))
+#define SCRIPT_TEXT(num)		(&gfStringWad[gfStringOffset[num]])
+#define SetCutPlayed(num)	(CutSceneTriggered |= 1 << (num))
+#define SetCutNotPlayed(num)	(CutSceneTriggered &= ~(1 << (num)))
+#define CheckCutPlayed(num)	(CutSceneTriggered & (1 << (num)))
 
-#define NOT_TARGETABLE -16384
-#define NO_HEIGHT -32512
-#define BLOCKABLE 0x8000
-#define BLOCKED 0x4000
-#define NO_BOX 2047
-#define NO_LOS 999
-#define NO_ITEM -1
-#define NO_ROOM 255
-#define NO_FOOTPRINT -1
-#define MESHBITS_ALL 0xFFFFFFFF
-#define MESHBITS_NONE 0
-#define MESHBITS(meshIdx) (1 << meshIdx)
-#define ONE_DEGREE 182
-#define ANGLE(x) ((x) * ONE_DEGREE)
+#define NO_HEIGHT	-32512
+#define NO_ITEM	-1
 #define FVF (D3DFVF_TEX2 | D3DFVF_SPECULAR | D3DFVF_DIFFUSE | D3DFVF_XYZRHW)
-#define WALL_SHIFT 10
-#define W2V_SHIFT 14
-#define MAX_SAMPLES 370
-#define MAX_FOOTPRINTS 64
-#define MAX_DYNAMICS 64
-#define MAX_SPLASHES 32
-#define MAX_BUCKETS 32
-#define MAX_VERTEX_PER_BUCKETS 2048
-#define MAX_BUCKET_VERTEX MAX_VERTEX_PER_BUCKETS + MAX_BUCKETS
-#define MALLOC_SIZE	15000000	// 15MB
-#define CAMERA_CUTSCENE_FOV (short)ANGLE(63)
-#define CAMERA_FOV (short)ANGLE(80)
-#define CLICK_SIZE 256
-#define WALL_SIZE 1024
-#define CLICK(x) ((x) * CLICK_SIZE)
-#define SECTOR(x) ((x) * WALL_SIZE)
+#define W2V_SHIFT	14
+#define MAX_SAMPLES	370
+#define MAX_DYNAMICS	64
+#define MALLOC_SIZE	15000000	//15MB
 
 /********************DX defs********************/
 #define LPDIRECTDRAWX			LPDIRECTDRAW4
@@ -79,7 +55,6 @@
 /*typedefs*/
 typedef unsigned char uchar;
 typedef unsigned short ushort;
-typedef unsigned int uint;
 typedef unsigned long ulong;
 
 enum DX_FLAGS
@@ -93,141 +68,26 @@ enum DX_FLAGS
 	DXF_HWR = 0x80
 };
 
-enum SHOCKWAVE_FLAGS
-{
-	SW_DAMAGE_LARA_COUNT = 0x0001,
-	SW_DAMAGE_LARA = 0x0002
-};
-
-enum exploding_death_flags
-{
-	EDF_NONE = 0x0000,
-	EDF_SMOKE = 0x0001,
-	EDF_BLOOD = 0x0002,
-	EDF_FIRE = 0x0004,
-	EDF_EXPLODE = 0x0008,
-	EDF_NOSPEED = 0x0010,
-	EDF_MORESPEED = 0x0020,
-	EDF_NOFALLSPEED = 0x0040,
-	EDF_MOREFALLSPEED = 0x0080,
-	EDF_CREATE_EFFECT = 0x0100,
-	EDF_UNKNOWN_FLAG = 0x0200,
-	EDF_INVERT_SHATTER_COLOR = 0x0400,
-	EDF_ROCK_FALL_SOUND = 0x0800
-};
-
-enum bone_flags
-{
-	BF_NONE = 0x0000,
-	BF_POP = 0x0001,
-	BF_PUSH = 0x0002,
-	BF_X = 0x0004,
-	BF_Y = 0x0008,
-	BF_Z = 0x0010,
-	BF_ALL = (BF_X|BF_Y|BF_Z)
-};
-
 enum carried_weapon_flags
 {
 	W_NONE =		0x0,
 	W_PRESENT =		0x1,
-	W_FLASHLIGHT =	0x2,	// speculation, actually unused
+	W_FLASHLIGHT =	0x2,	//speculation, actually unused
 	W_LASERSIGHT =	0x4,
 	W_AMMO1 =		0x8,
 	W_AMMO2 =		0x10,
 	W_AMMO3 =		0x20
 };
 
-enum bubble_projectile_types
-{
-	BP_Seth,
-	BP_SethSecond,
-	BP_Harpy,
-	BP_Demigod3,
-	BP_Demigod2,
-	BP_Demigod1,
-	BP_Crocgod
-};
-
-enum draw_types
-{
-	// Triangle.
-	// Texture.
-	// No alpha test and alpha blend.
-	// Depth test (only if ZBuffer enabled).
-	// Src/Dest blend alpha.
-	DT_DRAW_Z_NOALBL_TEX_TRI,
-	// Triangle.
-	// Texture.
-	// Alpha test + alpha blend.
-	// Src/Dest blend alpha.
-	DT_DRAW_NOZ_ALBL_TEX_TRI,
-	// Triangle.
-	// Texture.
-	// No alpha test.
-	// No depth test.
-	// No specular.
-	// Src/Dest one.
-	DT_DRAW_NOZ_NOATSP_TEX_TRI,
-	// Triangle.
-	// Texture.
-	// Alpha test.
-	// No depth test.
-	// Src/Dest alpha.
-	// Texture modulate.
-	DT_DRAW_NOZ_AL_MODULATE_TEX_TRI,
-	// Triangle.
-	// Texture.
-	// No depth.
-	DT_DRAW_NOZ_TEX_TRI,
-	// Triangle.
-	// Texture.
-	// Alpha test.
-	// No depth test.
-	// Src zero.
-	// Dest invcolor.
-	// Alpha modulate.
-	// Color modulate4x.
-	DT_DRAW_NOZ_ALZEROINV_MODULATE4_TEX_TRI,
-	// Line.
-	// Texture.
-	// No depth test.
-	// No alpha test.
-	// Src/Dest one.
-	DT_DRAW_NOZ_NOAL_TEX_LINE,
-	// Triangle.
-	// Texture.
-	// Depth.
-	// Alpha test.
-	// Src/Dest alpha.
-	// Alpha texture modulate.
-	DT_DRAW_Z_AL_SRCALPHA_MODULATE_TEX_TRI,
-};
-
 enum anim_commands
 {
 	ACMD_NULL,
-	// X, Y, Z
 	ACMD_SETPOS,
-	// Fallspeed, Speed
 	ACMD_JUMPVEL,
 	ACMD_FREEHANDS,
 	ACMD_KILL,
-	// FrameAt, SoundIndex
-	// - 0x8000 is water.
-	// - 0x4000 is land.
-	// - 0x3FFF is sound ids.
 	ACMD_PLAYSFX,
-	// FrameAt, FlipEffectFlags
-	// - 0x8000 is right foot.
-	// - 0x4000 is left foot.
-	// - 0x3FFF is flip effect ids.
-	ACMD_FLIPEFFECT,
-	// FrameAt, CreatureEffectFlags, Extra (Enum or value for a specific command).
-	// - 0x8000 is right foot. (Water)
-	// - 0x4000 is left foot. (Land)
-	// - 0x3FFF is creature effect ids.
-	ACMD_CREATUREEFFECT
+	ACMD_FLIPEFFECT
 };
 
 enum ai_bits
@@ -310,14 +170,13 @@ enum mood_type
 	STALK_MOOD,
 };
 
-enum ZONE_TYPE
+enum zone_type
 {
 	SKELLY_ZONE,
 	BASIC_ZONE,
 	CROC_ZONE,
 	HUMAN_ZONE,
 	FLYER_ZONE,
-	MAX_ZONES
 };
 
 enum height_types
@@ -569,12 +428,6 @@ struct PHD_VECTOR
 	long x;
 	long y;
 	long z;
-	PHD_VECTOR()
-		: x(0), y(0), z(0)
-	{}
-	PHD_VECTOR(long x, long y, long z)
-		: x(x), y(y), z(z)
-	{}
 };
 
 struct PHD_3DPOS
@@ -585,12 +438,6 @@ struct PHD_3DPOS
 	short x_rot;
 	short y_rot;
 	short z_rot;
-	PHD_3DPOS()
-		: x_pos(0), y_pos(0), z_pos(0), x_rot(0), y_rot(0), z_rot(0)
-	{}
-	PHD_3DPOS(long x_pos, long y_pos, long z_pos, short x_rot, short y_rot, short z_rot)
-		: x_pos(x_pos), y_pos(y_pos), z_pos(z_pos), x_rot(x_rot), y_rot(y_rot), z_rot(z_rot)
-	{}
 };
 
 struct GAME_VECTOR
@@ -600,18 +447,6 @@ struct GAME_VECTOR
 	long z;
 	short room_number;
 	short box_number;
-	GAME_VECTOR()
-		: x(0), y(0), z(0), room_number(0), box_number(0)
-	{}
-	GAME_VECTOR(long x, long y, long z)
-		: x(x), y(y), z(z)
-	{}
-	GAME_VECTOR(long x, long y, long z, short room_number)
-		: x(x), y(y), z(z), room_number(room_number)
-	{}
-	GAME_VECTOR(long x, long y, long z, short room_number, short box_number)
-		: x(x), y(y), z(z), room_number(room_number), box_number(box_number)
-	{}
 };
 
 struct OBJECT_VECTOR
@@ -628,12 +463,6 @@ struct FVECTOR
 	float x;
 	float y;
 	float z;
-	FVECTOR()
-		: x(0), y(0), z(0)
-	{}
-	FVECTOR(float x, float y, float z)
-		: x(x), y(y), z(z)
-	{}
 };
 
 struct SVECTOR
@@ -697,8 +526,8 @@ struct ITEM_LIGHT
 	long room_number;
 	long RoomChange;
 	PHD_VECTOR item_pos;
-	LPVOID pCurrentLights;
-	LPVOID pPrevLights;
+	void* pCurrentLights;
+	void* pPrevLights;
 };
 
 struct ITEM_INFO
@@ -706,8 +535,6 @@ struct ITEM_INFO
 	long floor;
 	ulong touch_bits;
 	ulong mesh_bits;
-	ulong meshswap_meshbits;
-	short index;
 	short object_number;
 	short current_anim_state;
 	short goal_anim_state;
@@ -724,64 +551,27 @@ struct ITEM_INFO
 	short timer;
 	short flags;
 	short shade;
-	short ocb;
+	short trigger_flags;
+	short carried_item;
 	short after_death;
-	short fired_weapon;
-	long item_flags[4];
-	LPVOID data;
+	ushort fired_weapon;
+	short item_flags[4];
+	void* data;
 	PHD_3DPOS pos;
-	int status; // Use ITEM_Xx
-	int ai_bits;
-	bool activated;
-	bool gravity_status;
-	bool hit_status;
-	bool collidable;
-	bool looked_at;
-	bool dynamic_light;
-	bool poisoned;
-	bool really_active;
 	ITEM_LIGHT il;
-	VectorList<short> carried_item_list;
-
-	bool IsMeshDrawn(long meshIdx)
-	{
-		return mesh_bits & MESHBITS(meshIdx);
-	}
-
-	bool IsMeshHidden(long meshIdx)
-	{
-		return !(mesh_bits & MESHBITS(meshIdx));
-	}
-
-	void DrawMesh(long meshIdx)
-	{
-		mesh_bits |= MESHBITS(meshIdx);
-	}
-
-	void HideMesh(long meshIdx)
-	{
-		mesh_bits &= ~MESHBITS(meshIdx);
-	}
-
-	bool IsMeshSwapDrawn(long meshIdx)
-	{
-		return meshswap_meshbits & MESHBITS(meshIdx);
-	}
-
-	bool IsMeshSwapHidden(long meshIdx)
-	{
-		return !(meshswap_meshbits & MESHBITS(meshIdx));
-	}
-
-	void DrawMeshSwap(long meshIdx)
-	{
-		meshswap_meshbits |= MESHBITS(meshIdx);
-	}
-
-	void HideMeshSwap(long meshIdx)
-	{
-		meshswap_meshbits &= ~MESHBITS(meshIdx);
-	}
+	ulong active : 1;
+	ulong status : 2;
+	ulong gravity_status : 1;
+	ulong hit_status : 1;
+	ulong collidable : 1;
+	ulong looked_at : 1;
+	ulong dynamic_light : 1;
+	ulong poisoned : 1;
+	ulong ai_bits : 5;
+	ulong really_active : 1;
+	ulong meshswap_meshbits;
+	short draw_room;
+	short TOSSPAD;
 };
 
 struct BOX_NODE
@@ -811,7 +601,7 @@ struct LOT_INFO
 	ushort is_jumping : 1;
 	ushort is_monkeying : 1;
 	PHD_VECTOR target;
-	ZONE_TYPE zone;
+	zone_type zone;
 };
 
 struct CREATURE_INFO
@@ -850,7 +640,6 @@ struct FX_INFO
 	short shade;
 	short flag1;
 	short flag2;
-	short flag3;
 };
 
 struct LARA_ARM
@@ -928,8 +717,7 @@ struct LARA_INFO
 	short torso_z_rot;
 	LARA_ARM left_arm;
 	LARA_ARM right_arm;
-	ushort holster_l;
-	ushort holster_r;
+	ushort holster;
 	CREATURE_INFO* creature;
 	long CornerX;
 	long CornerZ;
@@ -1040,27 +828,26 @@ struct CAMERA_INFO
 	PHD_VECTOR mike_pos;
 };
 
-struct COLL_DATA
-{
-	long floor;
-	long ceiling;
-	long type;
-	COLL_DATA()
-		: floor(0), ceiling(0), type(0)
-	{}
-	COLL_DATA(long floor, long ceiling, long type)
-		: floor(floor), ceiling(ceiling), type(type)
-	{}
-};
-
 struct COLL_INFO
 {
-	COLL_DATA middle;
-	COLL_DATA front;
-	COLL_DATA left;
-	COLL_DATA right;
-	COLL_DATA left2;
-	COLL_DATA right2;
+	long mid_floor;
+	long mid_ceiling;
+	long mid_type;
+	long front_floor;
+	long front_ceiling;
+	long front_type;
+	long left_floor;
+	long left_ceiling;
+	long left_type;
+	long right_floor;
+	long right_ceiling;
+	long right_type;
+	long left_floor2;
+	long left_ceiling2;
+	long left_type2;
+	long right_floor2;
+	long right_ceiling2;
+	long right_type2;
 	long radius;
 	long bad_pos;
 	long bad_neg;
@@ -1115,7 +902,7 @@ struct OBJECT_INFO
 	ushort semi_transparent : 1;
 	ushort water_creature : 1;
 	ushort using_drawanimating_item : 1;
-	ushort hit_effect : 2;
+	ushort HitEffect : 2;
 	ushort undead : 1;
 	ushort save_mesh : 1;
 	void (*draw_routine_extra)(ITEM_INFO* item);
@@ -1180,9 +967,9 @@ struct MESH_INFO
 	long y;
 	long z;
 	short y_rot;
-	short intensity1;
-	short intensity2;
-	short object_number;
+	short shade;
+	short Flags;
+	short static_number;
 };
 
 struct PCLIGHT_INFO
@@ -1212,78 +999,26 @@ struct PCLIGHT_INFO
 	uchar Pad;
 };
 
-struct SVECTOR2
-{
-	short x;
-	short y;
-	short z;
-};
-
-struct TR_VERTEX
-{
-	SVECTOR2 pos;
-	short lighting1;
-	short attributes;
-	short lighting2;
-};
-
-struct ROOM_FACE4
-{
-	short vertices[4];
-	short texture;
-	short lighting_effect;
-};
-
-struct ROOM_FACE3
-{
-	short vertices[3];
-	short texture;
-	short lighting_effect;
-};
-
-struct ROOM_DATA
-{
-	short nVerts;
-	TR_VERTEX* verts;
-	short gt4cnt;
-	ROOM_FACE4* gt4;
-	short gt3cnt;
-	ROOM_FACE3* gt3;
-};
-
-struct ROOM_PORTAL
-{
-	short adjoiningRoom;
-	SVECTOR2 normal;
-	SVECTOR2 vertices[4];
-};
-
-struct ROOM_DOORS
-{
-	int portal_count;
-	ROOM_PORTAL* portals;
-};
-
 struct ROOM_INFO
 {
-	ROOM_DATA data;
-	ROOM_DOORS* door;
+	short* data;
+	short* door;
 	FLOOR_INFO* floor;
 	LIGHTINFO* light;
-	MESH_INFO* static_mesh;
+	MESH_INFO* mesh;
 	long x;
 	long y;
 	long z;
-	long bottom_floor;
-	long top_ceiling;
+	long minfloor;
+	long maxceiling;
 	short x_size;
 	short y_size;
 	long ambient;
 	short num_lights;
 	short num_meshes;
-	uchar reverb_type;
-	uchar flip_number;
-	char mesh_effect;
+	uchar ReverbType;
+	uchar FlipNumber;
+	char MeshEffect;
 	char bound_active;
 	short left;
 	short right;
@@ -1297,11 +1032,11 @@ struct ROOM_INFO
 	short fx_number;
 	short flipped_room;
 	ushort flags;
-
 	long nVerts;
 	long nWaterVerts;
 	long nShoreVerts;
 	LPDIRECT3DVERTEXBUFFER SourceVB;
+	short* FaceData;
 	float posx;
 	float posy;
 	float posz;
@@ -1416,7 +1151,7 @@ struct SPARKS
 	short Zvel;
 	short Gravity;
 	short RotAng;
-	short flags;
+	short Flags;
 	uchar sSize;
 	uchar dSize;
 	uchar Size;
@@ -1481,7 +1216,7 @@ struct DXPTR
 	ulong dwRenderHeight;
 	RECT rViewport;
 	RECT rScreen;
-	long flags;
+	long Flags;
 	ulong WindowStyle;
 	long CoopLevel;
 	LPDIRECTINPUTX lpDirectInput;
@@ -1671,7 +1406,7 @@ struct LIGHTNING_STRUCT
 	char Yvel3;
 	char Zvel3;
 	uchar Size;
-	uchar flags;
+	uchar Flags;
 	uchar Rand;
 	uchar Segments;
 	uchar Pad[3];
@@ -1843,12 +1578,11 @@ struct WATERTAB
 
 struct FOOTPRINT
 {
-	bool On;
 	long x;
 	long y;
 	long z;
 	short YRot;
-	short Life;
+	short Active;
 };
 
 struct DISPLAYPU
@@ -1874,12 +1608,6 @@ struct BITE_INFO
 	long y;
 	long z;
 	long mesh_num;
-	BITE_INFO()
-		: x(0), y(0), z(0), mesh_num(0)
-	{}
-	BITE_INFO(long x, long y, long z, long mesh_num)
-		: x(x), y(y), z(z), mesh_num(mesh_num)
-	{}
 };
 
 struct D3DTLBUMPVERTEX
@@ -1909,11 +1637,11 @@ struct TEXTURE
 	long bumptpage;
 };
 
-struct BUCKETS
+struct TEXTUREBUCKET
 {
 	long tpage;
 	long nVtx;
-	D3DTLBUMPVERTEX vtx[MAX_BUCKET_VERTEX];
+	D3DTLBUMPVERTEX vtx[544];
 };
 
 struct THREAD
@@ -1947,17 +1675,11 @@ struct AI_INFO
 	short zone_number;
 	short enemy_zone;
 	long distance;
+	long ahead;
+	long bite;
 	short angle;
 	short x_angle;
 	short enemy_facing;
-	bool ahead;
-	bool bite;
-	AI_INFO()
-		: zone_number(0), enemy_zone(0), distance(0), ahead(0), bite(0), angle(0), x_angle(0), enemy_facing(0)
-	{}
-	AI_INFO(short zone_number, short enemy_zone, long distance, bool ahead, bool bite, short angle, short x_angle, short enemy_facing)
-		: zone_number(zone_number), enemy_zone(enemy_zone), distance(distance), ahead(ahead), bite(bite), angle(angle), x_angle(x_angle), enemy_facing(enemy_facing)
-	{}
 };
 
 struct AIOBJECT
@@ -1967,7 +1689,7 @@ struct AIOBJECT
 	long x;
 	long y;
 	long z;
-	short ocb;
+	short trigger_flags;
 	short flags;
 	short y_rot;
 	short box_number;
@@ -1992,7 +1714,7 @@ struct SHATTER_ITEM
 	short* meshp;
 	long Bit;
 	short YRot;
-	short flags;
+	short Flags;
 };
 
 struct SPOTCAM
@@ -2062,7 +1784,7 @@ struct BOX_INFO
 	uchar top;
 	uchar bottom;
 	short height;
-	ushort overlap_index;
+	short overlap_index;
 };
 
 struct SMOKE_SPARKS
@@ -2075,7 +1797,7 @@ struct SMOKE_SPARKS
 	short Zvel;
 	short Gravity;
 	short RotAng;
-	short flags;
+	short Flags;
 	uchar sSize;
 	uchar dSize;
 	uchar Size;
@@ -2278,13 +2000,12 @@ struct SHOCKWAVE_STRUCT
 	short InnerRad;
 	short OuterRad;
 	short XRot;
-	short flags;
+	short Flags;
 	uchar r;
 	uchar g;
 	uchar b;
 	uchar life;
 	short Speed;
-	short Damage;
 	short Temp;
 };
 
@@ -2331,7 +2052,7 @@ struct FIRE_SPARKS
 	short Zvel;
 	short Gravity;
 	short RotAng;
-	short flags;
+	short Flags;
 	uchar sSize;
 	uchar dSize;
 	uchar Size;
@@ -2493,7 +2214,7 @@ struct SP_DYNAMIC
 	uchar R;
 	uchar G;
 	uchar B;
-	uchar flags;
+	uchar Flags;
 	uchar Pad[2];
 };
 

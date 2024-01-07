@@ -323,7 +323,7 @@ void MovableBlock(short item_number)
 		switch (quadrant)
 		{
 		case NORTH:
-			offset = pos.z + item->item_flags[2] - lara_item->item_flags[2];
+			offset = pos.z + *(long*)&item->item_flags[2] - *(long*)&lara_item->item_flags[2];
 
 			if (abs(item->pos.z_pos - offset) < 512 && item->pos.z_pos < offset)
 				item->pos.z_pos = offset;
@@ -331,7 +331,7 @@ void MovableBlock(short item_number)
 			break;
 
 		case EAST:
-			offset = pos.x + item->item_flags[0] - lara_item->item_flags[0];
+			offset = pos.x + *(long*)item->item_flags - *(long*)lara_item->item_flags;
 
 			if (abs(item->pos.x_pos - offset) < 512 && item->pos.x_pos < offset)
 				item->pos.x_pos = offset;
@@ -339,7 +339,7 @@ void MovableBlock(short item_number)
 			break;
 
 		case SOUTH:
-			offset = pos.z + item->item_flags[2] - lara_item->item_flags[2];
+			offset = pos.z + *(long*)&item->item_flags[2] - *(long*)&lara_item->item_flags[2];
 
 			if (abs(item->pos.z_pos - offset) < 512 && item->pos.z_pos > offset)
 				item->pos.z_pos = offset;
@@ -347,7 +347,7 @@ void MovableBlock(short item_number)
 			break;
 
 		case WEST:
-			offset = pos.x + item->item_flags[0] - lara_item->item_flags[0];
+			offset = pos.x + *(long*)item->item_flags - *(long*)lara_item->item_flags;
 
 			if (abs(item->pos.x_pos - offset) < 512 && item->pos.x_pos > offset)
 				item->pos.x_pos = offset;
@@ -392,7 +392,7 @@ void MovableBlock(short item_number)
 		switch (quadrant)
 		{
 		case NORTH:
-			offset = pos.z + item->item_flags[2] - lara_item->item_flags[2];
+			offset = pos.z + *(long*)&item->item_flags[2] - *(long*)&lara_item->item_flags[2];
 
 			if (abs(item->pos.z_pos - offset) < 512 && item->pos.z_pos > offset)
 				item->pos.z_pos = offset;
@@ -400,7 +400,7 @@ void MovableBlock(short item_number)
 			break;
 
 		case EAST:
-			offset = pos.x + item->item_flags[0] - lara_item->item_flags[0];
+			offset = pos.x + *(long*)item->item_flags - *(long*)lara_item->item_flags;
 
 			if (abs(item->pos.x_pos - offset) < 512 && item->pos.x_pos > offset)
 				item->pos.x_pos = offset;
@@ -408,7 +408,7 @@ void MovableBlock(short item_number)
 			break;
 
 		case SOUTH:
-			offset = pos.z + item->item_flags[2] - lara_item->item_flags[2];
+			offset = pos.z + *(long*)&item->item_flags[2] - *(long*)&lara_item->item_flags[2];
 
 			if (abs(item->pos.z_pos - offset) < 512 && item->pos.z_pos < offset)
 				item->pos.z_pos = offset;
@@ -416,7 +416,7 @@ void MovableBlock(short item_number)
 			break;
 
 		case WEST:
-			offset = pos.x + item->item_flags[0] - lara_item->item_flags[0];
+			offset = pos.x + *(long*)item->item_flags - *(long*)lara_item->item_flags;
 
 			if (abs(item->pos.x_pos - offset) < 512 && item->pos.x_pos < offset)
 				item->pos.x_pos = offset;
@@ -477,7 +477,7 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 		ItemNewRoom(item_number, room_number);
 
 	if (input & IN_ACTION && laraitem->current_anim_state == AS_STOP && laraitem->anim_number == ANIM_BREATH && !laraitem->gravity_status &&
-		lara.gun_status == LG_NO_ARMS && item->status == ITEM_INACTIVE && item->ocb >= 0 || (lara.IsMoving && lara.GeneralPtr == (void*)item_number))
+		lara.gun_status == LG_NO_ARMS && item->status == ITEM_INACTIVE && item->trigger_flags >= 0 || (lara.IsMoving && lara.GeneralPtr == (void*)item_number))
 	{
 		room_number = laraitem->room_number;
 		GetFloor(item->pos.x_pos, item->pos.y_pos - 256, item->pos.z_pos, &room_number);
@@ -552,10 +552,10 @@ void MovableBlockCollision(short item_number, ITEM_INFO* laraitem, COLL_INFO* co
 		lara.torso_x_rot = 0;
 		lara.torso_y_rot = 0;
 		GetLaraJointPos(&pos, 14);
-		laraitem->item_flags[0] = pos.x;
-		laraitem->item_flags[2] = pos.z;
-		item->item_flags[0] = item->pos.x_pos;
-		item->item_flags[2] = item->pos.z_pos;
+		*(long*)&laraitem->item_flags[0] = pos.x;
+		*(long*)&laraitem->item_flags[2] = pos.z;
+		*(long*)&item->item_flags[0] = item->pos.x_pos;
+		*(long*)&item->item_flags[2] = item->pos.z_pos;
 	}
 	else
 		ObjectCollision(item_number, laraitem, coll);
@@ -575,14 +575,14 @@ void InitialisePlanetEffect(short item_number)
 	{
 		item2 = &items[i];
 
-		if (item2->object_number >= PUSHABLE_OBJECT1 && item2->object_number <= PUSHABLE_OBJECT5 && item2->ocb == item->ocb)
+		if (item2->object_number >= PUSHABLE_OBJECT1 && item2->object_number <= PUSHABLE_OBJECT5 && item2->trigger_flags == item->trigger_flags)
 		{
 			item->item_flags[0] = i;
 			break;
 		}
 	}
 
-	if (item->ocb == 1)	//get other planet effects
+	if (item->trigger_flags == 1)	//get other planet effects
 	{
 		for (int i = 0, j = 0; i < level_items; i++)
 		{
@@ -600,7 +600,7 @@ void InitialisePlanetEffect(short item_number)
 			{
 				item2 = &items[others[j]];
 
-				if (item2->ocb == i + 2)
+				if (item2->trigger_flags == i + 2)
 				{
 					*pifl++ = others[j];
 					break;
@@ -626,14 +626,14 @@ void ControlPlanetEffect(short item_number)
 
 	if (item->item_flags[0] > 0)
 	{
-		items[item->item_flags[0]].ocb = -items[item->item_flags[0]].ocb;	//disable pushable :D
+		items[item->item_flags[0]].trigger_flags = -items[item->item_flags[0]].trigger_flags;	//disable pushable :D
 		item->item_flags[0] = NO_ITEM;
 	}
 
 	item->mesh_bits = 255;
 	AnimateItem(item);
 
-	if (item->ocb == 1)
+	if (item->trigger_flags == 1)
 	{
 		if ((items[LOBYTE(item->item_flags[2])].flags & IFL_CODEBITS) == IFL_CODEBITS &&
 			(items[HIBYTE(item->item_flags[2])].flags & IFL_CODEBITS) == IFL_CODEBITS &&

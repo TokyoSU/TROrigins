@@ -23,9 +23,9 @@ void ControlPulseLight(short item_number)
 	if (!flip_stats[4] && gfLevelFlags & GF_PULSE)
 		return;
 
-	if (item->ocb == 1)
+	if (item->trigger_flags == 1)
 	{
-		item->ocb = 0;
+		item->trigger_flags = 0;
 		FlashFadeR = 128;
 		FlashFadeG = 255;
 		FlashFadeB = 255;
@@ -34,7 +34,7 @@ void ControlPulseLight(short item_number)
 		SoundEffect(SFX_BOULDER_FALL, 0, 0);
 		SoundEffect(SFX_EXPLOSION2, 0, 0);
 	}
-	else if (item->ocb == 2)
+	else if (item->trigger_flags == 2)
 	{
 		SoundEffect(SFX_MAPPER_PYRAMID_OPEN, &item->pos, 0);
 
@@ -62,7 +62,7 @@ void ControlPulseLight(short item_number)
 void ControlElectricalLight(short item_number)
 {
 	ITEM_INFO* item;
-	long intensity1, r, g, b;
+	long shade, r, g, b;
 
 	item = &items[item_number];
 
@@ -74,7 +74,7 @@ void ControlElectricalLight(short item_number)
 
 	if (item->item_flags[0] < 16)
 	{
-		intensity1 = (GetRandomControl() & 0x3F) << 2;
+		shade = (GetRandomControl() & 0x3F) << 2;
 		item->item_flags[0]++;
 	}
 	else
@@ -82,10 +82,10 @@ void ControlElectricalLight(short item_number)
 		if (item->item_flags[0] >= 96)
 		{
 			if (item->item_flags[0] >= 160)
-				intensity1 = 255 - (GetRandomControl() & 0x1F);
+				shade = 255 - (GetRandomControl() & 0x1F);
 			else
 			{
-				intensity1 = 96 - (GetRandomControl() & 0x1F);
+				shade = 96 - (GetRandomControl() & 0x1F);
 
 				if (!(GetRandomControl() & 0x1F) && item->item_flags[0] > 128)
 					item->item_flags[0] = 160;
@@ -96,17 +96,17 @@ void ControlElectricalLight(short item_number)
 		else
 		{
 			if (wibble & 0x3F && GetRandomControl() & 7)
-				intensity1 = GetRandomControl() & 0x3F;
+				shade = GetRandomControl() & 0x3F;
 			else
-				intensity1 = 192 - (GetRandomControl() & 0x3F);
+				shade = 192 - (GetRandomControl() & 0x3F);
 
 			item->item_flags[0]++;
 		}
 	}
 
-	r = ((intensity1 * (item->ocb & 0x1F)) << 3) >> 8;
-	g = (intensity1 * ((item->ocb >> 2) & 0xF8)) >> 8;
-	b = (intensity1 * ((item->ocb >> 7) & 0xF8)) >> 8;
+	r = ((shade * (item->trigger_flags & 0x1F)) << 3) >> 8;
+	g = (shade * ((item->trigger_flags >> 2) & 0xF8)) >> 8;
+	b = (shade * ((item->trigger_flags >> 7) & 0xF8)) >> 8;
 	TriggerDynamic(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, 16, r, g, b);
 }
 
@@ -120,9 +120,9 @@ void ControlBlinker(short item_number)
 	if (!TriggerActive(item))
 		return;
 
-	item->ocb--;
+	item->trigger_flags--;
 
-	if (item->ocb >= 3)
+	if (item->trigger_flags >= 3)
 		item->mesh_bits = 1;
 	else
 	{
@@ -133,7 +133,7 @@ void ControlBlinker(short item_number)
 		TriggerDynamic(pos.x, pos.y, pos.z, 16, 255, 192, 16);
 		item->mesh_bits = 2;
 
-		if (item->ocb < 0)
-			item->ocb = 30;
+		if (item->trigger_flags < 0)
+			item->trigger_flags = 30;
 	}
 }

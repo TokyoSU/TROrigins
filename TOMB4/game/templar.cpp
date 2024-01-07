@@ -32,7 +32,7 @@ void TemplarControl(short item_number)
 	ITEM_INFO* item;
 	CREATURE_INFO* knight;
 	ROOM_INFO* r;
-	MESH_INFO* static_mesh;
+	MESH_INFO* mesh;
 	FLOOR_INFO* floor;
 	PHD_VECTOR pos;
 	AI_INFO info;
@@ -138,13 +138,13 @@ void TemplarControl(short item_number)
 			{
 				for (int i = 0; i < r->num_meshes; i++)
 				{
-					static_mesh = &r->static_mesh[i];
+					mesh = &r->mesh[i];
 
-					if (!((pos.z ^ static_mesh->z) & ~0x3FF) && !((pos.x ^ static_mesh->x) & ~0x3FF) && static_mesh->object_number >= SHATTER0)
+					if (!((pos.z ^ mesh->z) & ~0x3FF) && !((pos.x ^ mesh->x) & ~0x3FF) && mesh->static_number >= SHATTER0)
 					{
-						ShatterObject(0, static_mesh, -64, lara_item->room_number, 0);
+						ShatterObject(0, mesh, -64, lara_item->room_number, 0);
 						SoundEffect(SFX_HIT_ROCK, &item->pos, SFX_DEFAULT);
-						static_mesh->intensity2 &= ~1;
+						mesh->Flags &= ~1;
 						floor->stopper = 0;
 						GetHeight(floor, pos.x, pos.y, pos.z);
 						TestTriggers(trigger_index, 1, 0);

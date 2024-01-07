@@ -531,10 +531,10 @@ HRESULT DXShowFrame()
 		DXAttempt(G_dxptr->lpBackBuffer->Restore());
 	}
 
-	if (!(App.dx.flags & (DXF_HWR | DXF_WINDOWED)))
+	if (!(App.dx.Flags & (DXF_HWR | DXF_WINDOWED)))
 		return 0;
 
-	if (G_dxptr->flags & DXF_WINDOWED)
+	if (G_dxptr->Flags & DXF_WINDOWED)
 		return DXAttempt(G_dxptr->lpPrimaryBuffer->Blt(&G_dxptr->rScreen, G_dxptr->lpBackBuffer, &G_dxptr->rViewport, DDBLT_WAIT, 0));
 	else
 		return DXAttempt(G_dxptr->lpPrimaryBuffer->Flip(0, DDFLIP_WAIT));
@@ -544,7 +544,7 @@ void DXMove(long x, long y)
 {
 	Log(2, "DXMove : x %d y %d", x, y);
 
-	if (G_dxptr && !(G_dxptr->flags & DXF_FULLSCREEN))
+	if (G_dxptr && !(G_dxptr->Flags & DXF_FULLSCREEN))
 		SetRect(&G_dxptr->rScreen, x, y, x + G_dxptr->dwRenderWidth, y + G_dxptr->dwRenderHeight);
 }
 
@@ -693,7 +693,7 @@ void DXClose()
 		else
 			Log(1, "%s Attempt To Release NULL Ptr", "Primary Buffer");
 
-		if (!(G_dxptr->flags & DXF_NOFREE))
+		if (!(G_dxptr->Flags & DXF_NOFREE))
 		{
 			if (G_dxptr->lpDD)
 			{
@@ -714,7 +714,7 @@ void DXClose()
 	}
 }
 
-long DXCreate(long w, long h, long bpp, long flags, DXPTR* dxptr, HWND hWnd, long WindowStyle)
+long DXCreate(long w, long h, long bpp, long Flags, DXPTR* dxptr, HWND hWnd, long WindowStyle)
 {
 	DXDISPLAYMODE* dm;
 	LPDIRECTDRAWCLIPPER clipper;
@@ -728,11 +728,11 @@ long DXCreate(long w, long h, long bpp, long flags, DXPTR* dxptr, HWND hWnd, lon
 	flag = 0;
 	Log(2, "DXCreate");
 	G_dxptr = dxptr;
-	G_dxptr->flags = flags;
+	G_dxptr->Flags = Flags;
 	G_dxptr->hWnd = hWnd;
 	G_dxptr->WindowStyle = WindowStyle;
 
-	if (flags & 64)
+	if (Flags & 64)
 		flag = 1;
 
 	DXClose();
@@ -746,12 +746,12 @@ long DXCreate(long w, long h, long bpp, long flags, DXPTR* dxptr, HWND hWnd, lon
 		}
 	}
 
-	if (flags & DXF_FULLSCREEN)
+	if (Flags & DXF_FULLSCREEN)
 		CoopLevel = DDSCL_FULLSCREEN | DDSCL_ALLOWREBOOT | DDSCL_EXCLUSIVE;
 	else
 		CoopLevel = DDSCL_NORMAL;
 
-	if (flags & DXF_FPUSETUP)
+	if (Flags & DXF_FPUSETUP)
 		CoopLevel |= DDSCL_FPUSETUP;
 
 	G_dxptr->CoopLevel = CoopLevel;
@@ -762,7 +762,7 @@ long DXCreate(long w, long h, long bpp, long flags, DXPTR* dxptr, HWND hWnd, lon
 		return 0;
 	}
 
-	if (flags & DXF_FULLSCREEN)
+	if (Flags & DXF_FULLSCREEN)
 	{
 		dm = &G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].DisplayModes[G_dxinfo->nDisplayMode];
 		DXSetVideoMode(G_dxptr->lpDD, dm->w, dm->h, dm->bpp);
@@ -781,13 +781,13 @@ long DXCreate(long w, long h, long bpp, long flags, DXPTR* dxptr, HWND hWnd, lon
 	memset(&desc, 0, sizeof(DDSURFACEDESCX));
 	desc.dwSize = sizeof(DDSURFACEDESCX);
 
-	if (flags & DXF_FULLSCREEN)
+	if (Flags & DXF_FULLSCREEN)
 	{
 		desc.dwBackBufferCount = 1;
 		desc.dwFlags = DDSD_CAPS | DDSD_BACKBUFFERCOUNT;
 		desc.ddsCaps.dwCaps = DDSCAPS_COMPLEX | DDSCAPS_FLIP | DDSCAPS_PRIMARYSURFACE | DDSCAPS_3DDEVICE | DDSCAPS_VIDEOMEMORY;
 
-		if (!(flags & DXF_HWR))
+		if (!(Flags & DXF_HWR))
 		{
 			desc.dwBackBufferCount = 0;
 			desc.dwFlags = DDSD_CAPS;
@@ -802,7 +802,7 @@ long DXCreate(long w, long h, long bpp, long flags, DXPTR* dxptr, HWND hWnd, lon
 			return 0;
 		}
 
-		if (flags & DXF_HWR)
+		if (Flags & DXF_HWR)
 		{
 			Log(3, "Get Attached Back Buffer");
 			desc.ddsCaps.dwCaps = DDSCAPS_BACKBUFFER;
@@ -874,7 +874,7 @@ long DXCreate(long w, long h, long bpp, long flags, DXPTR* dxptr, HWND hWnd, lon
 		}
 	}
 
-	if (flags & DXF_ZBUFFER && flags & DXF_HWR)
+	if (Flags & DXF_ZBUFFER && Flags & DXF_HWR)
 	{
 		Log(3, "Creating ZBuffer");
 		memset(&desc, 0, sizeof(DDSURFACEDESCX));
@@ -918,10 +918,10 @@ long DXChangeVideoMode()
 	long val;
 
 	Log(2, "DXChangeVideoMode");
-	G_dxptr->flags |= DXF_NOFREE;
+	G_dxptr->Flags |= DXF_NOFREE;
 	G_dxptr->lpD3D->EvictManagedTextures();
-	val = DXCreate(0, 0, 0, G_dxptr->flags, G_dxptr, G_dxptr->hWnd, G_dxptr->WindowStyle);
-	G_dxptr->flags ^= DXF_NOFREE;
+	val = DXCreate(0, 0, 0, G_dxptr->Flags, G_dxptr, G_dxptr->hWnd, G_dxptr->WindowStyle);
+	G_dxptr->Flags ^= DXF_NOFREE;
 	Log(2, "Exited DXChangeVideoMode %d", val);
 	return val;
 }
@@ -932,24 +932,24 @@ long DXToggleFullScreen()
 
 	Log(2, "DXToggleFullScreen");
 
-	if (G_dxptr->flags & 2)
+	if (G_dxptr->Flags & 2)
 	{
 		Log(5, "Switching To Full Screen");
-		G_dxptr->flags ^= DXF_WINDOWED;
-		G_dxptr->flags |= DXF_NOFREE | DXF_FULLSCREEN;
+		G_dxptr->Flags ^= DXF_WINDOWED;
+		G_dxptr->Flags |= DXF_NOFREE | DXF_FULLSCREEN;
 	}
 	else
 	{
 		Log(5, "Switching To A Window");
-		G_dxptr->flags ^= DXF_FULLSCREEN;
-		G_dxptr->flags |= DXF_NOFREE | DXF_WINDOWED;
+		G_dxptr->Flags ^= DXF_FULLSCREEN;
+		G_dxptr->Flags |= DXF_NOFREE | DXF_WINDOWED;
 	}
 
 	G_dxptr->lpD3D->EvictManagedTextures();
 	dm = &G_dxinfo->DDInfo[G_dxinfo->nDD].D3DDevices[G_dxinfo->nD3D].DisplayModes[G_dxinfo->nDisplayMode];
-	DXCreate(dm->w, dm->h, dm->bpp, G_dxptr->flags, G_dxptr, G_dxptr->hWnd, G_dxptr->WindowStyle);
-	WinSetStyle(G_dxptr->flags & DXF_FULLSCREEN, G_dxptr->WindowStyle);
-	G_dxptr->flags ^= DXF_NOFREE;
+	DXCreate(dm->w, dm->h, dm->bpp, G_dxptr->Flags, G_dxptr, G_dxptr->hWnd, G_dxptr->WindowStyle);
+	WinSetStyle(G_dxptr->Flags & DXF_FULLSCREEN, G_dxptr->WindowStyle);
+	G_dxptr->Flags ^= DXF_NOFREE;
 	return 1;
 }
 

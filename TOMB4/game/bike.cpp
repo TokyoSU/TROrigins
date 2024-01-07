@@ -282,7 +282,7 @@ static void TriggerExhaustSmoke(long x, long y, long z, short angle, long veloci
 
 	if (GetRandomControl() & 1)
 	{
-		sptr->flags = 538;
+		sptr->Flags = 538;
 		sptr->RotAng = GetRandomControl() & 0xFFF;
 
 		if (GetRandomControl() & 1)
@@ -291,7 +291,7 @@ static void TriggerExhaustSmoke(long x, long y, long z, short angle, long veloci
 			sptr->RotAdd = (GetRandomControl() & 7) + 24;
 	}
 	else
-		sptr->flags = 522;
+		sptr->Flags = 522;
 
 	sptr->Scalar = 1;
 	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
@@ -784,62 +784,60 @@ void BikeCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 long BikeBaddieCollision(ITEM_INFO* bike)
 {
-	ITEM_INFO* target_item = NULL;
+	ITEM_INFO* item;
 	OBJECT_INFO* obj;
-	ROOM_INFO* r;
-	long i, j, dx, dy, dz;
+	short* doors;
+	long j, dx, dy, dz;
 	short room_count, item_number;
 
-	r = &room[bike->room_number];
 	room_count = 1;
 	broomies[0] = bike->room_number;
+	doors = room[bike->room_number].door;
 
-	if (r->door)
+	for (int i = *doors++; i > 0; i--, doors += 16)
 	{
-		for (i = 0; i < r->door->portal_count; i++)
+		for (j = 0; j < room_count; j++)
 		{
-			auto cur_door = r->door->portals[i];
-			for (j = 0; j < room_count; j++)
-			{
-				if (broomies[j] == cur_door.adjoiningRoom)
-					break;
-			}
-			if (j == room_count)
-			{
-				broomies[room_count] = cur_door.adjoiningRoom;
-				room_count++;
-			}
+			if (broomies[j] == *doors)
+				break;
+		}
+
+		if (j == room_count)
+		{
+			broomies[room_count] = *doors;
+			room_count++;
 		}
 	}
 
 	for (int i = 0; i < room_count; i++)
 	{
-		for (item_number = room[broomies[i]].item_number; item_number != NO_ITEM; item_number = target_item->next_item)
+		for (item_number = room[broomies[i]].item_number; item_number != NO_ITEM; item_number = item->next_item)
 		{
-			target_item = &items[item_number];
-			if (target_item->collidable && target_item->status != ITEM_INVISIBLE && target_item != lara_item && target_item != bike)
+			item = &items[item_number];
+
+			if (item->collidable && item->status != ITEM_INVISIBLE && item != lara_item && item != bike)
 			{
-				obj = &objects[target_item->object_number];
+				obj = &objects[item->object_number];
 
 				if (obj->collision && obj->intelligent)
 				{
-					dx = bike->pos.x_pos - target_item->pos.x_pos;
-					dy = bike->pos.y_pos - target_item->pos.y_pos;
-					dz = bike->pos.z_pos - target_item->pos.z_pos;
+					dx = bike->pos.x_pos - item->pos.x_pos;
+					dy = bike->pos.y_pos - item->pos.y_pos;
+					dz = bike->pos.z_pos - item->pos.z_pos;
 
 					if (dx > -2048 && dx < 2048 && dz > -2048 && dz < 2048 && dy > -2048 && dy < 2048)
 					{
-						if (TestBoundsCollide(target_item, bike, 500))
+						if (TestBoundsCollide(item, bike, 500))
 						{
-							if (target_item->object_number == MUTANT)
+							if (item->object_number == MUTANT)
 								return 1;
 
-							if (target_item->hit_points)
-								SoundEffect(SFX_BIKE_HIT_ENEMIES, &target_item->pos, SFX_DEFAULT);
+							if (item->hit_points)
+								SoundEffect(SFX_BIKE_HIT_ENEMIES, &item->pos, SFX_DEFAULT);
 
-							DoLotsOfBlood(target_item->pos.x_pos, bike->pos.y_pos - 256, target_item->pos.z_pos, (GetRandomControl() & 3) + 8,
-								bike->pos.y_rot, target_item->room_number, 3);
-							target_item->hit_points = 0;
+							DoLotsOfBlood(item->pos.x_pos, bike->pos.y_pos - 256, item->pos.z_pos, (GetRandomControl() & 3) + 8,
+								bike->pos.y_rot, item->room_number, 3);
+							item->hit_points = 0;
 						}
 					}
 				}
@@ -852,16 +850,16 @@ long BikeBaddieCollision(ITEM_INFO* bike)
 
 void BikeCollideStaticObjects(long x, long y, long z, short room_number, long height)
 {
-	MESH_INFO* static_mesh;
+	MESH_INFO* mesh;
 	STATIC_INFO* sinfo;
 	ROOM_INFO* r;
 	PHD_VECTOR pos;
-	long i, j;
+	short* doors;
+	long j;
 	static long BikeBounds[6] = { 0, 0, 0, 0, 0, 0 };
 	static long CollidedStaticBounds[6] = { 0, 0, 0, 0, 0, 0 };
 	short room_count, rn;
 
-	r = &room[room_number];
 	pos.x = x;
 	pos.y = y;
 	pos.z = z;
@@ -873,22 +871,20 @@ void BikeCollideStaticObjects(long x, long y, long z, short room_number, long he
 	BikeBounds[5] = z - 256;
 	room_count = 1;
 	broomies[0] = room_number;
-	
-	if (r->door)
+	doors = room[room_number].door;
+
+	for (int i = *doors++; i > 0; i--, doors += 16)
 	{
-		for (i = 0; i < r->door->portal_count; i++)
+		for (j = 0; j < room_count; j++)
 		{
-			auto& cur_door = r->door->portals[i];
-			for (j = 0; j < room_count; j++)
-			{
-				if (broomies[j] == cur_door.adjoiningRoom)
-					break;
-			}
-			if (j == room_count)
-			{
-				broomies[room_count] = cur_door.adjoiningRoom;
-				room_count++;
-			}
+			if (broomies[j] == *doors)
+				break;
+		}
+
+		if (j == room_count)
+		{
+			broomies[room_count] = *doors;
+			room_count++;
 		}
 	}
 
@@ -896,46 +892,46 @@ void BikeCollideStaticObjects(long x, long y, long z, short room_number, long he
 	{
 		rn = broomies[i];
 		r = &room[rn];
-		static_mesh = r->static_mesh;
+		mesh = r->mesh;
 
-		for (j = r->num_meshes; j > 0; j--, static_mesh++)
+		for (j = r->num_meshes; j > 0; j--, mesh++)
 		{
-			sinfo = &static_objects[static_mesh->object_number];
+			sinfo = &static_objects[mesh->static_number];
 
-			if (static_mesh->intensity2 & 1)
+			if (mesh->Flags & 1)
 			{
-				if (static_mesh->object_number >= SHATTER0 && static_mesh->object_number <= SHATTER9)
+				if (mesh->static_number >= SHATTER0 && mesh->static_number <= SHATTER9)
 				{
-					CollidedStaticBounds[2] = static_mesh->y + sinfo->y_maxc;
-					CollidedStaticBounds[3] = static_mesh->y + sinfo->y_minc;
+					CollidedStaticBounds[2] = mesh->y + sinfo->y_maxc;
+					CollidedStaticBounds[3] = mesh->y + sinfo->y_minc;
 
-					if (static_mesh->y_rot == -0x8000)
+					if (mesh->y_rot == -0x8000)
 					{
-						CollidedStaticBounds[0] = static_mesh->x - sinfo->x_minc;
-						CollidedStaticBounds[1] = static_mesh->x - sinfo->x_maxc;
-						CollidedStaticBounds[4] = static_mesh->z - sinfo->z_minc;
-						CollidedStaticBounds[5] = static_mesh->z - sinfo->z_maxc;
+						CollidedStaticBounds[0] = mesh->x - sinfo->x_minc;
+						CollidedStaticBounds[1] = mesh->x - sinfo->x_maxc;
+						CollidedStaticBounds[4] = mesh->z - sinfo->z_minc;
+						CollidedStaticBounds[5] = mesh->z - sinfo->z_maxc;
 					}
-					else if (static_mesh->y_rot == -0x4000)
+					else if (mesh->y_rot == -0x4000)
 					{
-						CollidedStaticBounds[0] = static_mesh->x - sinfo->z_minc;
-						CollidedStaticBounds[1] = static_mesh->x - sinfo->z_maxc;
-						CollidedStaticBounds[4] = static_mesh->z + sinfo->x_maxc;
-						CollidedStaticBounds[5] = static_mesh->z + sinfo->x_minc;
+						CollidedStaticBounds[0] = mesh->x - sinfo->z_minc;
+						CollidedStaticBounds[1] = mesh->x - sinfo->z_maxc;
+						CollidedStaticBounds[4] = mesh->z + sinfo->x_maxc;
+						CollidedStaticBounds[5] = mesh->z + sinfo->x_minc;
 					}
-					else if (static_mesh->y_rot == 0x4000)
+					else if (mesh->y_rot == 0x4000)
 					{
-						CollidedStaticBounds[0] = static_mesh->x + sinfo->z_maxc;
-						CollidedStaticBounds[1] = static_mesh->x + sinfo->z_minc;
-						CollidedStaticBounds[4] = static_mesh->z - sinfo->x_minc;
-						CollidedStaticBounds[5] = static_mesh->z - sinfo->x_maxc;
+						CollidedStaticBounds[0] = mesh->x + sinfo->z_maxc;
+						CollidedStaticBounds[1] = mesh->x + sinfo->z_minc;
+						CollidedStaticBounds[4] = mesh->z - sinfo->x_minc;
+						CollidedStaticBounds[5] = mesh->z - sinfo->x_maxc;
 					}
 					else
 					{
-						CollidedStaticBounds[0] = static_mesh->x + sinfo->x_maxc;
-						CollidedStaticBounds[1] = static_mesh->x + sinfo->x_minc;
-						CollidedStaticBounds[4] = static_mesh->z + sinfo->z_maxc;
-						CollidedStaticBounds[5] = static_mesh->z + sinfo->z_minc;
+						CollidedStaticBounds[0] = mesh->x + sinfo->x_maxc;
+						CollidedStaticBounds[1] = mesh->x + sinfo->x_minc;
+						CollidedStaticBounds[4] = mesh->z + sinfo->z_maxc;
+						CollidedStaticBounds[5] = mesh->z + sinfo->z_minc;
 					}
 
 					if (BikeBounds[0] > CollidedStaticBounds[1] &&
@@ -945,12 +941,12 @@ void BikeCollideStaticObjects(long x, long y, long z, short room_number, long he
 						BikeBounds[4] > CollidedStaticBounds[5] &&
 						BikeBounds[5] < CollidedStaticBounds[4])
 					{
-						ShatterObject(0, static_mesh, -128, rn, 0);
+						ShatterObject(0, mesh, -128, rn, 0);
 						SoundEffect(SFX_HIT_ROCK, (PHD_3DPOS*)&pos, SFX_DEFAULT);
 						SmashedMeshRoom[SmashedMeshCount] = rn;
-						SmashedMesh[SmashedMeshCount] = static_mesh;
+						SmashedMesh[SmashedMeshCount] = mesh;
 						SmashedMeshCount++;
-						static_mesh->intensity2 &= ~1;
+						mesh->Flags &= ~1;
 					}
 				}
 			}

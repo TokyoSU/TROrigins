@@ -768,7 +768,7 @@ void ControlCrossbow(short item_number)
 	MESH_INFO** meshlist;
 	ITEM_INFO* item;
 	ITEM_INFO* target;
-	MESH_INFO* static_mesh;
+	MESH_INFO* mesh;
 	FLOOR_INFO* floor;
 	ROOM_INFO* r;
 	PHD_VECTOR oldPos;
@@ -826,8 +826,8 @@ void ControlCrossbow(short item_number)
 
 	if (r->flags & ROOM_UNDERWATER && abovewater)
 	{
-		TriggerSmallSplash(item->pos.x_pos, r->top_ceiling, item->pos.z_pos, 8);
-		SetupRipple(item->pos.x_pos, r->top_ceiling, item->pos.z_pos, (GetRandomControl() & 7) + 8, 0);
+		TriggerSmallSplash(item->pos.x_pos, r->maxceiling, item->pos.z_pos, 8);
+		SetupRipple(item->pos.x_pos, r->maxceiling, item->pos.z_pos, (GetRandomControl() & 7) + 8, 0);
 	}
 
 	if (exploded)
@@ -885,29 +885,29 @@ void ControlCrossbow(short item_number)
 			}
 
 			j = 0;
-			static_mesh = meshlist[0];
+			mesh = meshlist[0];
 
-			while (static_mesh)
+			while (mesh)
 			{
-				if (static_mesh->object_number >= SHATTER0 && static_mesh->object_number < SHATTER8)
+				if (mesh->static_number >= SHATTER0 && mesh->static_number < SHATTER8)
 				{
 					if (exploded)
 					{
-						TriggerExplosionSparks(static_mesh->x, static_mesh->y, static_mesh->z, 3, -2, 0, item->room_number);
-						static_mesh->y -= 128;
-						TriggerShockwave((PHD_VECTOR*)&static_mesh->x, 0xB00028, 64, 0x10806000, 0);
-						static_mesh->y += 128;
+						TriggerExplosionSparks(mesh->x, mesh->y, mesh->z, 3, -2, 0, item->room_number);
+						mesh->y -= 128;
+						TriggerShockwave((PHD_VECTOR*)&mesh->x, 0xB00028, 64, 0x10806000, 0);
+						mesh->y += 128;
 					}
 
-					ShatterObject(0, static_mesh, -128, item->room_number, 0);
+					ShatterObject(0, mesh, -128, item->room_number, 0);
 					SmashedMeshRoom[SmashedMeshCount] = item->room_number;
-					SmashedMesh[SmashedMeshCount] = static_mesh;
+					SmashedMesh[SmashedMeshCount] = mesh;
 					SmashedMeshCount++;
-					static_mesh->intensity2 &= ~1;
+					mesh->Flags &= ~1;
 				}
 
 				j++;
-				static_mesh = meshlist[j];
+				mesh = meshlist[j];
 			}
 
 			break;
@@ -951,7 +951,7 @@ void ControlGrenade(short item_number)
 	ITEM_INFO* item;
 	ITEM_INFO* item2;
 	ITEM_INFO* target;
-	MESH_INFO* static_mesh;
+	MESH_INFO* mesh;
 	FLOOR_INFO* floor;
 	PHD_VECTOR oldPos;
 	PHD_VECTOR pos;
@@ -1114,7 +1114,7 @@ void ControlGrenade(short item_number)
 	if (room[room_number].flags & ROOM_UNDERWATER && abovewater)
 	{
 		splash_setup.x = item->pos.x_pos;
-		splash_setup.y = room[room_number].top_ceiling;
+		splash_setup.y = room[room_number].maxceiling;
 		splash_setup.z = item->pos.z_pos;
 		splash_setup.InnerRad = 32;
 		splash_setup.InnerSize = 8;
@@ -1213,26 +1213,26 @@ void ControlGrenade(short item_number)
 				}
 
 				j = 0;
-				static_mesh = meshlist[0];
+				mesh = meshlist[0];
 
-				while (static_mesh)
+				while (mesh)
 				{
-					if (static_mesh->object_number >= SHATTER0 && static_mesh->object_number < SHATTER8)
+					if (mesh->static_number >= SHATTER0 && mesh->static_number < SHATTER8)
 					{
 						Log(0, "Shatter");
-						TriggerExplosionSparks(static_mesh->x, static_mesh->y, static_mesh->z, 3, -2, 0, item->room_number);
-						static_mesh->y -= 128;
-						TriggerShockwave((PHD_VECTOR*)&static_mesh->x, 0xB00028, 64, 0x10806000, 0);
-						static_mesh->y += 128;
-						ShatterObject(0, static_mesh, -128, item->room_number, 0);
+						TriggerExplosionSparks(mesh->x, mesh->y, mesh->z, 3, -2, 0, item->room_number);
+						mesh->y -= 128;
+						TriggerShockwave((PHD_VECTOR*)&mesh->x, 0xB00028, 64, 0x10806000, 0);
+						mesh->y += 128;
+						ShatterObject(0, mesh, -128, item->room_number, 0);
 						SmashedMeshRoom[SmashedMeshCount] = item->room_number;
-						SmashedMesh[SmashedMeshCount] = static_mesh;
+						SmashedMesh[SmashedMeshCount] = mesh;
 						SmashedMeshCount++;
-						static_mesh->intensity2 &= ~1;
+						mesh->Flags &= ~1;
 					}
 
 					j++;
-					static_mesh = meshlist[j];
+					mesh = meshlist[j];
 				}
 			}
 			else

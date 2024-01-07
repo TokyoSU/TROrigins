@@ -429,7 +429,7 @@ void init_new_inventry()
 	compass_settle_thang = 4096;
 	examine_mode = 0;
 	stats_mode = 0;
-	AlterFOV(CAMERA_FOV);
+	AlterFOV(14560);
 	lara.Busy = 0;
 	GLOBAL_inventoryitemchosen = -1;
 	left_debounce = 0;
@@ -608,7 +608,7 @@ void do_debounced_joystick_poo()
 	}
 }
 
-void DrawInventoryItemMe(INVDRAWITEM* item, long intensity1, long overlay, long shagflag)
+void DrawInventoryItemMe(INVDRAWITEM* item, long shade, long overlay, long shagflag)
 {
 	ANIM_STRUCT* anim;
 	OBJECT_INFO* object;
@@ -662,12 +662,12 @@ void DrawInventoryItemMe(INVDRAWITEM* item, long intensity1, long overlay, long 
 		{
 			alpha = GlobalAlpha;
 
-			if (intensity1 > 127)
-				intensity1 = 255;
+			if (shade > 127)
+				shade = 255;
 			else
-				intensity1 <<= 1;
+				shade <<= 1;
 
-			GlobalAlpha = intensity1 << 24;
+			GlobalAlpha = shade << 24;
 			phd_PutPolygonsPickup(*meshpp, (float)xoffset, (float)yoffset, pcbright);
 			GlobalAlpha = alpha;
 		}
@@ -696,7 +696,7 @@ void DrawInventoryItemMe(INVDRAWITEM* item, long intensity1, long overlay, long 
 
 			if (lara_item->pos.y_rot > -48 && lara_item->pos.y_rot <= 48 && tomb4.cheats)
 			{
-				intensity1 = 96;
+				shade = 96;
 
 				if (rings[RING_INVENTORY]->current_object_list[rings[RING_INVENTORY]->curobjinlist].invitem == INV_SMALLMEDI_ITEM)
 				{
@@ -766,12 +766,12 @@ void DrawInventoryItemMe(INVDRAWITEM* item, long intensity1, long overlay, long 
 			{
 				alpha = GlobalAlpha;
 
-				if (intensity1 > 127)
-					intensity1 = 255;
+				if (shade > 127)
+					shade = 255;
 				else
-					intensity1 <<= 1;
+					shade <<= 1;
 
-				GlobalAlpha = intensity1 << 24;
+				GlobalAlpha = shade << 24;
 				phd_PutPolygonsPickup(*meshpp, (float)xoffset, (float)yoffset, pcbright);
 				GlobalAlpha = alpha;
 			}
@@ -781,7 +781,7 @@ void DrawInventoryItemMe(INVDRAWITEM* item, long intensity1, long overlay, long 
 	phd_PopMatrix();
 }
 
-void DrawThreeDeeObject2D(long x, long y, long num, long intensity1, long xrot, long yrot, long zrot, long bright, long overlay)
+void DrawThreeDeeObject2D(long x, long y, long num, long shade, long xrot, long yrot, long zrot, long bright, long overlay)
 {
 	INVOBJ* objme;
 	INVDRAWITEM item;
@@ -806,7 +806,7 @@ void DrawThreeDeeObject2D(long x, long y, long num, long intensity1, long xrot, 
 	phd_TranslateRel(0, 0, objme->scale1);
 	xoffset = x;
 	yoffset = objme->yoff + y;
-	DrawInventoryItemMe(&item, intensity1, overlay, objme->flags & 8);
+	DrawInventoryItemMe(&item, shade, overlay, objme->flags & 8);
 	phd_PopMatrix();
 	xoffset = phd_centerx;
 	yoffset = phd_centery;
@@ -1654,8 +1654,8 @@ void do_examine_mode()
 		DrawThreeDeeObject2D(long(((float)phd_centerx / 256) * 256 + inventry_xpos), long(((float)phd_centery / 120 * 256 + inventry_ypos) / 2),
 			INV_EXAMINE2_ITEM, examine_mode, 0, 0, 0, 0, 0);
 		objme->scale1 = saved_scale;
-		PrintString(phd_centerx, WANK_RULES_YPOS, 5, GetScriptText(TXT_RULES1), FF_CENTER);
-		PrintString(phd_centerx, WANK_RULES_YPOS + phd_winheight / 2, 5, GetScriptText(TXT_RULES2), FF_CENTER);
+		PrintString(phd_centerx, WANK_RULES_YPOS, 5, SCRIPT_TEXT(TXT_RULES1), FF_CENTER);
+		PrintString(phd_centerx, WANK_RULES_YPOS + phd_winheight / 2, 5, SCRIPT_TEXT(TXT_RULES2), FF_CENTER);
 		break;
 
 	case INV_EXAMINE3_ITEM:
@@ -1664,7 +1664,7 @@ void do_examine_mode()
 		DrawThreeDeeObject2D(long(((float)phd_centerx / 256) * 256 + inventry_xpos), long(((float)phd_centery / 120 * 256 + inventry_ypos) / 2 - 8),
 			INV_EXAMINE3_ITEM, examine_mode, 0x8000, 0x4000, 0x4000, 96, 0);
 		objme->scale1 = saved_scale;
-		PrintString(phd_centerx, WANK_SCROL_YPOS, 8, GetScriptText(TXT_PETEPOO), FF_CENTER);
+		PrintString(phd_centerx, WANK_SCROL_YPOS, 8, SCRIPT_TEXT(TXT_PETEPOO), FF_CENTER);
 		break;
 	}
 
@@ -2187,9 +2187,9 @@ void draw_ammo_selector()
 		if (i == *current_ammo_type)
 		{
 			if (ammo_object_list[i].amount == -1)
-				sprintf(cunter, GetScriptText(TXT_Unlimited_s), GetScriptText(objme->objname));
+				sprintf(cunter, SCRIPT_TEXT(TXT_Unlimited_s), SCRIPT_TEXT(objme->objname));
 			else
-				sprintf(cunter, "%d x %s", ammo_object_list[i].amount, GetScriptText(objme->objname));
+				sprintf(cunter, "%d x %s", ammo_object_list[i].amount, SCRIPT_TEXT(objme->objname));
 
 			if (ammo_selector_fade_val)
 				PrintString(phd_centerx, font_height + phd_centery + 2 * font_height - 9, 8, cunter, FF_CENTER);
@@ -2212,7 +2212,7 @@ void handle_inventry_menu()
 
 	if (rings[RING_AMMO]->ringactive)
 	{
-		PrintString(phd_centerx, phd_centery, 1, GetScriptText(optmessages[5]), FF_CENTER);
+		PrintString(phd_centerx, phd_centery, 1, SCRIPT_TEXT(optmessages[5]), FF_CENTER);
 
 		if (rings[RING_INVENTORY]->objlistmovement || rings[RING_AMMO]->objlistmovement)
 			return;
@@ -2281,16 +2281,16 @@ void handle_inventry_menu()
 	if (ammo_active)
 	{
 		current_options[num].type = 6;
-		current_options[num].text = GetScriptText(inventry_objects_list[ammo_object_list[num].invitem].objname);
+		current_options[num].text = SCRIPT_TEXT(inventry_objects_list[ammo_object_list[num].invitem].objname);
 		num++;
 		current_options[num].type = 7;
-		current_options[num].text = GetScriptText(inventry_objects_list[ammo_object_list[num].invitem].objname);
+		current_options[num].text = SCRIPT_TEXT(inventry_objects_list[ammo_object_list[num].invitem].objname);
 		num++;
 
 		if (opts & 0x80 || opts & 0x100)
 		{
 			current_options[num].type = 8;
-			current_options[num].text = GetScriptText(inventry_objects_list[ammo_object_list[num].invitem].objname);
+			current_options[num].text = SCRIPT_TEXT(inventry_objects_list[ammo_object_list[num].invitem].objname);
 			num++;
 		}
 
@@ -2301,42 +2301,42 @@ void handle_inventry_menu()
 		if (opts & 0x1000)
 		{
 			current_options[num].type = 9;
-			current_options[num].text = GetScriptText(optmessages[6]);
+			current_options[num].text = SCRIPT_TEXT(optmessages[6]);
 			num++;
 		}
 
 		if (opts & 0x2000)
 		{
 			current_options[num].type = 10;
-			current_options[num].text = GetScriptText(optmessages[7]);
+			current_options[num].text = SCRIPT_TEXT(optmessages[7]);
 			num++;
 		}
 
 		if (opts & 0x20)
 		{
 			current_options[num].type = 11;
-			current_options[num].text = GetScriptText(optmessages[8]);
+			current_options[num].text = SCRIPT_TEXT(optmessages[8]);
 			num++;
 		}
 
 		if (opts & 4)
 		{
 			current_options[num].type = 1;
-			current_options[num].text = GetScriptText(optmessages[0]);
+			current_options[num].text = SCRIPT_TEXT(optmessages[0]);
 			num++;
 		}
 
 		if (opts & 2)
 		{
 			current_options[num].type = 5;
-			current_options[num].text = GetScriptText(optmessages[4]);
+			current_options[num].text = SCRIPT_TEXT(optmessages[4]);
 			num++;
 		}
 
 		if (opts & 0xC0 || opts & 0x100)
 		{
 			current_options[num].type = 2;
-			current_options[num].text = GetScriptText(optmessages[1]);
+			current_options[num].text = SCRIPT_TEXT(optmessages[1]);
 			num++;
 		}
 
@@ -2345,7 +2345,7 @@ void handle_inventry_menu()
 			if (is_item_currently_combinable(inv_item))
 			{
 				current_options[num].type = 3;
-				current_options[num].text = GetScriptText(optmessages[2]);
+				current_options[num].text = SCRIPT_TEXT(optmessages[2]);
 				num++;
 			}
 		}
@@ -2353,14 +2353,14 @@ void handle_inventry_menu()
 		if (opts & 1)
 		{
 			current_options[num].type = 3;
-			current_options[num].text = GetScriptText(optmessages[2]);
+			current_options[num].text = SCRIPT_TEXT(optmessages[2]);
 			num++;
 		}
 
 		if (opts & 0x10)
 		{
 			current_options[num].type = 4;
-			current_options[num].text = GetScriptText(optmessages[3]);
+			current_options[num].text = SCRIPT_TEXT(optmessages[3]);
 			num++;
 		}
 	}
@@ -2503,7 +2503,7 @@ void handle_inventry_menu()
 void draw_current_object_list(long ringnum)
 {
 	INVOBJ* objme;
-	long n, maxobj, xoff, intensity1, minobj, objmeup, nummeup, activenum;
+	long n, maxobj, xoff, shade, minobj, objmeup, nummeup, activenum;
 	short ymeup, yrot;
 	char textbufme[128];
 
@@ -2634,34 +2634,34 @@ void draw_current_object_list(long ringnum)
 		if (minobj == i)
 		{
 			if (rings[ringnum]->objlistmovement < 0)
-				intensity1 = 0;
+				shade = 0;
 			else
-				intensity1 = rings[ringnum]->objlistmovement >> 9;
+				shade = rings[ringnum]->objlistmovement >> 9;
 		}
 		else if (i == minobj + 1 && maxobj != minobj + 1)
 		{
 			if (rings[ringnum]->objlistmovement < 0)
-				intensity1 = 128 - ((-128 * rings[ringnum]->objlistmovement) >> 16);
+				shade = 128 - ((-128 * rings[ringnum]->objlistmovement) >> 16);
 			else
-				intensity1 = 128;
+				shade = 128;
 		}
 		else if (i == maxobj)
 		{
 			if (rings[ringnum]->objlistmovement < 0)
-				intensity1 = (-128 * rings[ringnum]->objlistmovement) >> 16;
+				shade = (-128 * rings[ringnum]->objlistmovement) >> 16;
 			else
-				intensity1 = 128 - (short)(rings[ringnum]->objlistmovement >> 9);
+				shade = 128 - (short)(rings[ringnum]->objlistmovement >> 9);
 		}
 		else
-			intensity1 = 128;
+			shade = 128;
 
 		if (!minobj && !maxobj)
-			intensity1 = 128;
+			shade = 128;
 
-		if (ringnum == RING_AMMO && combine_ring_fade_val < 128 && intensity1)
-			intensity1 = combine_ring_fade_val;
-		else if (ringnum == RING_INVENTORY && normal_ring_fade_val < 128 && intensity1)
-			intensity1 = normal_ring_fade_val;
+		if (ringnum == RING_AMMO && combine_ring_fade_val < 128 && shade)
+			shade = combine_ring_fade_val;
+		else if (ringnum == RING_INVENTORY && normal_ring_fade_val < 128 && shade)
+			shade = normal_ring_fade_val;
 
 		objme = &inventry_objects_list[rings[ringnum]->current_object_list[n].invitem];
 
@@ -2748,12 +2748,12 @@ void draw_current_object_list(long ringnum)
 			if (nummeup)
 			{
 				if (nummeup == -1)
-					sprintf(textbufme, GetScriptText(TXT_Unlimited_s), GetScriptText(objme->objname));
+					sprintf(textbufme, SCRIPT_TEXT(TXT_Unlimited_s), SCRIPT_TEXT(objme->objname));
 				else
-					sprintf(textbufme, "%d x %s", nummeup, GetScriptText(objme->objname));
+					sprintf(textbufme, "%d x %s", nummeup, SCRIPT_TEXT(objme->objname));
 			}
 			else
-				sprintf(textbufme, GetScriptText(objme->objname));
+				sprintf(textbufme, SCRIPT_TEXT(objme->objname));
 
 			if (ringnum == RING_INVENTORY)
 				objmeup = long(phd_centery - float(phd_winymax + 1) / 16.0F * 3.0F);
@@ -2799,7 +2799,7 @@ void draw_current_object_list(long ringnum)
 		DrawThreeDeeObject2D(long((((float)phd_centerx / 256.0F) * 256 + inventry_xpos) + xoff + i * OBJLIST_SPACING),
 			long((float)phd_centery / 120.0F * ymeup + inventry_ypos),
 			rings[ringnum]->current_object_list[n].invitem,
-			intensity1, 0, yrot, 0, rings[ringnum]->current_object_list[n].bright, 0);
+			shade, 0, yrot, 0, rings[ringnum]->current_object_list[n].bright, 0);
 
 		n++;
 

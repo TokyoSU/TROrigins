@@ -50,7 +50,7 @@ void TriggerHarpyMissileFlame(short fx_number, long xv, long yv, long zv)
 	sptr->Yvel = (short)yv;
 	sptr->Zvel = (short)zv;
 	sptr->Friction = 68;
-	sptr->flags = 602;
+	sptr->Flags = 602;
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 
 	if (GetRandomControl() & 1)
@@ -67,7 +67,7 @@ void TriggerHarpyMissileFlame(short fx_number, long xv, long yv, long zv)
 	sptr->dSize = sptr->Size >> 5;
 }
 
-void TriggerHarpyMissile(PHD_3DPOS* pos, short room_number, short static_mesh)
+void TriggerHarpyMissile(PHD_3DPOS* pos, short room_number, short mesh)
 {
 	FX_INFO* fx;
 	short fx_num;
@@ -87,8 +87,8 @@ void TriggerHarpyMissile(PHD_3DPOS* pos, short room_number, short static_mesh)
 		fx->counter = short(2 * GetRandomControl() + 0x8000);
 		fx->object_number = BUBBLES;
 		fx->speed = (GetRandomControl() & 0x1F) + 96;
-		fx->flag1 = static_mesh;
-		fx->frame_number = objects[BUBBLES].mesh_index + static_mesh * 2;
+		fx->flag1 = mesh;
+		fx->frame_number = objects[BUBBLES].mesh_index + mesh * 2;
 	}
 }
 
@@ -129,7 +129,7 @@ void TriggerHarpySparks(long x, long y, long z, short xv, short yv, short zv)
 	sptr->dSize = (GetRandomControl() & 1) + 1;
 	sptr->MaxYvel = 0;
 	sptr->Gravity = 0;
-	sptr->flags = 0;
+	sptr->Flags = 0;
 }
 
 void TriggerHarpyFlame(short item_number, uchar NodeNumber, short size)
@@ -163,7 +163,7 @@ void TriggerHarpyFlame(short item_number, uchar NodeNumber, short size)
 	sptr->Yvel = 0;
 	sptr->Zvel = (GetRandomControl() & 0xFF) - 128;
 	sptr->Friction = 5;
-	sptr->flags = 4762;
+	sptr->Flags = 4762;
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 
 	if (GetRandomControl() & 1)

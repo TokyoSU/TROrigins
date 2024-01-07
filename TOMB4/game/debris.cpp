@@ -197,7 +197,7 @@ long GetFreeDebris()
 
 void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num, short RoomNumber, long NoXZVel)
 {
-	MESH_DATA* static_mesh;
+	MESH_DATA* mesh;
 	TEXTURESTRUCT* tex;
 	PHD_VECTOR TPos;
 	PHD_VECTOR VPos;
@@ -235,20 +235,20 @@ void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num,
 	}
 	else
 	{
-		meshp = meshes[static_objects[StaticMesh->object_number].mesh_number];
+		meshp = meshes[static_objects[StaticMesh->static_number].mesh_number];
 		TPos.x = StaticMesh->x;
 		TPos.y = StaticMesh->y;
 		TPos.z = StaticMesh->z;
 		RotY = StaticMesh->y_rot;
-		rgb = StaticMesh->intensity1;
+		rgb = StaticMesh->shade;
 	}
 
-	static_mesh = (MESH_DATA*)meshp;
-	DebrisMesh = static_mesh;
-	static_mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&vtx, 0);
-	nVtx = static_mesh->nVerts;
-	nTris = static_mesh->ngt3;
-	nQuads = static_mesh->ngt4;
+	mesh = (MESH_DATA*)meshp;
+	DebrisMesh = mesh;
+	mesh->SourceVB->Lock(DDLOCK_READONLY, (LPVOID*)&vtx, 0);
+	nVtx = mesh->nVerts;
+	nTris = mesh->ngt3;
+	nQuads = mesh->ngt4;
 
 	if (nVtx > 256)
 		nVtx = 256;
@@ -276,7 +276,7 @@ void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num,
 		offsets += 3;
 	}
 
-	static_mesh->SourceVB->Unlock();
+	mesh->SourceVB->Unlock();
 	VPos.x = pos.x / lp;
 	VPos.y = pos.y / lp;
 	VPos.z = pos.z / lp;
@@ -288,7 +288,7 @@ void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num,
 	vec.room_number = RoomNumber;
 	DebrisMeshAmbient = room[RoomNumber].ambient;
 
-	face_data = (ushort*)static_mesh->gt3;
+	face_data = (ushort*)mesh->gt3;
 
 	while (nTris && Num)
 	{
@@ -355,7 +355,7 @@ void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num,
 			vec.z += TPos.z;
 			c = rgb;
 
-			if (shatter_item != NULL && (shatter_item->flags & EDF_INVERT_SHATTER_COLOR))
+			if (shatter_item && shatter_item->Flags & 0x400)
 				c = -rgb;
 
 			TriggerDebris(&vec, tex, offsets, Vels, c);
@@ -365,7 +365,7 @@ void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num,
 		nTris--;
 	}
 
-	face_data = (ushort*)static_mesh->gt4;
+	face_data = (ushort*)mesh->gt4;
 
 	while (nQuads && Num)
 	{
@@ -433,7 +433,7 @@ void ShatterObject(SHATTER_ITEM* shatter_item, MESH_INFO* StaticMesh, short Num,
 			vec.z += TPos.z;
 			c = rgb;
 
-			if (shatter_item && shatter_item->flags & 0x400)
+			if (shatter_item && shatter_item->Flags & 0x400)
 				c = -rgb;
 
 			TriggerDebris(&vec, tex, offsets, Vels, c);

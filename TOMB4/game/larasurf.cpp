@@ -247,15 +247,15 @@ long LaraTestWaterClimbOut(ITEM_INFO* item, COLL_INFO* coll)
 	long hdif;
 	short angle;
 
-	if (coll->coll_type != CT_FRONT || !(input & IN_ACTION) || abs(coll->left2.floor - coll->right2.floor) >= 60)
+	if (coll->coll_type != CT_FRONT || !(input & IN_ACTION) || abs(coll->left_floor2 - coll->right_floor2) >= 60)
 		return 0;
 
 	if (lara.gun_status != LG_NO_ARMS && (lara.gun_status != LG_READY || lara.gun_type != WEAPON_FLARE))
 		return 0;
 
-	hdif = coll->front.floor + 700;
+	hdif = coll->front_floor + 700;
 
-	if (coll->front.ceiling > 0 || coll->middle.ceiling > -384 || hdif <= -512 || hdif > 316)
+	if (coll->front_ceiling > 0 || coll->mid_ceiling > -384 || hdif <= -512 || hdif > 316)
 		return 0;
 
 	angle = item->pos.y_rot;
@@ -272,7 +272,7 @@ long LaraTestWaterClimbOut(ITEM_INFO* item, COLL_INFO* coll)
 	if (angle & 0x3FFF)
 		return 0;
 
-	item->pos.y_pos += coll->front.floor + 695;
+	item->pos.y_pos += coll->front_floor + 695;
 	UpdateLaraRoom(item, -381);
 
 	switch (angle)
@@ -325,10 +325,10 @@ long LaraTestWaterClimbOut(ITEM_INFO* item, COLL_INFO* coll)
 
 long LaraTestWaterStepOut(ITEM_INFO* item, COLL_INFO* coll)
 {
-	if (coll->coll_type == CT_FRONT || coll->middle.type == BIG_SLOPE || coll->middle.type == DIAGONAL || coll->middle.floor >= 0)
+	if (coll->coll_type == CT_FRONT || coll->mid_type == BIG_SLOPE || coll->mid_type == DIAGONAL || coll->mid_floor >= 0)
 		return 0;
 
-	if (coll->middle.floor < -128)
+	if (coll->mid_floor < -128)
 	{
 		item->anim_number = ANIM_SURF2WADE1;
 		item->frame_number = anims[ANIM_SURF2WADE1].frame_base;
@@ -347,7 +347,7 @@ long LaraTestWaterStepOut(ITEM_INFO* item, COLL_INFO* coll)
 		item->goal_anim_state = AS_WADE;
 	}
 
-	item->pos.y_pos += coll->front.floor + 695;
+	item->pos.y_pos += coll->front_floor + 695;
 	UpdateLaraRoom(item, -381);
 	item->pos.x_rot = 0;
 	item->pos.z_rot = 0;
@@ -365,7 +365,7 @@ void LaraSurfaceCollision(ITEM_INFO* item, COLL_INFO* coll)
 	ShiftItem(item, coll);
 
 	if (coll->coll_type & (CT_FRONT | CT_TOP | CT_TOP_FRONT | CT_CLAMP)
-		|| coll->middle.floor < 0 && (coll->middle.type == BIG_SLOPE || coll->middle.type == DIAGONAL))
+		|| coll->mid_floor < 0 && (coll->mid_type == BIG_SLOPE || coll->mid_type == DIAGONAL))
 	{
 		item->fallspeed = 0;
 		item->pos.x_pos = coll->old.x;

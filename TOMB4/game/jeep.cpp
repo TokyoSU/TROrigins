@@ -174,7 +174,7 @@ static void TriggerExhaustSmoke(long x, long y, long z, short angle, long veloci
 
 	if (GetRandomControl() & 1)
 	{
-		sptr->flags = 538;
+		sptr->Flags = 538;
 		sptr->RotAng = GetRandomControl() & 0xFFF;
 
 		if (GetRandomControl() & 1)
@@ -183,7 +183,7 @@ static void TriggerExhaustSmoke(long x, long y, long z, short angle, long veloci
 			sptr->RotAdd = (GetRandomControl() & 7) + 24;
 	}
 	else
-		sptr->flags = 522;
+		sptr->Flags = 522;
 
 	sptr->Scalar = 1;
 	sptr->Gravity = -4 - (GetRandomControl() & 3);
@@ -1061,33 +1061,30 @@ static long UserControl(ITEM_INFO* item, long height, long* pitch)
 
 void JeepBaddieCollision(ITEM_INFO* item)
 {
-	ROOM_INFO* r;
 	JEEPINFO* jeep;
-	ITEM_INFO* collided = NULL;
+	ITEM_INFO* collided;
 	OBJECT_INFO* obj;
-	long i, j, dx, dy, dz;
+	short* doors;
+	long j, dx, dy, dz;
 	short room_count, item_number;
 
-	r = &room[item->room_number];
 	jeep = (JEEPINFO*)item->data;
 	room_count = 1;
 	jroomies[0] = item->room_number;
+	doors = room[item->room_number].door;
 
-	if (r->door)
+	for (int i = *doors++; i > 0; i--, doors += 16)
 	{
-		for (i = 0; i < r->door->portal_count; i++)
+		for (j = 0; j < room_count; j++)
 		{
-			auto& cur_door = r->door->portals[i];
-			for (j = 0; j < room_count; j++)
-			{
-				if (jroomies[j] == cur_door.adjoiningRoom)
-					break;
-			}
-			if (j == room_count)
-			{
-				jroomies[room_count] = cur_door.adjoiningRoom;
-				room_count++;
-			}
+			if (jroomies[j] == *doors)
+				break;
+		}
+
+		if (j == room_count)
+		{
+			jroomies[room_count] = *doors;
+			room_count++;
 		}
 	}
 
@@ -1146,16 +1143,16 @@ void JeepBaddieCollision(ITEM_INFO* item)
 
 void JeepCollideStaticObjects(long x, long y, long z, short room_number, long height)
 {
-	MESH_INFO* static_mesh;
+	MESH_INFO* mesh;
 	STATIC_INFO* sinfo;
 	ROOM_INFO* r;
 	PHD_VECTOR pos;
-	long i, j;
+	short* doors;
+	long j;
 	static long JeepBounds[6] = { 0, 0, 0, 0, 0, 0 };
 	static long CollidedStaticBounds[6] = { 0, 0, 0, 0, 0, 0 };
 	short room_count, rn;
 
-	r = &room[room_number];
 	pos.x = x;
 	pos.y = y;
 	pos.z = z;
@@ -1167,22 +1164,20 @@ void JeepCollideStaticObjects(long x, long y, long z, short room_number, long he
 	JeepBounds[5] = z - 256;
 	room_count = 1;
 	jroomies[0] = room_number;
+	doors = room[room_number].door;
 
-	if (r->door)
+	for (int i = *doors++; i > 0; i--, doors += 16)
 	{
-		for (i = 0; i < r->door->portal_count; i++)
+		for (j = 0; j < room_count; j++)
 		{
-			auto& cur_door = r->door->portals[i];
-			for (j = 0; j < room_count; j++)
-			{
-				if (jroomies[j] == cur_door.adjoiningRoom)
-					break;
-			}
-			if (j == room_count)
-			{
-				jroomies[room_count] = cur_door.adjoiningRoom;
-				room_count++;
-			}
+			if (jroomies[j] == *doors)
+				break;
+		}
+
+		if (j == room_count)
+		{
+			jroomies[room_count] = *doors;
+			room_count++;
 		}
 	}
 
@@ -1190,46 +1185,46 @@ void JeepCollideStaticObjects(long x, long y, long z, short room_number, long he
 	{
 		rn = jroomies[i];
 		r = &room[rn];
-		static_mesh = r->static_mesh;
+		mesh = r->mesh;
 
-		for (j = r->num_meshes; j > 0; j--, static_mesh++)
+		for (j = r->num_meshes; j > 0; j--, mesh++)
 		{
-			sinfo = &static_objects[static_mesh->object_number];
+			sinfo = &static_objects[mesh->static_number];
 
-			if (static_mesh->intensity2 & 1)
+			if (mesh->Flags & 1)
 			{
-				if (static_mesh->object_number >= SHATTER0 && static_mesh->object_number <= SHATTER9)
+				if (mesh->static_number >= SHATTER0 && mesh->static_number <= SHATTER9)
 				{
-					CollidedStaticBounds[2] = static_mesh->y + sinfo->y_maxc;
-					CollidedStaticBounds[3] = static_mesh->y + sinfo->y_minc;
+					CollidedStaticBounds[2] = mesh->y + sinfo->y_maxc;
+					CollidedStaticBounds[3] = mesh->y + sinfo->y_minc;
 
-					if (static_mesh->y_rot == -0x8000)
+					if (mesh->y_rot == -0x8000)
 					{
-						CollidedStaticBounds[0] = static_mesh->x - sinfo->x_minc;
-						CollidedStaticBounds[1] = static_mesh->x - sinfo->x_maxc;
-						CollidedStaticBounds[4] = static_mesh->z - sinfo->z_minc;
-						CollidedStaticBounds[5] = static_mesh->z - sinfo->z_maxc;
+						CollidedStaticBounds[0] = mesh->x - sinfo->x_minc;
+						CollidedStaticBounds[1] = mesh->x - sinfo->x_maxc;
+						CollidedStaticBounds[4] = mesh->z - sinfo->z_minc;
+						CollidedStaticBounds[5] = mesh->z - sinfo->z_maxc;
 					}
-					else if (static_mesh->y_rot == -0x4000)
+					else if (mesh->y_rot == -0x4000)
 					{
-						CollidedStaticBounds[0] = static_mesh->x - sinfo->z_minc;
-						CollidedStaticBounds[1] = static_mesh->x - sinfo->z_maxc;
-						CollidedStaticBounds[4] = static_mesh->z + sinfo->x_maxc;
-						CollidedStaticBounds[5] = static_mesh->z + sinfo->x_minc;
+						CollidedStaticBounds[0] = mesh->x - sinfo->z_minc;
+						CollidedStaticBounds[1] = mesh->x - sinfo->z_maxc;
+						CollidedStaticBounds[4] = mesh->z + sinfo->x_maxc;
+						CollidedStaticBounds[5] = mesh->z + sinfo->x_minc;
 					}
-					else if (static_mesh->y_rot == 0x4000)
+					else if (mesh->y_rot == 0x4000)
 					{
-						CollidedStaticBounds[0] = static_mesh->x + sinfo->z_maxc;
-						CollidedStaticBounds[1] = static_mesh->x + sinfo->z_minc;
-						CollidedStaticBounds[4] = static_mesh->z - sinfo->x_minc;
-						CollidedStaticBounds[5] = static_mesh->z - sinfo->x_maxc;
+						CollidedStaticBounds[0] = mesh->x + sinfo->z_maxc;
+						CollidedStaticBounds[1] = mesh->x + sinfo->z_minc;
+						CollidedStaticBounds[4] = mesh->z - sinfo->x_minc;
+						CollidedStaticBounds[5] = mesh->z - sinfo->x_maxc;
 					}
 					else
 					{
-						CollidedStaticBounds[0] = static_mesh->x + sinfo->x_maxc;
-						CollidedStaticBounds[1] = static_mesh->x + sinfo->x_minc;
-						CollidedStaticBounds[4] = static_mesh->z + sinfo->z_maxc;
-						CollidedStaticBounds[5] = static_mesh->z + sinfo->z_minc;
+						CollidedStaticBounds[0] = mesh->x + sinfo->x_maxc;
+						CollidedStaticBounds[1] = mesh->x + sinfo->x_minc;
+						CollidedStaticBounds[4] = mesh->z + sinfo->z_maxc;
+						CollidedStaticBounds[5] = mesh->z + sinfo->z_minc;
 					}
 
 					if (JeepBounds[0] > CollidedStaticBounds[1] &&
@@ -1239,12 +1234,12 @@ void JeepCollideStaticObjects(long x, long y, long z, short room_number, long he
 						JeepBounds[4] > CollidedStaticBounds[5] &&
 						JeepBounds[5] < CollidedStaticBounds[4])
 					{
-						ShatterObject(0, static_mesh, -128, rn, 0);
+						ShatterObject(0, mesh, -128, rn, 0);
 						SoundEffect(SFX_HIT_ROCK, (PHD_3DPOS*)&pos, SFX_DEFAULT);
 						SmashedMeshRoom[SmashedMeshCount] = rn;
-						SmashedMesh[SmashedMeshCount] = static_mesh;
+						SmashedMesh[SmashedMeshCount] = mesh;
 						SmashedMeshCount++;
-						static_mesh->intensity2 &= ~1;
+						mesh->Flags &= ~1;
 					}
 				}
 			}
@@ -1974,7 +1969,7 @@ void EnemyJeepControl(short item_number)
 			{
 				aiobj = &AIObjects[i];
 
-				if (aiobj->ocb == item->item_flags[3] && aiobj->room_number != 255)
+				if (aiobj->trigger_flags == item->item_flags[3] && aiobj->room_number != 255)
 				{
 					jeep->enemy = &jeep->ai_target;
 					jeep->enemy->object_number = aiobj->object_number;
@@ -1984,7 +1979,7 @@ void EnemyJeepControl(short item_number)
 					jeep->enemy->pos.z_pos = aiobj->z;
 					jeep->enemy->pos.y_rot = aiobj->y_rot;
 					jeep->enemy->flags = aiobj->flags;
-					jeep->enemy->ocb = aiobj->ocb;
+					jeep->enemy->trigger_flags = aiobj->trigger_flags;
 					jeep->enemy->box_number = aiobj->box_number;
 
 					if (!(jeep->enemy->flags & 0x20))

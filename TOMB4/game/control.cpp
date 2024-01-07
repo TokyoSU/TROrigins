@@ -136,9 +136,9 @@ static long S_Death()
 		{
 			if (!menu)	//"main" menu
 			{
-				PrintString(phd_centerx, phd_centery, 3, GetScriptText(TXT_GAME_OVER), FF_CENTER);
-				PrintString(phd_centerx, phd_centery + 2 * font_height, !selection ? 1 : 2, GetScriptText(TXT_Load_Game), FF_CENTER);
-				PrintString(phd_centerx, phd_centery + 3 * font_height, selection == 1 ? 1 : 2, GetScriptText(TXT_Exit_to_Title), FF_CENTER);
+				PrintString(phd_centerx, phd_centery, 3, SCRIPT_TEXT(TXT_GAME_OVER), FF_CENTER);
+				PrintString(phd_centerx, phd_centery + 2 * font_height, !selection ? 1 : 2, SCRIPT_TEXT(TXT_Load_Game), FF_CENTER);
+				PrintString(phd_centerx, phd_centery + 3 * font_height, selection == 1 ? 1 : 2, SCRIPT_TEXT(TXT_Exit_to_Title), FF_CENTER);
 
 				if (selection)
 				{
@@ -189,7 +189,7 @@ static long S_Death()
 		}
 		else
 		{
-			PrintString(phd_centerx, phd_centery, 3, GetScriptText(TXT_GAME_OVER), FF_CENTER);
+			PrintString(phd_centerx, phd_centery, 3, SCRIPT_TEXT(TXT_GAME_OVER), FF_CENTER);
 
 			if (lara.death_count > 300 || (lara.death_count > 150 && input != IN_NONE))
 				return 1;
@@ -209,7 +209,7 @@ long ControlPhase(long nframes, long demo_mode)
 	ITEM_INFO* item;
 	FX_INFO* fx;
 	FLOOR_INFO* floor;
-	MESH_INFO* static_mesh;
+	MESH_INFO* mesh;
 	short item_num, nex, fx_num;
 
 	RegeneratePickups();
@@ -341,7 +341,7 @@ long ControlPhase(long nframes, long demo_mode)
 			{
 				BinocularRange = 0;
 				LaserSight = 0;
-				AlterFOV(CAMERA_FOV);
+				AlterFOV(14560);
 				lara_item->mesh_bits = -1;
 				lara.Busy = 0;
 				camera.type = BinocularOldCamera;
@@ -451,9 +451,9 @@ long ControlPhase(long nframes, long demo_mode)
 		while (SmashedMeshCount)
 		{
 			SmashedMeshCount--;
-			static_mesh = SmashedMesh[SmashedMeshCount];
-			floor = GetFloor(static_mesh->x, static_mesh->y, static_mesh->z, &SmashedMeshRoom[SmashedMeshCount]);
-			GetHeight(floor, static_mesh->x, static_mesh->y, static_mesh->z);
+			mesh = SmashedMesh[SmashedMeshCount];
+			floor = GetFloor(mesh->x, mesh->y, mesh->z, &SmashedMeshRoom[SmashedMeshCount]);
+			GetHeight(floor, mesh->x, mesh->y, mesh->z);
 			TestTriggers(trigger_index, 1, 0);
 			floor->stopper = 0;
 			SmashedMesh[SmashedMeshCount] = 0;
@@ -523,7 +523,7 @@ long ControlPhase(long nframes, long demo_mode)
 	return 0;
 }
 
-void FlipMap(long flip_number)
+void FlipMap(long FlipNumber)
 {
 	ROOM_INFO* r;
 	ROOM_INFO* flipped;
@@ -533,7 +533,8 @@ void FlipMap(long flip_number)
 	for (int i = 0; i < number_rooms; i++)
 	{
 		r = &room[i];
-		if (r->flipped_room >= 0 && r->flip_number == flip_number)
+
+		if (r->flipped_room >= 0 && r->FlipNumber == FlipNumber)
 		{
 			for (int j = r->item_number; j != NO_ITEM; j = items[j].next_item)
 				items[j].il.room_number = 255;
@@ -551,8 +552,8 @@ void FlipMap(long flip_number)
 		}
 	}
 
-	flip_stats[flip_number] = !flip_stats[flip_number];
-	flip_status = flip_stats[flip_number];
+	flip_stats[FlipNumber] = !flip_stats[FlipNumber];
+	flip_status = flip_stats[FlipNumber];
 
 	for (short slot = 0; slot < 5; slot++)
 	{
@@ -563,28 +564,33 @@ void FlipMap(long flip_number)
 
 void RemoveRoomFlipItems(ROOM_INFO* r)
 {
-	for (short item_num = r->item_number; item_num != NO_ITEM;)
+	ITEM_INFO* item;
+
+	for (short item_num = r->item_number; item_num != NO_ITEM; item_num = item->next_item)
 	{
-		auto* item = &items[item_num];
+		item = &items[item_num];
+
 		if (item->flags & IFL_INVISIBLE && objects[item->object_number].intelligent)
 		{
-			if (item->hit_points <= 0 && item->hit_points != NOT_TARGETABLE)
+			if (item->hit_points <= 0 && item->hit_points != -16384)
 				KillItem(item_num);
 		}
-		item_num = item->next_item;
 	}
 }
 
 void AddRoomFlipItems(ROOM_INFO* r)
 {
-	for (short item_num = r->item_number; item_num != NO_ITEM;)
+	ITEM_INFO* item;
+
+	for (short item_num = r->item_number; item_num != NO_ITEM; item_num =item->next_item)
 	{
-		auto* item = &items[item_num];
-		if (item->object_number == RAISING_BLOCK1 && item->item_flags[1])
+		item = &items[item_num];
+
+		if (items[item_num].object_number == RAISING_BLOCK1 && item->item_flags[1])
 			AlterFloorHeight(item, -1024);
+
 		if (item->object_number == RAISING_BLOCK2 && item->item_flags[1])
 			AlterFloorHeight(item, -2048);
-		item_num = item->next_item;
 	}
 }
 
@@ -787,10 +793,11 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 			if (key >= 2 || ((type == ANTIPAD || type == ANTITRIGGER || type == HEAVYANTITRIGGER) && item->flags & IFL_ANTITRIGGER_ONESHOT) ||
 				(type == SWITCH && item->flags & IFL_SWITCH_ONESHOT) ||
 				(type != SWITCH && type != ANTIPAD && type != ANTITRIGGER && type != HEAVYANTITRIGGER && item->flags & IFL_INVISIBLE) ||
-				((type != ANTIPAD && type != ANTITRIGGER && type != HEAVYANTITRIGGER) && (item->object_number == DART_EMITTER && item->activated)))
+				((type != ANTIPAD && type != ANTITRIGGER && type != HEAVYANTITRIGGER) && (item->object_number == DART_EMITTER && item->active)))
 				break;
 
 			item->timer = timer;
+
 			if (timer != 1)
 				item->timer *= 30;
 
@@ -835,7 +842,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 			if (flags & IFL_INVISIBLE)
 				item->flags |= IFL_INVISIBLE;
 
-			if (!item->activated)
+			if (!item->active)
 			{
 				if (objects[item->object_number].intelligent)
 				{
@@ -854,6 +861,7 @@ void TestTriggers(short* data, long heavy, long HeavyFlags)
 							item->status = ITEM_ACTIVE;
 						else
 							item->status = ITEM_INVISIBLE;
+
 						AddActiveItem(value);
 					}
 				}
@@ -2403,7 +2411,7 @@ long ExplodeItemNode(ITEM_INFO* item, long Node, long NoXZVel, long bits)
 	ShatterItem.Sphere.z = Slist[Node].z;
 	ShatterItem.YRot = item->pos.y_rot;
 	ShatterItem.il = &item->il;
-	ShatterItem.flags = item->object_number != CROSSBOW_BOLT ? 0 : 1024;
+	ShatterItem.Flags = item->object_number != CROSSBOW_BOLT ? 0 : 1024;
 	ShatterObject(&ShatterItem, 0, (short)bits, item->room_number, NoXZVel);
 	item->mesh_bits &= ~ShatterItem.Bit;
 	return 1;
@@ -2429,7 +2437,7 @@ long IsRoomOutside(long x, long y, long z)
 	{
 		r = &room[offset & 0x7FFF];
 
-		if (y >= r->top_ceiling && y <= r->bottom_floor &&
+		if (y >= r->maxceiling && y <= r->minfloor &&
 			z >= r->z + 1024 && z <= ((r->x_size - 1) << 10) + r->z &&
 			x >= r->x + 1024 && x <= ((r->y_size - 1) << 10) + r->x)
 		{
@@ -2456,7 +2464,7 @@ long IsRoomOutside(long x, long y, long z)
 		{
 			r = &room[*pTable];
 
-			if (y >= r->top_ceiling && y <= r->bottom_floor &&
+			if (y >= r->maxceiling && y <= r->minfloor &&
 				z >= r->z + 1024 && z <= ((r->x_size - 1) << 10) + r->z &&
 				x >= r->x + 1024 && x <= ((r->y_size - 1) << 10) + r->x)
 			{
@@ -2482,10 +2490,10 @@ long IsRoomOutside(long x, long y, long z)
 	return -2;
 }
 
-long ObjectOnLOS2(GAME_VECTOR* start, GAME_VECTOR* target, PHD_VECTOR* Coord, MESH_INFO** StaticMesh, bool includeLaraOnSearch)
+long ObjectOnLOS2(GAME_VECTOR* start, GAME_VECTOR* target, PHD_VECTOR* Coord, MESH_INFO** StaticMesh)
 {
 	ITEM_INFO* item;
-	MESH_INFO* static_mesh;
+	MESH_INFO* mesh;
 	ROOM_INFO* r;
 	PHD_3DPOS ItemPos;
 	short* bounds;
@@ -2506,13 +2514,14 @@ long ObjectOnLOS2(GAME_VECTOR* start, GAME_VECTOR* target, PHD_VECTOR* Coord, ME
 		{
 			item = &items[item_number];
 
-			if (item->status != ITEM_DEACTIVATED && item->status != ITEM_INVISIBLE && (!includeLaraOnSearch && item->object_number != LARA))
+			if (item->status != ITEM_DEACTIVATED && item->status != ITEM_INVISIBLE && item->object_number != LARA)
 			{
 				bounds = GetBoundsAccurate(item);
 				ItemPos.x_pos = item->pos.x_pos;
 				ItemPos.y_pos = item->pos.y_pos;
 				ItemPos.z_pos = item->pos.z_pos;
 				ItemPos.y_rot = item->pos.y_rot;
+
 				if (DoRayBox(start, target, bounds, &ItemPos, Coord, item_number))
 					target->room_number = los_rooms[i];
 			}
@@ -2520,18 +2529,18 @@ long ObjectOnLOS2(GAME_VECTOR* start, GAME_VECTOR* target, PHD_VECTOR* Coord, ME
 
 		for (int j = 0; j < r->num_meshes; j++)
 		{
-			static_mesh = &r->static_mesh[j];
+			mesh = &r->mesh[j];
 
-			if (static_mesh->intensity2 & 1)
+			if (mesh->Flags & 1)
 			{
-				ItemPos.x_pos = static_mesh->x;
-				ItemPos.y_pos = static_mesh->y;
-				ItemPos.z_pos = static_mesh->z;
-				ItemPos.y_rot = static_mesh->y_rot;
+				ItemPos.x_pos = mesh->x;
+				ItemPos.y_pos = mesh->y;
+				ItemPos.z_pos = mesh->z;
+				ItemPos.y_rot = mesh->y_rot;
 
-				if (DoRayBox(start, target, &static_objects[static_mesh->object_number].x_minc, &ItemPos, Coord, -1 - static_mesh->object_number))
+				if (DoRayBox(start, target, &static_objects[mesh->static_number].x_minc, &ItemPos, Coord, -1 - mesh->static_number))
 				{
-					*StaticMesh = static_mesh;
+					*StaticMesh = mesh;
 					target->room_number = los_rooms[i];
 				}
 			}
@@ -2582,13 +2591,13 @@ long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long f
 			{
 				if (item_no < 0)
 				{
-					if (Mesh->object_number >= SHATTER0 && Mesh->object_number < SHATTER8)
+					if (Mesh->static_number >= SHATTER0 && Mesh->static_number < SHATTER8)
 					{
 						ShatterObject(0, Mesh, 128, target.room_number, 0);
 						SmashedMeshRoom[SmashedMeshCount] = target.room_number;
 						SmashedMesh[SmashedMeshCount] = Mesh;
 						SmashedMeshCount++;
-						Mesh->intensity2 &= ~1;
+						Mesh->Flags &= ~1;
 						SoundEffect(SFX_HIT_ROCK, (PHD_3DPOS*)Mesh, SFX_DEFAULT);
 					}
 
@@ -2614,11 +2623,11 @@ long GetTargetOnLOS(GAME_VECTOR* src, GAME_VECTOR* dest, long DrawTarget, long f
 						}
 						else
 						{
-							if (objects[shotitem->object_number].hit_effect == 1)
+							if (objects[shotitem->object_number].HitEffect == 1)
 								DoBloodSplat(target.x, target.y, target.z, (GetRandomControl() & 3) + 3, shotitem->pos.y_rot, shotitem->room_number);
-							else if (objects[shotitem->object_number].hit_effect == 2)
+							else if (objects[shotitem->object_number].HitEffect == 2)
 								TriggerRicochetSpark(&target, lara_item->pos.y_rot, 3, -5);
-							else if (objects[shotitem->object_number].hit_effect == 3)
+							else if (objects[shotitem->object_number].HitEffect == 3)
 								TriggerRicochetSpark(&target, lara_item->pos.y_rot, 3, 0);
 
 							shotitem->hit_status = 1;
@@ -2699,8 +2708,8 @@ void AnimateItem(ITEM_INFO* item)
 	ushort type, num;
 
 	anim = &anims[item->anim_number];
-	item->touch_bits = NULL;
-	item->hit_status = false;
+	item->touch_bits = 0;
+	item->hit_status = 0;
 	item->frame_number++;
 
 	if (anim->number_changes > 0)
@@ -2709,6 +2718,7 @@ void AnimateItem(ITEM_INFO* item)
 		{
 			anim = &anims[item->anim_number];
 			item->current_anim_state = anim->current_anim_state;
+
 			if (item->required_anim_state == item->current_anim_state)
 				item->required_anim_state = 0;
 		}
@@ -2719,6 +2729,7 @@ void AnimateItem(ITEM_INFO* item)
 		if (anim->number_commands > 0)
 		{
 			cmd = &commands[anim->command_index];
+
 			for (int i = anim->number_commands; i > 0; i--)
 			{
 				switch (*cmd++)
@@ -2727,23 +2738,25 @@ void AnimateItem(ITEM_INFO* item)
 					TranslateItem(item, cmd[0], cmd[1], cmd[2]);
 					cmd += 3;
 					break;
+
 				case ACMD_JUMPVEL:
 					item->fallspeed = cmd[0];
 					item->speed = cmd[1];
-					item->gravity_status = true;
+					item->gravity_status = 1;
 					cmd += 2;
 					break;
+
 				case ACMD_KILL:
+
 					if (objects[item->object_number].intelligent)
 						item->after_death = 1;
+
 					item->status = ITEM_DEACTIVATED;
 					break;
+
 				case ACMD_PLAYSFX:
 				case ACMD_FLIPEFFECT:
 					cmd += 2;
-					break;
-				case ACMD_CREATUREEFFECT:
-					cmd += 3;
 					break;
 				}
 			}
@@ -2766,6 +2779,7 @@ void AnimateItem(ITEM_INFO* item)
 	if (anim->number_commands > 0)
 	{
 		cmd = &commands[anim->command_index];
+
 		for (int i = anim->number_commands; i > 0; i--)
 		{
 			switch (*cmd++)
@@ -2773,14 +2787,18 @@ void AnimateItem(ITEM_INFO* item)
 			case ACMD_SETPOS:
 				cmd += 3;
 				break;
+
 			case ACMD_JUMPVEL:
 				cmd += 2;
 				break;
+
 			case ACMD_PLAYSFX:
-				if (item->frame_number == *(cmd + 0))
+
+				if (item->frame_number == *cmd)
 				{
-					num = *(cmd + 1) & 0x3FFF;
-					type = *(cmd + 1) & 0xC000;
+					num = cmd[1] & 0x3FFF;
+					type = cmd[1] & 0xC000;
+
 					if (objects[item->object_number].water_creature)
 					{
 						if (room[item->room_number].flags & ROOM_UNDERWATER)
@@ -2788,7 +2806,7 @@ void AnimateItem(ITEM_INFO* item)
 						else
 							SoundEffect(num, &item->pos, SFX_DEFAULT);
 					}
-					else if (item->room_number == NO_ROOM)
+					else if (item->room_number == 255)
 					{
 						item->pos.x_pos = lara_item->pos.x_pos;
 						item->pos.y_pos = lara_item->pos.y_pos - 762;
@@ -2803,39 +2821,33 @@ void AnimateItem(ITEM_INFO* item)
 					else if (type == SFX_LANDANDWATER || type == SFX_LANDONLY)
 						SoundEffect(num, &item->pos, SFX_DEFAULT);
 				}
+
 				cmd += 2;
 				break;
+
 			case ACMD_FLIPEFFECT:
-				if (item->frame_number == *(cmd + 0))
+
+				if (item->frame_number == *cmd)
 				{
-					num = *(cmd + 1) & 0x3FFF;
-					FXType = *(cmd + 1) & 0xC000;
-					if (FlipEffectRoutines[num] != NULL)
-						FlipEffectRoutines[num](item);
+					FXType = cmd[1] & 0xC000;
+					effect_routines[cmd[1] & 0x3FFF](item);
 				}
+
 				cmd += 2;
-				break;
-			case ACMD_CREATUREEFFECT:
-				if (item->frame_number == *(cmd + 0))
-				{
-					num = *(cmd + 1) & 0x3FFF;
-					FXType = *(cmd + 1) & 0xC000;
-					if (CreatureEffectRoutines[num] != NULL)
-						CreatureEffectRoutines[num](item, *(cmd + 2));
-				}
-				cmd += 3;
 				break;
 			}
 		}
 	}
 
 	speed2 = 0;
+
 	if (item->gravity_status)
 	{
 		if (item->fallspeed < 128)
 			item->fallspeed += 6;
 		else
 			item->fallspeed++;
+
 		item->pos.y_pos += item->fallspeed;
 	}
 	else
@@ -3145,7 +3157,7 @@ long DoRayBox(GAME_VECTOR* start, GAME_VECTOR* target, short* bounds, PHD_3DPOS*
 				ShatterItem.Sphere.z = Slist[ClosestNode].z;
 				ShatterItem.Bit = ClosestBit;
 				ShatterItem.il = &item->il;
-				ShatterItem.flags = 0;
+				ShatterItem.Flags = 0;
 			}
 
 			return 1;

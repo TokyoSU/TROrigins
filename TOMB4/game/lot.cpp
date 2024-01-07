@@ -175,7 +175,7 @@ void InitialiseSlot(short item_number, long slot)
 	case DEMIGOD1:
 	case DEMIGOD2:
 	case DEMIGOD3:
-	case DOG:
+	case FUCKED_UP_DOG:
 		creature->LOT.step = 256;
 		creature->LOT.drop = -512;
 		creature->LOT.zone = BASIC_ZONE;

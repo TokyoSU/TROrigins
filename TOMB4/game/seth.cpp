@@ -48,7 +48,7 @@ void TriggerSethMissileFlame(short fx_number, long xv, long yv, long zv)
 	sptr->Yvel = (short)yv;
 	sptr->Zvel = (short)zv;
 	sptr->Friction = 68;
-	sptr->flags = 602;
+	sptr->Flags = 602;
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 
 	if (GetRandomControl() & 1)
@@ -132,7 +132,7 @@ void TriggerSethSparks(long x, long y, long z, short xv, short yv, short zv)
 	sptr->dSize = (GetRandomControl() & 1) + 1;
 	sptr->MaxYvel = 0;
 	sptr->Gravity = 0;
-	sptr->flags = 0;
+	sptr->Flags = 0;
 }
 
 void TriggerSethFlame(short item_number, uchar NodeNumber, short size)
@@ -166,7 +166,7 @@ void TriggerSethFlame(short item_number, uchar NodeNumber, short size)
 	sptr->Yvel = 0;
 	sptr->Zvel = (GetRandomControl() & 0xFF) - 128;
 	sptr->Friction = 5;
-	sptr->flags = 4762;
+	sptr->Flags = 4762;
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 
 	if (GetRandomControl() & 1)

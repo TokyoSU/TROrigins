@@ -83,7 +83,7 @@ void SetCutSceneCamera(ITEM_INFO* item)
 	f = cut->f;
 
 	if (f & 0xFFFF)
-		AlterFOV(ANGLE(f & 0xFFFF));
+		AlterFOV(182 * (f & 0xFFFF));
 
 	if (f & 0x40000)
 	{
@@ -154,7 +154,8 @@ void GetAIEnemy(CREATURE_INFO* info, long tfl)
 	for (int i = 0; i < nAIObjects; i++)
 	{
 		ai = &AIObjects[i];
-		if (ai->ocb == tfl && ai->room_number != 255)
+
+		if (ai->trigger_flags == tfl && ai->room_number != 255)
 		{
 			info->enemy = &info->ai_target;
 			info->ai_target.object_number = ai->object_number;
@@ -164,7 +165,7 @@ void GetAIEnemy(CREATURE_INFO* info, long tfl)
 			info->ai_target.pos.z_pos = ai->z;
 			info->ai_target.pos.y_rot = ai->y_rot;
 			info->ai_target.flags = ai->flags;
-			info->ai_target.ocb = ai->ocb;
+			info->ai_target.trigger_flags = ai->trigger_flags;
 			info->ai_target.box_number = ai->box_number;
 
 			if (!(info->ai_target.flags & IFL_TRIGGERED))
@@ -189,6 +190,7 @@ void DoVonCroyCutscene(ITEM_INFO* item, CREATURE_INFO* info)
 		return;
 
 	item->pos.z_rot = 0;
+
 	if (item->item_flags[3] == 8 || item->item_flags[3] == 15)
 	{
 		if (lara_item->current_anim_state == AS_HANG || lara_item->current_anim_state == AS_HANGLEFT || lara_item->current_anim_state == AS_HANGRIGHT)
@@ -202,10 +204,11 @@ void DoVonCroyCutscene(ITEM_INFO* item, CREATURE_INFO* info)
 		return;
 	}
 
-	switch (item->ocb)
+	switch (item->trigger_flags)
 	{
 	case 0:
 		SetFadeClip(24, 1);
+		//empty func call here
 		ScreenFading = 1;
 		dScreenFade = 255;
 		ScreenFade = 255;
@@ -213,7 +216,7 @@ void DoVonCroyCutscene(ITEM_INFO* item, CREATURE_INFO* info)
 		ScreenFadeBack = 0;
 		ScreenFadedOut = 1;
 		bDisableLaraControl = 1;
-		item->ocb++;
+		item->trigger_flags++;
 		input = 0;
 
 		if (item->item_flags[3] == 14)
@@ -283,7 +286,7 @@ void DoVonCroyCutscene(ITEM_INFO* item, CREATURE_INFO* info)
 			SetCutSceneCamera(item);
 			ScreenFading = 0;
 			SetScreenFadeIn(16);
-			item->ocb++;
+			item->trigger_flags++;
 			S_StartSyncedAudio(VonCroyCutTracks[item->item_flags[3]]);
 		}
 
@@ -294,7 +297,7 @@ void DoVonCroyCutscene(ITEM_INFO* item, CREATURE_INFO* info)
 		if (input & IN_LOOK && item->item_flags[3] != 43 && item->item_flags[3] != 53)
 		{
 			item->meshswap_meshbits &= ~0x8000;
-			item->ocb = 3;
+			item->trigger_flags = 3;
 
 			if (item->item_flags[3] != 14)
 				item->goal_anim_state = 1;
@@ -302,7 +305,7 @@ void DoVonCroyCutscene(ITEM_INFO* item, CREATURE_INFO* info)
 		else
 		{
 			if (XATrack != VonCroyCutTracks[item->item_flags[3]])
-				item->ocb = 3;
+				item->trigger_flags = 3;
 
 			if (item->current_anim_state == 1)
 			{
@@ -329,7 +332,7 @@ void DoVonCroyCutscene(ITEM_INFO* item, CREATURE_INFO* info)
 		IsAtmospherePlaying = 1;
 		bDisableLaraControl = 0;
 		SetFadeClip(0, 1);
-		item->ocb = 0;
+		item->trigger_flags = 0;
 		VonCroyCutFlags[item->item_flags[3]] = 1;
 		ang = info->enemy->pos.y_rot - item->pos.y_rot;
 
@@ -356,7 +359,9 @@ void DoVonCroyCutscene(ITEM_INFO* item, CREATURE_INFO* info)
 
 void InitialiseVoncroy(short item_number)
 {
-	ITEM_INFO* item = &items[item_number];
+	ITEM_INFO* item;
+
+	item = &items[item_number];
 	InitialiseCreature(item_number);
 	item->anim_number = objects[VON_CROY].anim_index + 11;
 	item->frame_number = anims[item->anim_number].frame_base;
@@ -1104,7 +1109,7 @@ void VoncroyControl(short item_number)
 	if (!VonCroyCutFlags[item->item_flags[3]])
 	{
 		if (VonCroy->reached_goal && item->item_flags[3] == lara.locationPad && VonCroyCutTracks[item->item_flags[3]] != -1 ||
-			item->ocb > 0 || lara.locationPad >= item->item_flags[3] &&
+			item->trigger_flags > 0 || lara.locationPad >= item->item_flags[3] &&
 			!VonCroyCutFlags[lara.locationPad] && VonCroyCutTracks[lara.locationPad] != -1)
 		{
 			CreatureJoint(item, 0, VonCroyLaraAI.angle >> 1);

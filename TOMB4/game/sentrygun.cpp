@@ -14,10 +14,7 @@
 #include "newinv.h"
 #include "control.h"
 
-constexpr auto MESH_GUN_RAIL = 4;
-constexpr auto MESH_GUN_FLASH = 8;
-constexpr auto MESH_JERRICAN = 6;
-static BITE_INFO AGOffsets = BITE_INFO(0, 0, 0, MESH_GUN_RAIL);
+static BITE_INFO AGOffsets = { 0, 0, 0, 8 };
 
 void TriggerAutogunFlamethrower(ITEM_INFO* item)
 {
@@ -62,12 +59,12 @@ void TriggerAutogunFlamethrower(ITEM_INFO* item)
 		sptr->Friction = 85;
 		sptr->MaxYvel = 0;
 		sptr->Gravity = -16 - (GetRandomControl() & 0x1F);
-		sptr->flags = 538;
+		sptr->Flags = 538;
 
 		if (GlobalCounter & 1)
 		{
 			v = 255;
-			sptr->flags = 539;
+			sptr->Flags = 539;
 		}
 
 		sptr->Scalar = 3;
@@ -80,9 +77,10 @@ void TriggerAutogunFlamethrower(ITEM_INFO* item)
 
 void InitialiseAutogun(short item_number)
 {
-	auto* item = &items[item_number];
+	ITEM_INFO* item;
+
+	item = &items[item_number];
 	InitialiseCreature(item_number);
-	item->HideMesh(MESH_GUN_FLASH);
 	item->item_flags[0] = 0;
 	item->item_flags[1] = 768;
 	item->item_flags[2] = 0;
@@ -90,27 +88,43 @@ void InitialiseAutogun(short item_number)
 
 void AutogunControl(short item_number)
 {
-	if (!CreatureActive(item_number))
-		return;
-	auto* item = &items[item_number];
-	auto* autogun = GetCreatureInfo(item);
-	if (autogun == NULL)
-		return;
+	ITEM_INFO* item;
+	CREATURE_INFO* autogun;
 	AI_INFO info;
 	PHD_VECTOR pos;
-	short angle = 0;
-	short ahead = 0;
+	long ang;
+	short ahead;
 
-	if (item->IsMeshHidden(MESH_JERRICAN))
+	ang = 0;
+	item = &items[item_number];
+
+	if (!CreatureActive(item_number))
+		return;
+
+	autogun = (CREATURE_INFO*)item->data;
+
+	if (!autogun)
+		return;
+
+	if (!(item->mesh_bits & 0x40))
 	{
-		CreatureDie(item_number, TRUE, EDF_FIRE|EDF_EXPLODE);
-		TriggerExplosion(item, 768);
+		ExplodingDeath2(item_number, -1, 257);
+		DisableBaddieAI(item_number);
+		KillItem(item_number);
+		item->status = ITEM_DEACTIVATED;
+		item->flags |= IFL_INVISIBLE;
+		untrigger_item_in_room(item->room_number, SMOKE_EMITTER_BLACK);
+		TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos - 768, item->pos.z_pos, 3, -2, 0, item->room_number);
+
+		for (int i = 0; i < 2; i++)
+			TriggerExplosionSparks(item->pos.x_pos, item->pos.y_pos - 768, item->pos.z_pos, 3, -1, 0, item->room_number);
+
 		SoundEffect(SFX_EXPLOSION1, &item->pos, 0x1800000 | SFX_SETPITCH);
 		SoundEffect(SFX_EXPLOSION2, &item->pos, SFX_DEFAULT);
 	}
 	else
 	{
-		if (item->item_flags[0] != 0)
+		if (item->item_flags[0])
 		{
 			pos.x = AGOffsets.x;
 			pos.y = AGOffsets.y;
@@ -120,12 +134,12 @@ void AutogunControl(short item_number)
 			item->item_flags[0]--;
 		}
 
-		if (item->item_flags[0] != 0)
-			item->DrawMesh(MESH_GUN_FLASH);
+		if (item->item_flags[0] & 1)
+			item->mesh_bits |= 0x100;
 		else
-			item->HideMesh(MESH_GUN_FLASH);
+			item->mesh_bits &= ~0x100;
 
-		if (item->ocb == 0)
+		if (!item->trigger_flags)
 		{
 			item->pos.y_pos -= 512;
 			CreatureAIInfo(item, &info);
@@ -154,22 +168,23 @@ void AutogunControl(short item_number)
 					else
 					{
 						TriggerAutogunFlamethrower(item);
-						angle = (4 * rcossin_tbl[(2048 * (GlobalCounter & 0x1F)) >> 3]) >> 2;
+						ang = (4 * rcossin_tbl[(2048 * (GlobalCounter & 0x1F)) >> 3]) >> 2;
 					}
 				}
 
-				angle += info.angle - autogun->joint_rotation[0];
+				ang += info.angle - autogun->joint_rotation[0];
 
-				if (angle > 1820)
-					angle = 1820;
-				else if (angle < -1820)
-					angle = -1820;
+				if (ang > 1820)
+					ang = 1820;
+				else if (ang < -1820)
+					ang = -1820;
 
-				autogun->joint_rotation[0] += (short)angle;
+				autogun->joint_rotation[0] += (short)ang;
 				CreatureJoint(item, 1, -info.x_angle);
 			}
 
 			item->item_flags[2] -= 32;
+
 			if (item->item_flags[2] < 0)
 				item->item_flags[2] = 0;
 

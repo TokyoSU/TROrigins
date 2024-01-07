@@ -87,7 +87,7 @@ void ControlMapper(short item_number)
 			sptr->dSize = (GetRandomControl() & 1) + 3;
 			sptr->MaxYvel = 0;
 			sptr->Gravity = (GetRandomControl() & 0x1F) + 32;
-			sptr->flags = 10;
+			sptr->Flags = 10;
 		}
 	}
 
@@ -106,7 +106,7 @@ void ControlLightningConductor(short item_number)
 	if (!TriggerActive(item))
 		return;
 
-	if (item->ocb == 2)
+	if (item->trigger_flags == 2)
 	{
 		if (!flip_stats[1])
 			return;
@@ -124,7 +124,7 @@ void ControlLightningConductor(short item_number)
 			item->item_flags[1] = (GetRandomControl() & 0x3FF) - 512;
 		}
 	}
-	else if (item->ocb == 1 && flip_stats[1])
+	else if (item->trigger_flags == 1 && flip_stats[1])
 	{
 		KillItem(item_number);
 		return;
@@ -166,7 +166,7 @@ void ControlLightningConductor(short item_number)
 
 		TriggerLightningGlow(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, RGBA(r, g, b, 64));
 
-		if (item->ocb == 2 && !item->item_flags[0])
+		if (item->trigger_flags == 2 && !item->item_flags[0])
 		{
 			ExplodeItemNode(&items[item->item_flags[2] & 0xFF], 0, 0, -128);
 			KillItem(item->item_flags[2] & 0xFF);
@@ -176,7 +176,7 @@ void ControlLightningConductor(short item_number)
 		}
 		else
 		{
-			if (item->ocb == 1 && !lara.burn && !((item->pos.x_pos ^ lara_item->pos.x_pos) & -1024) &&
+			if (item->trigger_flags == 1 && !lara.burn && !((item->pos.x_pos ^ lara_item->pos.x_pos) & -1024) &&
 				!((item->pos.z_pos ^ lara_item->pos.z_pos) & -1024) && lara_item->pos.y_pos <= item->pos.y_pos)
 			{
 				LaraBurn();
@@ -278,7 +278,7 @@ void StatuePlinthCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	item = &items[item_number];
 
 	if (input & IN_ACTION && l->current_anim_state == AS_STOP && l->anim_number == ANIM_BREATH && !l->gravity_status &&
-		lara.gun_status == LG_NO_ARMS && !item->ocb && !item->item_flags[0])
+		lara.gun_status == LG_NO_ARMS && !item->trigger_flags && !item->item_flags[0])
 	{
 		if (!item->item_flags[1])
 		{
@@ -366,10 +366,10 @@ void TriggerRopeFlame(PHD_VECTOR* pos)
 	sptr->Xvel = (GetRandomControl() & 0xFF) - 128;
 	sptr->Zvel = (GetRandomControl() & 0xFF) - 128;
 	sptr->Friction = 5;
-	sptr->flags = 538;
+	sptr->Flags = 538;
 
 	if (!(GetRandomControl() & 3))
-		sptr->flags |= 0x20;
+		sptr->Flags |= 0x20;
 
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 
@@ -505,7 +505,7 @@ void BurningRopeCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 	item = &items[item_number];
 
-	if (item->ocb || !lara.LitTorch)
+	if (item->trigger_flags || !lara.LitTorch)
 		return;
 
 	nSpheres = GetSpheres(item, Slist, 1);
@@ -536,7 +536,7 @@ void BurningRopeCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 				TestTriggersAtXYZ(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item->room_number, 1, 0);
 			}
 
-			item->ocb = 1;
+			item->trigger_flags = 1;
 			item->item_flags[0] = i << 1;
 			item->item_flags[1] = i << 1;
 			item->item_flags[2] = i;
@@ -558,14 +558,14 @@ void ControlWaterfall(short item_number)
 	{
 		item->status = ITEM_ACTIVE;
 
-		if (item->ocb == 668)
+		if (item->trigger_flags == 668)
 			SoundEffect(SFX_SAND_LOOP, &item->pos, SFX_DEFAULT);
-		else if (item->ocb == 777)
+		else if (item->trigger_flags == 777)
 			SoundEffect(SFX_WATERFALL_LOOP, &item->pos, SFX_DEFAULT);
 	}
 	else
 	{
-		if (item->ocb == 2 || item->ocb == 668)
+		if (item->trigger_flags == 2 || item->trigger_flags == 668)
 			item->status = ITEM_INVISIBLE;
 	}
 }
@@ -732,7 +732,7 @@ void ControlAnimatingSlots(short item_number)
 		item->status = ITEM_ACTIVE;
 		AnimateItem(item);
 
-		if (item->ocb == 666)
+		if (item->trigger_flags == 666)
 		{
 			pos.x = 0;
 			pos.y = 0;
@@ -744,7 +744,7 @@ void ControlAnimatingSlots(short item_number)
 				item->flags &= ~IFL_CODEBITS;
 		}
 	}
-	else if (item->ocb == 2)
+	else if (item->trigger_flags == 2)
 		item->status = ITEM_INVISIBLE;
 }
 
@@ -775,17 +775,24 @@ void SmashObjectControl(short item_number)
 
 void SmashObject(short item_number)
 {
-	auto* item = &items[item_number];
-	auto* r = &room[item->room_number];
-	auto* box = &boxes[r->floor[GetSectorIndex(r, item)].box];
+	ITEM_INFO* item;
+	ROOM_INFO* r;
+	BOX_INFO* box;
+	long sector;
+
+	item = &items[item_number];
+	r = &room[item->room_number];
+	sector = ((item->pos.z_pos - r->z) >> 10) + r->x_size * ((item->pos.x_pos - r->x) >> 10);
+	box = &boxes[r->floor[sector].box];
+
 	if (box->overlap_index & 0x8000)
 		box->overlap_index &= ~0x4000;
 
 	SoundEffect(SFX_EXPLOSION1, &item->pos, SFX_DEFAULT);
 	SoundEffect(SFX_EXPLOSION2, &item->pos, SFX_DEFAULT);
-	item->collidable = FALSE;
+	item->collidable = 0;
 	item->mesh_bits = 0xFFFE;
-	ExplodingDeath2(item_number, MESHBITS_ALL, 256);
+	ExplodingDeath2(item_number, -1, 256);
 	item->flags |= IFL_INVISIBLE;
 
 	if (item->status == ITEM_ACTIVE)
@@ -796,14 +803,16 @@ void SmashObject(short item_number)
 
 void EarthQuake(short item_number)
 {
+	ITEM_INFO* item;
 	long pitch;
 	short earth_item;
 
-	auto* item = &items[item_number];
+	item = &items[item_number];
+
 	if (!TriggerActive(item))
 		return;
 
-	if (item->ocb == 888)
+	if (item->trigger_flags == 888)
 	{
 		camera.bounce = -64 - (GetRandomControl() & 0x1F);
 		SoundEffect(SFX_EARTHQUAKE_LOOP, 0, SFX_DEFAULT);
@@ -815,7 +824,7 @@ void EarthQuake(short item_number)
 			KillItem(item_number);
 		}
 	}
-	else if (item->ocb == 333)
+	else if (item->trigger_flags == 333)
 	{
 		if (item->item_flags[0] >= 495)
 			KillItem(item_number);

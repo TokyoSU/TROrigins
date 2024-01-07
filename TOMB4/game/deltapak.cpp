@@ -119,7 +119,7 @@ static ulong cutseq_meshswapbits[10];
 static long GLOBAL_numcutseq_frames;
 static long lastcamnum;
 static long numnailed;
-static short old_lara_holster_l, old_lara_holster_r;
+static short old_lara_holster;
 static short temp_rotation_buffer[160];
 static char cutseq_busy_timeout = 0;
 static char lara_chat_cnt = 0;
@@ -130,10 +130,10 @@ void handle_cutseq_triggering(long name)
 {
 	long n, goin, fuck;
 
-	if (cutseq_num == 0)
+	if (!cutseq_num)
 		return;
 
-	if (cutseq_trig == 0)
+	if (!cutseq_trig)
 	{
 		if ((lara.gun_status != LG_NO_ARMS || lara.gun_type == WEAPON_FLARE) && cutseq_num != 27 &&
 			(lara.gun_type == WEAPON_FLARE || lara.gun_status != LG_HANDS_BUSY))
@@ -215,7 +215,7 @@ void handle_cutseq_triggering(long name)
 				if (cutseq_control_routines[goin].init_func)
 					cutseq_control_routines[goin].init_func();
 
-				AlterFOV(CAMERA_CUTSCENE_FOV);
+				AlterFOV(11488);
 
 				if (GLOBAL_cutme->audio_track != -1)
 					S_StartSyncedAudio(GLOBAL_cutme->audio_track);
@@ -225,6 +225,10 @@ void handle_cutseq_triggering(long name)
 	else if (cutseq_trig == 3)
 	{
 		SetScreenFadeOut(16, 1);
+
+	//	if (cutseq_num != 1 && gfCurrentLevel)
+			//empty func call here
+
 		cutseq_trig = 4;
 	}
 	else if (cutseq_trig == 4)
@@ -297,7 +301,7 @@ void handle_cutseq_triggering(long name)
 				cutseq_num = 0;
 				GLOBAL_playing_cutseq = 0;
 				cutseq_trig = 0;
-				AlterFOV(CAMERA_FOV);
+				AlterFOV(14560);
 				ScreenFade = 0;
 				dScreenFade = 0;
 				ScreenFadeBack = 0;
@@ -312,12 +316,12 @@ void handle_cutseq_triggering(long name)
 
 				cutseq_num = 0;
 
-				if (gfCurrentLevel != 0)
+				if (gfCurrentLevel)
 					SetFadeClip(0, 1);
 
-				AlterFOV(CAMERA_FOV);
+				AlterFOV(14560);
 
-				if (gfCurrentLevel != 0)
+				if (gfCurrentLevel)
 					S_CDPlay(CurrentAtmosphere, 1);
 
 				IsAtmospherePlaying = 1;
@@ -569,7 +573,7 @@ void finish_cutseq()
 void DrawCutSeqActors()
 {
 	OBJECT_INFO* obj;
-	short** static_mesh;
+	short** mesh;
 	long* bone;
 	short* rot;
 	long n;
@@ -587,7 +591,7 @@ void DrawCutSeqActors()
 			phd_TranslateAbs(GLOBAL_cutme->orgx, GLOBAL_cutme->orgy, GLOBAL_cutme->orgz);
 			obj = &objects[GLOBAL_cutme->actor_data[i].objslot];
 			bone = &bones[obj->bone_index];
-			static_mesh = &meshes[obj->mesh_index];
+			mesh = &meshes[obj->mesh_index];
 			CalcActorLighting(&duff_item[i - 1], obj, temp_rotation_buffer);
 			phd_TranslateRel(temp_rotation_buffer[6], temp_rotation_buffer[7], temp_rotation_buffer[8]);
 			rot = &temp_rotation_buffer[9];
@@ -596,14 +600,14 @@ void DrawCutSeqActors()
 			if (cutseq_meshbits[i] & 1)
 			{
 				if (cutseq_meshswapbits[i] & 1)
-					phd_PutPolygons(static_mesh[1], -1);
+					phd_PutPolygons(mesh[1], -1);
 				else
-					phd_PutPolygons(static_mesh[0], -1);
+					phd_PutPolygons(mesh[0], -1);
 			}
 
-			static_mesh += 2;
+			mesh += 2;
 
-			for (int j = 0; j < obj->nmeshes - 1; j++, bone += 4, static_mesh += 2)
+			for (int j = 0; j < obj->nmeshes - 1; j++, bone += 4, mesh += 2)
 			{
 				if (*bone & 1)
 					phd_PopMatrix();
@@ -618,9 +622,9 @@ void DrawCutSeqActors()
 				if (cutseq_meshbits[i] & n)
 				{
 					if (cutseq_meshswapbits[i] & n)
-						phd_PutPolygons(static_mesh[1], -1);
+						phd_PutPolygons(mesh[1], -1);
 					else
-						phd_PutPolygons(static_mesh[0], -1);
+						phd_PutPolygons(mesh[0], -1);
 				}
 			}
 		}
@@ -709,10 +713,8 @@ void third_cutseq_control()
 
 void fourth_cutseq_init()
 {
-	old_lara_holster_l = lara.holster_l;
-	old_lara_holster_r = lara.holster_r;
-	lara.holster_l = LARA_HOLSTERS;
-	lara.holster_r = LARA_HOLSTERS;
+	old_lara_holster = lara.holster;
+	lara.holster = LARA_HOLSTERS;
 	draw_pistol_meshes(1);
 }
 
@@ -726,8 +728,7 @@ void fourth_cutseq_control()
 	{
 		undraw_pistol_mesh_left(1);
 		undraw_pistol_mesh_right(1);
-		lara.holster_l = old_lara_holster_l;
-		lara.holster_r = old_lara_holster_r;
+		lara.holster = old_lara_holster;
 	}
 	else
 	{
@@ -912,12 +913,14 @@ void tenth_cutseq_end()
 
 void eleventh_cutseq_init()
 {
-	ITEM_INFO* item = find_a_fucking_item(ANIMATING5);
+	ITEM_INFO* item;
+
+	item = find_a_fucking_item(ANIMATING5);
 	old_status_flags[numnailed] = item->status;
 	item->status = ITEM_INVISIBLE;
 	item->flags &= ~IFL_CODEBITS;
 	numnailed++;
-	KillActiveBaddies(false);
+	KillActiveBaddies(0);
 	cutseq_kill_item(MOTORBIKE);
 	cutseq_kill_item(ANIMATING4);
 	cutseq_kill_item(ANIMATING1);
@@ -1278,10 +1281,8 @@ void twentythree_end()
 void twentyfour_init()
 {
 	cutseq_kill_item(ANIMATING13);
-	old_lara_holster_l = lara.holster_l;
-	old_lara_holster_r = lara.holster_r;
-	lara.holster_l = LARA_HOLSTERS;
-	lara.holster_r = LARA_HOLSTERS;
+	old_lara_holster = lara.holster;
+	lara.holster = LARA_HOLSTERS;
 	draw_pistol_meshes(1);
 }
 
@@ -1291,8 +1292,7 @@ void twentyfour_control()
 	{
 		undraw_pistol_mesh_left(1);
 		undraw_pistol_mesh_right(1);
-		lara.holster_l = old_lara_holster_l;
-		lara.holster_r = old_lara_holster_r;
+		lara.holster = old_lara_holster;
 	}
 
 	handle_lara_chatting(lara_chat_ranges24);

@@ -30,7 +30,7 @@ void SphinxControl(short item_number)
 	CREATURE_INFO* sphinx;
 	FLOOR_INFO* floor;
 	ROOM_INFO* r;
-	MESH_INFO* static_mesh;
+	MESH_INFO* mesh;
 	AI_INFO info;
 	long s, c, x, z, h1, h2;
 	short room_number, angle;
@@ -54,13 +54,13 @@ void SphinxControl(short item_number)
 
 		for (int i = 0; i < r->num_meshes; i++)
 		{
-			static_mesh = &r->static_mesh[i];
+			mesh = &r->mesh[i];
 
-			if (static_mesh->z >> 10 == z >> 10 && static_mesh->x >> 10 == x >> 10 && static_mesh->object_number >= SHATTER0)
+			if (mesh->z >> 10 == z >> 10 && mesh->x >> 10 == x >> 10 && mesh->static_number >= SHATTER0)
 			{
-				ShatterObject(0, static_mesh, -64, item->room_number, 0);
+				ShatterObject(0, mesh, -64, item->room_number, 0);
 				SoundEffect(SFX_HIT_ROCK, &item->pos, SFX_DEFAULT);
-				static_mesh->intensity2 &= ~1;
+				mesh->Flags &= ~1;
 				floor->stopper = 0;
 				TestTriggers(trigger_index, 1, 0);
 			}
@@ -94,7 +94,7 @@ void SphinxControl(short item_number)
 	case 1:
 		sphinx->maximum_turn = 0;
 
-		if (info.distance < 0x100000 || item->ocb)
+		if (info.distance < 0x100000 || item->trigger_flags)
 			item->goal_anim_state = 3;
 		else if (!GetRandomControl())
 			item->goal_anim_state = 2;
@@ -104,7 +104,7 @@ void SphinxControl(short item_number)
 	case 2:
 		sphinx->maximum_turn = 0;
 
-		if (info.distance < 0x100000 || item->ocb)
+		if (info.distance < 0x100000 || item->trigger_flags)
 			item->goal_anim_state = 3;
 		else if (!GetRandomControl())
 			item->goal_anim_state = 1;

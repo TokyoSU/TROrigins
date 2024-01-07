@@ -68,7 +68,7 @@ void TriggerRiseEffect(ITEM_INFO* item)
 	sptr->Zvel = phd_cos(fx->pos.y_rot) >> 2;
 	sptr->TransType = 2;
 	sptr->Friction = 68;
-	sptr->flags = 26;
+	sptr->Flags = 26;
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 
 	if (GetRandomControl() & 1)
@@ -91,25 +91,25 @@ void InitialiseSkeleton(short item_number)
 	item = &items[item_number];
 	InitialiseCreature(item_number);
 
-	if (!item->ocb)
+	if (!item->trigger_flags)
 	{
 		item->anim_number = objects[SKELETON].anim_index;
 		item->current_anim_state = 0;
 		item->goal_anim_state = 0;
 	}
-	else if (item->ocb == 1)
+	else if (item->trigger_flags == 1)
 	{
 		item->anim_number = objects[SKELETON].anim_index + 37;
 		item->current_anim_state = 20;
 		item->goal_anim_state = 20;
 	}
-	else if (item->ocb == 2)
+	else if (item->trigger_flags == 2)
 	{
 		item->anim_number = objects[SKELETON].anim_index + 34;
 		item->current_anim_state = 19;
 		item->goal_anim_state = 19;
 	}
-	else if (item->ocb == 3)
+	else if (item->trigger_flags == 3)
 	{
 		item->anim_number = objects[SKELETON].anim_index + 46;
 		item->current_anim_state = 25;
@@ -127,7 +127,7 @@ void SkeletonControl(short item_number)
 	CREATURE_INFO* skelly;
 	FLOOR_INFO* floor;
 	ROOM_INFO* r;
-	MESH_INFO* static_mesh;
+	MESH_INFO* mesh;
 	AI_INFO info;
 	AI_INFO larainfo;
 	PHD_VECTOR pos;
@@ -164,8 +164,11 @@ void SkeletonControl(short item_number)
 	floor = GetFloor(x, y, z, &room_number);
 	farheight = GetHeight(floor, x, y, z);
 
-	jump_ahead = (item->box_number != lara_item->box_number || !(item->mesh_bits & 0x200)) && y < nearheight - 384 && y < midheight + 256 && y > midheight - 256;
-	long_jump_ahead = (item->box_number != lara_item->box_number || !(item->mesh_bits & 0x200)) && y < nearheight - 384 && y < midheight - 384 && y < farheight + 256 && y > farheight - 256;
+	jump_ahead = (item->box_number != lara_item->box_number || !(item->mesh_bits & 0x200)) &&
+		y < nearheight - 384 && y < midheight + 256 && y > midheight - 256;
+
+	long_jump_ahead = (item->box_number != lara_item->box_number || !(item->mesh_bits & 0x200)) &&
+		y < nearheight - 384 && y < midheight - 384 && y < farheight + 256 && y > farheight - 256;
 
 	if (item->ai_bits)
 		GetAITarget(skelly);
@@ -332,7 +335,8 @@ void SkeletonControl(short item_number)
 				else if (!(GetRandomControl() & 0x3F))
 					item->goal_anim_state = 15;
 			}
-			else if (lara.target == item && larainfo.ahead && larainfo.distance < 0x400000 && GetRandomControl() & 1 && (lara.gun_type == WEAPON_SHOTGUN || !(GetRandomControl() & 0xF)) && item->mesh_bits == -1)
+			else if (lara.target == item && larainfo.ahead && larainfo.distance < 0x400000 && GetRandomControl() & 1 &&
+				(lara.gun_type == WEAPON_SHOTGUN || !(GetRandomControl() & 0xF)) && item->mesh_bits == -1)
 				item->goal_anim_state = 7;
 			else if (info.bite && info.distance < 0x718E4)
 			{
@@ -407,13 +411,13 @@ void SkeletonControl(short item_number)
 			{
 				for (int i = 0; i < r->num_meshes; i++)
 				{
-					static_mesh = &r->static_mesh[i];
+					mesh = &r->mesh[i];
 
-					if (static_mesh->z >> 10 == pos.z >> 10 && static_mesh->x >> 10 == pos.x >> 10 && static_mesh->object_number >= SHATTER0)
+					if (mesh->z >> 10 == pos.z >> 10 && mesh->x >> 10 == pos.x >> 10 && mesh->static_number >= SHATTER0)
 					{
-						ShatterObject(0, static_mesh, -64, lara_item->room_number, 0);
+						ShatterObject(0, mesh, -64, lara_item->room_number, 0);
 						SoundEffect(SFX_HIT_ROCK, &item->pos, SFX_DEFAULT);
-						static_mesh->intensity2 &= ~1;
+						mesh->Flags &= ~1;
 						floor->stopper = 0;
 						GetHeight(floor, pos.x, pos.y, pos.z);
 						TestTriggers(trigger_index, 1, 0);
@@ -612,7 +616,7 @@ void SkeletonControl(short item_number)
 		floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 		h = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 
-		if (h <= item->pos.y_pos && item->activated)
+		if (h <= item->pos.y_pos && item->active)
 		{
 			ExplodingDeath2(item_number, -1, 929);
 			KillItem(item_number);

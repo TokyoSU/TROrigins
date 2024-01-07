@@ -1,12 +1,9 @@
 #pragma once
 #include "../global/types.h"
 
-// Use EDF_Xx flags.
-void DropBaddyPickups(ITEM_INFO* item);
-void CreatureDie(short item_number, long explode, long flags = 0);
+void CreatureDie(short item_number, long explode);
 void InitialiseCreature(short item_number);
 long CreatureActive(short item_number);
-void SetupBasicAIInfo(ITEM_INFO* item, AI_INFO* info);
 void CreatureAIInfo(ITEM_INFO* item, AI_INFO* info);
 long SearchLOT(LOT_INFO* LOT, long expansion);
 long UpdateLOT(LOT_INFO* LOT, long expansion);
@@ -26,7 +23,8 @@ void CreatureJoint(ITEM_INFO* item, short joint, short required);
 void CreatureFloat(short item_number);
 void CreatureUnderwater(ITEM_INFO* item, long depth);
 short CreatureEffect(ITEM_INFO* item, BITE_INFO* bite, short(*generate)(long x, long y, long z, short speed, short yrot, short room_number));
-short CreatureEffectT(ITEM_INFO* item, BITE_INFO* bite, short damage, short angle, short(*generate)(long x, long y, long z, short damage, short angle, short room_number));
+short CreatureEffectT(ITEM_INFO* item, BITE_INFO* bite, short damage, short angle,
+	short(*generate)(long x, long y, long z, short damage, short angle, short room_number));
 long CreatureVault(short item_number, short angle, long vault, long shift);
 void CreatureKill(ITEM_INFO* item, short kill_anim, short kill_state, short lara_anim);
 void AlertAllGuards(short item_number);
@@ -37,16 +35,6 @@ void GetAITarget(CREATURE_INFO* creature);
 short SameZone(CREATURE_INFO* creature, ITEM_INFO* target_item);
 void CreatureYRot(PHD_3DPOS* srcpos, short angle, short angadd);
 long MoveCreature3DPos(PHD_3DPOS* srcpos, PHD_3DPOS* destpos, long velocity, short angdif, long angadd);
-long GetSectorIndex(ROOM_INFO* r, int x, int z);
-long GetSectorIndex(ROOM_INFO* r, ITEM_INFO* item);
-CREATURE_INFO* GetCreatureInfo(ITEM_INFO* item);
-void SetAnimation(ITEM_INFO* item, int anim_index, int frame_index);
-void SetAnimation(ITEM_INFO* item, int anim_index, int state_index, int frame_index);
-ITEM_INFO* GetNearestTarget(ITEM_INFO* item, long targetedObjNum);
-void DamageTarget(ITEM_INFO* item, ITEM_INFO* target, int damage);
-void EFF_ShootProjectileFromItem(ITEM_INFO* item, short extra);
-void EFF_DoDamageFromItem(ITEM_INFO* item, short extra);
-bool IsAnimValid(ITEM_INFO* item, long anim_required);
 
 extern BOX_INFO* boxes;
 extern ushort* overlap;

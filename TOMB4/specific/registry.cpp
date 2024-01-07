@@ -306,7 +306,7 @@ void SaveSettings()
 
 	OpenRegistry("System");
 	REG_WriteLong((char*)"VMode", App.DXInfo.nDisplayMode);
-	REG_WriteBool((char*)"Window", (App.dx.flags & DXF_WINDOWED) != 0);
+	REG_WriteBool((char*)"Window", (App.dx.Flags & DXF_WINDOWED) != 0);
 	CloseRegistry();
 }
 

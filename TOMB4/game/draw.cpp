@@ -106,6 +106,7 @@ void phd_RotY_I(short ang)
 void phd_RotX_I(short ang)
 {
 	float* mPtr;
+
 	phd_RotX(ang);
 	mPtr = mMXPtr;
 	mMXPtr = mIMptr;
@@ -127,6 +128,7 @@ void phd_RotZ_I(short ang)
 void phd_TranslateRel_I(long x, long y, long z)
 {
 	float* mPtr;
+
 	phd_TranslateRel(x, y, z);
 	mPtr = mMXPtr;
 	mMXPtr = mIMptr;
@@ -137,6 +139,7 @@ void phd_TranslateRel_I(long x, long y, long z)
 void phd_TranslateRel_ID(long x, long y, long z, long x2, long y2, long z2)
 {
 	float* mPtr;
+
 	phd_TranslateRel(x, y, z);
 	mPtr = mMXPtr;
 	mMXPtr = mIMptr;
@@ -147,6 +150,7 @@ void phd_TranslateRel_ID(long x, long y, long z, long x2, long y2, long z2)
 void phd_RotYXZ_I(short y, short x, short z)
 {
 	float* mPtr;
+
 	phd_RotYXZ(y, x, z);
 	mPtr = mMXPtr;
 	mMXPtr = mIMptr;
@@ -157,6 +161,7 @@ void phd_RotYXZ_I(short y, short x, short z)
 void gar_RotYXZsuperpack_I(short** pprot1, short** pprot2, long skip)
 {
 	float* mPtr;
+
 	gar_RotYXZsuperpack(pprot1, skip);
 	mPtr = mMXPtr;
 	mMXPtr = mIMptr;
@@ -167,6 +172,7 @@ void gar_RotYXZsuperpack_I(short** pprot1, short** pprot2, long skip)
 void gar_RotYXZsuperpack(short** pprot, long skip)
 {
 	ushort* prot;
+
 	while (skip)
 	{
 		prot = (ushort*)*pprot;
@@ -667,7 +673,7 @@ void DrawRooms(short CurrentRoom)
 		else
 		{
 			if (BinocularRange)
-				AlterFOV(CAMERA_FOV - BinocularRange);
+				AlterFOV(14560 - (short)BinocularRange);
 
 			phd_PushMatrix();
 			phd_TranslateAbs(camera.pos.x, camera.pos.y, camera.pos.z);
@@ -851,11 +857,10 @@ void DrawRooms(short CurrentRoom)
 
 void RenderIt(short CurrentRoom)
 {
-	if (CurrentRoom == 255 || (CurrentRoom < 0 || CurrentRoom > number_rooms))
-		return;
-	
-	ROOM_INFO* r = &room[CurrentRoom];
+	ROOM_INFO* r;
+
 	current_room = CurrentRoom;
+	r = &room[CurrentRoom];
 	r->test_left = 0;
 	r->test_top = 0;
 	phd_left = 0;
@@ -898,7 +903,7 @@ void RenderIt(short CurrentRoom)
 		else
 		{
 			if (BinocularRange)
-				AlterFOV(CAMERA_FOV - BinocularRange);
+				AlterFOV(14560 - (short)BinocularRange);
 
 			phd_PushMatrix();
 			phd_TranslateAbs(camera.pos.x, camera.pos.y, camera.pos.z);
@@ -966,12 +971,15 @@ long DrawPhaseGame()
 
 void GetRoomBounds()
 {
+	ROOM_INFO* r;
+	short* door;
+	long rn, drn;
+
 	while (room_list_start != room_list_end)
 	{
-		auto rn = draw_room_list[room_list_start % 128];
+		rn = draw_room_list[room_list_start % 128];
 		room_list_start++;
-
-		auto* r = &room[rn];
+		r = &room[rn];
 		r->bound_active -= 2;
 
 		if (r->test_left < r->left)
@@ -991,6 +999,7 @@ void GetRoomBounds()
 			draw_rooms[number_draw_rooms] = (short)rn;
 			number_draw_rooms++;
 			r->bound_active |= 1;
+
 			if (r->flags & ROOM_OUTSIDE)
 				outside = ROOM_OUTSIDE;
 		}
@@ -1012,16 +1021,20 @@ void GetRoomBounds()
 
 		phd_PushMatrix();
 		phd_TranslateAbs(r->x, r->y, r->z);
+		door = r->door;
 
-		if (r->door)
+		if (door)
 		{
-			for (int i = 0; i < r->door->portal_count; i++)
+			for (drn = *door++; drn > 0; drn--)
 			{
-				auto& door = r->door->portals[i];
-				if (door.normal.x * long(r->x + door.vertices[0].x - mW2V[M03]) +
-					door.normal.y * long(r->y + door.vertices[0].y - mW2V[M13]) +
-					door.normal.z * long(r->z + door.vertices[0].z - mW2V[M23]) < 0)
-					SetRoomBounds(&door, door.adjoiningRoom, r);
+				rn = *door++;
+
+				if (door[0] * long(r->x + door[3] - mW2V[M03]) +
+					door[1] * long(r->y + door[4] - mW2V[M13]) +
+					door[2] * long(r->z + door[5] - mW2V[M23]) < 0)
+					SetRoomBounds(door, rn, r);
+
+				door += 15;
 			}
 		}
 
@@ -1029,7 +1042,7 @@ void GetRoomBounds()
 	}
 }
 
-void SetRoomBounds(ROOM_PORTAL* door, long adjointRoom, ROOM_INFO* actualRoom)
+void SetRoomBounds(short* door, long rn, ROOM_INFO* actualRoom)
 {
 	ROOM_INFO* r;
 	FVECTOR* v;
@@ -1037,37 +1050,38 @@ void SetRoomBounds(ROOM_PORTAL* door, long adjointRoom, ROOM_INFO* actualRoom)
 	static FVECTOR vbuf[4];
 	float x, y, z, tooNear, tooFar, tL, tR, tT, tB;
 
-	r = &room[adjointRoom];
+	r = &room[rn];
+
 	if (r->left <= actualRoom->test_left && r->right >= actualRoom->test_right && r->top <= actualRoom->test_top && r->bottom >= actualRoom->test_bottom)
 		return;
 	
-	tR = (float)actualRoom->test_right;
-	tL = (float)actualRoom->test_left;
-	tT = (float)actualRoom->test_top;
-	tB = (float)actualRoom->test_bottom;
+	tL = (float)actualRoom->test_right;
+	tR = (float)actualRoom->test_left;
+	tB = (float)actualRoom->test_top;
+	tT = (float)actualRoom->test_bottom;
+	door += 3;
 	v = vbuf;
 	tooNear = 0;
 	tooFar = 0;
 
-	for (int i = 0; i < 4; i++, v++)
+	for (int i = 0; i < 4; i++, v++, door += 3)
 	{
-		v->x = mMXPtr[M00] * door->vertices[i].x + mMXPtr[M01] * door->vertices[i].y + mMXPtr[M02] * door->vertices[i].z + mMXPtr[M03];
-		v->y = mMXPtr[M10] * door->vertices[i].x + mMXPtr[M11] * door->vertices[i].y + mMXPtr[M12] * door->vertices[i].z + mMXPtr[M13];
-		v->z = mMXPtr[M20] * door->vertices[i].x + mMXPtr[M21] * door->vertices[i].y + mMXPtr[M22] * door->vertices[i].z + mMXPtr[M23];
+		v->x = mMXPtr[M00] * door[0] + mMXPtr[M01] * door[1] + mMXPtr[M02] * door[2] + mMXPtr[M03];
+		v->y = mMXPtr[M10] * door[0] + mMXPtr[M11] * door[1] + mMXPtr[M12] * door[2] + mMXPtr[M13];
+		v->z = mMXPtr[M20] * door[0] + mMXPtr[M21] * door[1] + mMXPtr[M22] * door[2] + mMXPtr[M23];
 		x = v->x;
 		y = v->y;
 		z = v->z;
 
 		if (z <= 0)
-		{
 			tooNear++;
-		}
 		else
 		{
 			if (z > f_zfar)
 				tooFar++;
 
 			z /= f_mpersp;
+
 			if (z)
 			{
 				x = x / z + f_centerx;
@@ -1079,6 +1093,7 @@ void SetRoomBounds(ROOM_PORTAL* door, long adjointRoom, ROOM_INFO* actualRoom)
 					x = (float)phd_left;
 				else
 					x = (float)phd_right;
+
 				if (y < 0)
 					y = (float)phd_top;
 				else
@@ -1136,10 +1151,13 @@ void SetRoomBounds(ROOM_PORTAL* door, long adjointRoom, ROOM_INFO* actualRoom)
 
 	if (tL < actualRoom->test_left)
 		tL = actualRoom->test_left;
+
 	if (tR > actualRoom->test_right)
 		tR = actualRoom->test_right;
+
 	if (tT < actualRoom->test_top)
 		tT = actualRoom->test_top;
+
 	if (tB > actualRoom->test_bottom)
 		tB = actualRoom->test_bottom;
 
@@ -1150,16 +1168,19 @@ void SetRoomBounds(ROOM_PORTAL* door, long adjointRoom, ROOM_INFO* actualRoom)
 	{
 		if (tL < r->test_left)
 			r->test_left = (short)tL;
+
 		if (tT < r->test_top)
 			r->test_top = (short)tT;
+
 		if (tR > r->test_right)
 			r->test_right = (short)tR;
+
 		if (tB > r->test_bottom)
 			r->test_bottom = (short)tB;
 	}
 	else
 	{
-		draw_room_list[room_list_end % 128] = adjointRoom;
+		draw_room_list[room_list_end % 128] = rn;
 		room_list_end++;
 		r->bound_active |= 2;
 		r->test_left = (short)tL;
@@ -1203,7 +1224,7 @@ void DrawEffect(short fx_num)
 void PrintObjects(short room_number)
 {
 	ROOM_INFO* r;
-	MESH_INFO* static_mesh;
+	MESH_INFO* mesh;
 	STATIC_INFO* sinfo;
 	ITEM_INFO* item;
 	OBJECT_INFO* obj;
@@ -1233,21 +1254,21 @@ void PrintObjects(short room_number)
 		phd_bottom = r->bottom;
 	}
 
-	static_mesh = r->static_mesh;
+	mesh = r->mesh;
 
-	for (int i = r->num_meshes; i > 0; i--, static_mesh++)
+	for (int i = r->num_meshes; i > 0; i--, mesh++)
 	{
-		if (static_mesh->intensity2 & 1)
+		if (mesh->Flags & 1)
 		{
 			phd_PushMatrix();
-			phd_TranslateAbs(static_mesh->x, static_mesh->y, static_mesh->z);
-			phd_RotY(static_mesh->y_rot);
-			sinfo = &static_objects[static_mesh->object_number];
+			phd_TranslateAbs(mesh->x, mesh->y, mesh->z);
+			phd_RotY(mesh->y_rot);
+			sinfo = &static_objects[mesh->static_number];
 			clip = S_GetObjectBounds(&sinfo->x_minp);
 
 			if (clip)
 			{
-				S_CalculateStaticMeshLight(static_mesh->x, static_mesh->y, static_mesh->z, static_mesh->intensity1, r);
+				S_CalculateStaticMeshLight(mesh->x, mesh->y, mesh->z, mesh->shade, r);
 				phd_PutPolygons(meshes[sinfo->mesh_number], clip);
 			}
 
@@ -1488,12 +1509,15 @@ void mRotBoundingBoxNoPersp(short* bounds, short* rotatedBounds)
 void calc_animating_item_clip_window(ITEM_INFO* item, short* bounds)
 {
 	ROOM_INFO* r;
+	short* door;
 	long xMin, xMax, yMin, yMax, zMin, zMax;		//object bounds
 	long xMinR, xMaxR, yMinR, yMaxR, zMinR, zMaxR;	//room bounds
 	long xMinD, xMaxD, yMinD, yMaxD, zMinD, zMaxD;	//door bounds
-	short rotatedBounds[6] = {};
+	short rotatedBounds[6];
+	short nDoors;
 
 	r = &room[ClipRoomNum];
+
 	if (item->object_number >= ANIMATING1 && item->object_number <= ANIMATING16 ||
 		item->object_number >= DOOR_TYPE1 && item->object_number <= DOOR_TYPE8)
 	{
@@ -1519,8 +1543,8 @@ void calc_animating_item_clip_window(ITEM_INFO* item, short* bounds)
 
 	xMinR = r->x + 1024;
 	xMaxR = xMinR + ((r->y_size - 2) << 10);
-	yMinR = r->top_ceiling;
-	yMaxR = r->bottom_floor;
+	yMinR = r->maxceiling;
+	yMaxR = r->minfloor;
 	zMinR = r->z + 1024;
 	zMaxR = zMinR + ((r->x_size - 2) << 10);
 
@@ -1533,65 +1557,67 @@ void calc_animating_item_clip_window(ITEM_INFO* item, short* bounds)
 		return;
 	}
 
-	if (camera.pos.room_number != item->room_number && camera.pos.room_number != ClipRoomNum && r->door != NULL)
+	if (camera.pos.room_number != item->room_number && camera.pos.room_number != ClipRoomNum)
 	{
-		for (int i = 0; i < r->door->portal_count; i++)
+		door = r->door;
+		nDoors = *door++;
+
+		for (; nDoors > 0; nDoors--, door += 16)
 		{
-			auto door = r->door->portals[i];
-			if (door.adjoiningRoom != camera.pos.room_number)
+			if (door[0] != camera.pos.room_number)
 				continue;
 
-			xMinD = door.vertices[0].x;	// skip door normal
-			xMaxD = door.vertices[0].x;
-			yMinD = door.vertices[0].y;
-			yMaxD = door.vertices[0].y;
-			zMinD = door.vertices[0].z;
-			zMaxD = door.vertices[0].z;
+			xMinD = door[4];	//skip door normal
+			xMaxD = door[4];
+			yMinD = door[5];
+			yMaxD = door[5];
+			zMinD = door[6];
+			zMaxD = door[6];
 
-			if (door.vertices[1].x < xMinD)
-				xMinD = door.vertices[1].x;
-			else if (door.vertices[1].x > xMaxD)
-				xMaxD = door.vertices[1].x;
+			if (door[7] < xMinD)
+				xMinD = door[7];
+			else if (door[7] > xMaxD)
+				xMaxD = door[7];
 
-			if (door.vertices[1].y < yMinD)
-				yMinD = door.vertices[1].y;
-			else if (door.vertices[1].y > yMaxD)
-				yMaxD = door.vertices[1].y;
+			if (door[8] < yMinD)
+				yMinD = door[8];
+			else if (door[8] > yMaxD)
+				yMaxD = door[8];
 
-			if (door.vertices[1].z < zMinD)
-				zMinD = door.vertices[1].z;
-			else if (door.vertices[1].z > zMaxD)
-				zMaxD = door.vertices[1].z;
+			if (door[9] < zMinD)
+				zMinD = door[9];
+			else if (door[9] > zMaxD)
+				zMaxD = door[9];
 
-			if (door.vertices[2].x < xMinD)
-				xMinD = door.vertices[2].x;
-			else if (door.vertices[2].x > xMaxD)
-				xMaxD = door.vertices[2].x;
+			if (door[10] < xMinD)
+				xMinD = door[10];
+			else if (door[10] > xMaxD)
+				xMaxD = door[10];
 
-			if (door.vertices[2].y < yMinD)
-				yMinD = door.vertices[2].y;
-			else if (door.vertices[2].y > yMaxD)
-				yMaxD = door.vertices[2].y;
+			if (door[11] < yMinD)
+				yMinD = door[11];
+			else if (door[11] > yMaxD)
+				yMaxD = door[11];
 
-			if (door.vertices[2].z < zMinD)
-				zMinD = door.vertices[2].z;
-			else if (door.vertices[2].z > zMaxD)
-				zMaxD = door.vertices[2].z;
+			if (door[12] < zMinD)
+				zMinD = door[12];
+			else if (door[12] > zMaxD)
+				zMaxD = door[12];
 
-			if (door.vertices[3].x < xMinD)
-				xMinD = door.vertices[3].x;
-			else if (door.vertices[3].x > xMaxD)
-				xMaxD = door.vertices[3].x;
+			if (door[13] < xMinD)
+				xMinD = door[13];
+			else if (door[13] > xMaxD)
+				xMaxD = door[13];
 
-			if (door.vertices[3].y < yMinD)
-				yMinD = door.vertices[3].y;
-			else if (door.vertices[3].y > yMaxD)
-				yMaxD = door.vertices[3].y;
+			if (door[14] < yMinD)
+				yMinD = door[14];
+			else if (door[14] > yMaxD)
+				yMaxD = door[14];
 
-			if (door.vertices[3].z < zMinD)
-				zMinD = door.vertices[3].z;
-			else if (door.vertices[3].z > zMaxD)
-				zMaxD = door.vertices[3].z;
+			if (door[15] < zMinD)
+				zMinD = door[15];
+			else if (door[15] > zMaxD)
+				zMaxD = door[15];
 
 			xMinD += xMinR - 1024;
 			xMaxD += xMinR - 1024;
@@ -1604,7 +1630,7 @@ void calc_animating_item_clip_window(ITEM_INFO* item, short* bounds)
 				break;
 		}
 
-		if (!r->door->portal_count)
+		if (!nDoors)
 		{
 			phd_left = r->left;
 			phd_right = r->right;

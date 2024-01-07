@@ -10,7 +10,6 @@ void lara_col_hang(ITEM_INFO* item, COLL_INFO* coll);
 short LaraCeilingFront(ITEM_INFO* item, short ang, long dist, long h);
 short LaraFloorFront(ITEM_INFO* item, short ang, long dist);
 long LaraFallen(ITEM_INFO* item, COLL_INFO* coll);
-short GetSlideAngle(COLL_INFO* coll);
 long TestLaraSlide(ITEM_INFO* item, COLL_INFO* coll);
 long LaraHitCeiling(ITEM_INFO* item, COLL_INFO* coll);
 void lara_as_duckl(ITEM_INFO* item, COLL_INFO* coll);

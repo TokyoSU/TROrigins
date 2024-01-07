@@ -2,10 +2,10 @@
 #include "../global/types.h"
 
 LIGHTNING_STRUCT* TriggerLightning(PHD_VECTOR* s, PHD_VECTOR* d, char variation, long rgb, uchar flags, uchar size, uchar segments);
-long ExplodingDeath2(short item_number, long mesh_bits, ulong flags);
+long ExplodingDeath2(short item_number, long mesh_bits, short Flags);
 void DrawGunshells();
-void TriggerGunSmoke(long x, long y, long z, long xVel, long yVel, long zVel, long notLara, long weaponType, long intensity1);
-void EFF_DoLaraBubble(ITEM_INFO* item);
+void TriggerGunSmoke(long x, long y, long z, long xVel, long yVel, long zVel, long notLara, long weaponType, long shade);
+void LaraBubbles(ITEM_INFO* item);
 void UpdateDrips();
 long GetFreeFireSpark();
 void TriggerGlobalStaticFlame();
@@ -37,7 +37,6 @@ long GetFreeDrip();
 void TriggerLaraDrips();
 long GetFreeShockwave();
 void TriggerShockwave(PHD_VECTOR* pos, long InnerOuterRads, long speed, long rgb, long XRotFlags);
-void TriggerShockwave(PHD_VECTOR* pos, uchar life, short inner, short outer, short xRot, short flags, short speed, short damage, DWORD color);
 void TriggerShockwaveHitEffect(long x, long y, long z, long rgb, short dir, long speed);
 void UpdateShockwaves();
 void UpdateLightning();
@@ -51,8 +50,6 @@ void UpdateFadeClip();
 void SetScreenFadeOut(short speed, short back);
 void SetScreenFadeIn(short speed);
 void Fade();
-void TriggerExplosion(ITEM_INFO* item, int height = 0, long extras = 3, bool isSmallObj = false);
-void TriggerExplosion(FX_INFO* fx, int height = 0, long extras = 3, bool isSmallObj = false);
 
 extern NODEOFFSET_INFO NodeOffsets[16];
 extern LIGHTNING_STRUCT Lightning[16];

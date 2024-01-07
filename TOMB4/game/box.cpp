@@ -14,115 +14,93 @@
 #include "effect2.h"
 #include "lara.h"
 #include "../specific/file.h"
-#include "collide.h"
-#include "people.h"
-#include "demigod.h"
 
 BOX_INFO* boxes;
 ushort* overlap;
 short* ground_zone[5][2];
 long num_boxes;
 
-void DropBaddyPickups(ITEM_INFO* item)
+void CreatureDie(short item_number, long explode)
 {
-	for (auto& pickup_number : item->carried_item_list)
-	{
-		auto* pickup = &items[pickup_number];
-		auto* bounds = GetBoundsAccurate(pickup);
-		pickup->pos.x_pos = item->pos.x_pos;
-		pickup->pos.y_pos = item->pos.y_pos;
-		pickup->pos.z_pos = item->pos.z_pos;
-		auto room_number = item->room_number;
-		auto* floor = GetFloor(pickup->pos.x_pos, pickup->pos.y_pos, pickup->pos.z_pos, &room_number);
-		pickup->pos.y_pos = GetHeight(floor, pickup->pos.x_pos, pickup->pos.y_pos, pickup->pos.z_pos);
-		pickup->pos.y_pos -= bounds[3]; // yMax
-		floor = GetFloor(pickup->pos.x_pos, pickup->pos.y_pos, pickup->pos.z_pos, &room_number); // Redo the room number check just in case the bounds[3] move it to another room !
-		ItemNewRoom(pickup_number, room_number);
-		MoveItemAlongsideSlope(pickup_number);
-		pickup->flags |= IFL_TRIGGERED;
-	}
-	item->carried_item_list.clear(); // Clear the list so it won't be saved when the game reload.
-}
+	ITEM_INFO* item;
+	ITEM_INFO* pickup;
+	short pickup_number, room_number;
 
-void CreatureDie(short item_number, long explode, long flags)
-{
-	auto* item = &items[item_number];
-	auto* obj = &objects[item->object_number];
-	item->hit_points = NOT_TARGETABLE;
-	item->collidable = FALSE;
+	item = &items[item_number];
+	item->hit_points = -16384;
+	item->collidable = 0;
 
 	if (explode)
 	{
-		if (obj->hit_effect == 1)
-			ExplodingDeath2(item_number, MESHBITS_ALL, flags|EDF_CREATE_EFFECT|EDF_BLOOD);
+		if (objects[item->object_number].HitEffect == 1)
+			ExplodingDeath2(item_number, -1, 258);
 		else
-			ExplodingDeath2(item_number, MESHBITS_ALL, flags|EDF_CREATE_EFFECT);
+			ExplodingDeath2(item_number, -1, 256);
+
 		KillItem(item_number);
 	}
 	else
-	{
 		RemoveActiveItem(item_number);
-	}
 
 	DisableBaddieAI(item_number);
 	item->flags |= IFL_INVISIBLE | IFL_CLEARBODY;
-	DropBaddyPickups(item);
+
+	//inlined DropBaddyPickups..
+
+	pickup_number = item->carried_item;
+
+	while (pickup_number != NO_ITEM)
+	{
+		pickup = &items[pickup_number];
+
+		if (item->object_number == TROOPS && item->trigger_flags == 1)
+		{
+			pickup->pos.x_pos = ((item->pos.x_pos + ((1024 * phd_sin(item->pos.y_rot)) >> W2V_SHIFT)) & -512) | 512;
+			pickup->pos.z_pos = ((item->pos.z_pos + ((1024 * phd_cos(item->pos.y_rot)) >> W2V_SHIFT)) & -512) | 512;
+		}
+		else
+		{
+			pickup->pos.x_pos = (item->pos.x_pos & -512) | 512;
+			pickup->pos.z_pos = (item->pos.z_pos & -512) | 512;
+		}
+
+		room_number = item->room_number;
+		pickup->pos.y_pos = GetHeight(GetFloor(pickup->pos.x_pos, item->pos.y_pos, pickup->pos.z_pos, &room_number),
+			pickup->pos.x_pos, item->pos.y_pos, pickup->pos.z_pos);
+		pickup->pos.y_pos -= GetBoundsAccurate(pickup)[3];
+		ItemNewRoom(pickup_number, item->room_number);
+		pickup->flags |= IFL_TRIGGERED;
+		pickup_number = pickup->carried_item;
+	}
 }
 
 void InitialiseCreature(short item_number)
 {
-	auto* item = &items[item_number];
-	item->collidable = TRUE;
-	item->data = NULL;
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+	item->collidable = 1;
+	item->data = 0;
 }
 
 long CreatureActive(short item_number)
 {
-	auto* item = &items[item_number];
+	ITEM_INFO* item;
+
+	item = &items[item_number];
+
 	if (item->flags & IFL_CLEARBODY)
-		return FALSE;
+		return 0;
+
 	if (item->status == ITEM_INVISIBLE)
 	{
-		if (!EnableBaddieAI(item_number, FALSE))
-			return FALSE;
-		item->status = ITEM_ACTIVE;
+		if (EnableBaddieAI(item_number, 0))
+			item->status = ITEM_ACTIVE;
+		else
+			return 0;
 	}
-	return TRUE;
-}
 
-void SetupBasicAIInfo(ITEM_INFO* item, AI_INFO* info)
-{
-	if (info == NULL)
-		return;
-	auto* creature = GetCreatureInfo(item);
-	if (creature == NULL || creature->enemy == NULL)
-		return;
-	auto* obj = &objects[item->object_number];
-	auto* enemy = creature->enemy;
-	auto ang = enemy == lara_item ? lara.move_angle : enemy->pos.y_rot;
-	auto x = enemy->pos.x_pos + (14 * enemy->speed * phd_sin(ang) >> W2V_SHIFT) - (obj->pivot_length * phd_sin(item->pos.y_rot) >> W2V_SHIFT) - item->pos.x_pos;
-	auto y = enemy->pos.y_pos - item->pos.y_pos;
-	auto z = enemy->pos.z_pos + (14 * enemy->speed * phd_cos(ang) >> W2V_SHIFT) - (obj->pivot_length * phd_cos(item->pos.y_rot) >> W2V_SHIFT) - item->pos.z_pos;
-	ang = (short)phd_atan(z, x);
-	if (z > SECTOR(31) || z < -SECTOR(31) || x > SECTOR(31) || x < -SECTOR(31))
-		info->distance = INT_MAX;
-	else if (enemy != NULL)
-		info->distance = SQUARE(x) + SQUARE(z);
-	else
-		info->distance = INT_MAX;
-	info->angle = ang - item->pos.y_rot;
-	info->enemy_facing = ang - enemy->pos.y_rot + ANGLE(180);
-	x = abs(x);
-	z = abs(z);
-	if (enemy == lara_item)
-	{
-		auto state = lara_item->current_anim_state;
-		if (state == AS_DUCK || state == AS_DUCKROLL || state == AS_ALL4S || state == AS_CRAWL || state == AS_ALL4TURNL || state == AS_ALL4TURNR || state == AS_DUCKROTL || state == AS_DUCKROTR)
-			y -= 384;
-	}
-	info->x_angle = (x > z) ? (short)phd_atan(x + (z >> 1), y) : (short)phd_atan(z + (x >> 1), y);
-	info->ahead = info->angle >= -ANGLE(90) && info->angle <= ANGLE(90);
-	info->bite = info->ahead && enemy->hit_points > 0 && abs(enemy->pos.y_pos - item->pos.y_pos) <= CLICK(2);
+	return 1;
 }
 
 void CreatureAIInfo(ITEM_INFO* item, AI_INFO* info)
@@ -133,33 +111,94 @@ void CreatureAIInfo(ITEM_INFO* item, AI_INFO* info)
 	ROOM_INFO* r;
 	FLOOR_INFO* floor;
 	short* zone;
-	creature = GetCreatureInfo(item);
-	if (creature == NULL || info == NULL)
+	long x, y, z;
+	short pivot, ang, state;
+
+	creature = (CREATURE_INFO*)item->data;
+
+	if (!creature)
 		return;
+
 	obj = &objects[item->object_number];
+
 	if (item->poisoned)
 	{
 		if (!obj->undead && !(wibble & 0x3F) && item->hit_points > 1)
 			item->hit_points--;
 	}
+
 	enemy = creature->enemy;
-	if (enemy == NULL)
+
+	if (!enemy)
 	{
 		enemy = lara_item;
 		creature->enemy = lara_item;
 	}
+
 	zone = ground_zone[creature->LOT.zone][flip_status];
 	r = &room[item->room_number];
-	floor = &r->floor[GetSectorIndex(r, item)];
+	floor = &r->floor[((item->pos.z_pos - r->z) >> 10) + r->x_size * ((item->pos.x_pos - r->x) >> 10)];
 	item->box_number = floor->box;
 	info->zone_number = zone[item->box_number];
+
 	r = &room[enemy->room_number];
-	floor = &r->floor[GetSectorIndex(r, enemy)];
+	floor = &r->floor[((enemy->pos.z_pos - r->z) >> 10) + r->x_size * ((enemy->pos.x_pos - r->x) >> 10)];
 	enemy->box_number = floor->box;
 	info->enemy_zone = zone[enemy->box_number];
-	if (boxes[enemy->box_number].overlap_index & creature->LOT.block_mask || creature->LOT.node[item->box_number].search_number == (creature->LOT.search_number | 0x8000))
+
+	if (boxes[enemy->box_number].overlap_index & creature->LOT.block_mask ||
+		creature->LOT.node[item->box_number].search_number == (creature->LOT.search_number | 0x8000))
 		info->enemy_zone |= 0x4000;
-	SetupBasicAIInfo(item, info);
+
+	pivot = obj->pivot_length;
+
+	if (enemy == lara_item)
+		ang = lara.move_angle;
+	else
+		ang = enemy->pos.y_rot;
+
+	x = enemy->pos.x_pos + (14 * enemy->speed * phd_sin(ang) >> W2V_SHIFT) - (pivot * phd_sin(item->pos.y_rot) >> W2V_SHIFT) - item->pos.x_pos;
+	y = item->pos.y_pos - enemy->pos.y_pos;
+	z = enemy->pos.z_pos + (14 * enemy->speed * phd_cos(ang) >> W2V_SHIFT) - (pivot * phd_cos(item->pos.y_rot) >> W2V_SHIFT) - item->pos.z_pos;
+
+	ang = (short)phd_atan(z, x);
+
+	if (z > 32000 || z < -32000 || x > 32000 || x < -32000)
+		info->distance = 0x7FFFFFFF;
+	else if (creature->enemy)
+		info->distance = SQUARE(x) + SQUARE(z);
+	else
+		info->distance = 0x7FFFFFFF;
+
+	info->angle = ang - item->pos.y_rot;
+	info->enemy_facing = ang - enemy->pos.y_rot + 0x8000;
+
+	x = abs(x);
+	z = abs(z);
+
+	if (enemy == lara_item)
+	{
+		state = lara_item->current_anim_state;
+
+		if (state == AS_DUCK || state == AS_DUCKROLL || state == AS_ALL4S || state == AS_CRAWL ||
+			state == AS_ALL4TURNL|| state == AS_ALL4TURNR || state == AS_DUCKROTL || state == AS_DUCKROTR)
+			y -= 384;
+	}
+
+	if (x > z)
+		info->x_angle = (short)phd_atan(x + (z >> 1), y);
+	else
+		info->x_angle = (short)phd_atan(z + (x >> 1), y);
+
+	if (info->angle > -0x4000 && info->angle < 0x4000)
+		info->ahead = 1;
+	else
+		info->ahead = 0;
+
+	if (info->ahead && enemy->hit_points > 0 && abs(enemy->pos.y_pos - item->pos.y_pos) <= 512)
+		info->bite = 1;
+	else
+		info->bite = 0;
 }
 
 long SearchLOT(LOT_INFO* LOT, long expansion)
@@ -309,20 +348,24 @@ long EscapeBox(ITEM_INFO* item, ITEM_INFO* enemy, short box_number)
 
 long ValidBox(ITEM_INFO* item, short zone_number, short box_number)
 {
-	auto* creature = GetCreatureInfo(item);
-	auto* zone = ground_zone[creature->LOT.zone][flip_status];
-	if (creature->LOT.fly == 0 && zone[box_number] != zone_number)
-		return FALSE;
+	CREATURE_INFO* creature;
+	BOX_INFO* box;
 
-	auto* box = &boxes[box_number];
+	creature = (CREATURE_INFO*)item->data;
+
+	if (!creature->LOT.fly && ground_zone[creature->LOT.zone][flip_status][box_number] != zone_number)
+		return 0;
+
+	box = &boxes[box_number];
+
 	if (creature->LOT.block_mask & box->overlap_index)
-		return FALSE;
+		return 0;
 
-	if (item->pos.z_pos > box->left << WALL_SHIFT && item->pos.z_pos < box->right << WALL_SHIFT &&
-		item->pos.x_pos > box->top << WALL_SHIFT && item->pos.x_pos < box->bottom << WALL_SHIFT)
-		return FALSE;
+	if (item->pos.z_pos > box->left << 10 && item->pos.z_pos < box->right << 10 &&
+		item->pos.x_pos > box->top << 10 && item->pos.x_pos < box->bottom << 10)
+		return 0;
 
-	return TRUE;
+	return 1;
 }
 
 long StalkBox(ITEM_INFO* item, ITEM_INFO* enemy, short box_number)
@@ -581,10 +624,11 @@ void CreatureMood(ITEM_INFO* item, AI_INFO* info, long violent)
 	ITEM_INFO* enemy;
 	LOT_INFO* LOT;
 	static target_type type;
-	short index, box_no, room_number;
+	short index, box_no;
 
-	creature = GetCreatureInfo(item);
-	if (creature == NULL)
+	creature = (CREATURE_INFO*)item->data;
+
+	if (!creature)
 		return;
 
 	enemy = creature->enemy;
@@ -602,7 +646,7 @@ void CreatureMood(ITEM_INFO* item, AI_INFO* info, long violent)
 				TargetBox(&creature->LOT, box_no);
 				creature->mood = BORED_MOOD;
 			}
-			else if (creature->LOT.required_box == NO_BOX)
+			else if (creature->LOT.required_box == 2047)
 				TargetBox(&creature->LOT, box_no);
 		}
 
@@ -613,19 +657,19 @@ void CreatureMood(ITEM_INFO* item, AI_INFO* info, long violent)
 		creature->LOT.target.y = enemy->pos.y_pos;
 		creature->LOT.target.z = enemy->pos.z_pos;
 		creature->LOT.required_box = enemy->box_number;
-		if (creature->LOT.fly != 0 && lara.water_status == LW_ABOVE_WATER)
+
+		if (creature->LOT.fly && lara.water_status == LW_ABOVE_WATER)
 			creature->LOT.target.y += GetBestFrame(enemy)[2];
+
 		break;
 
 	case ESCAPE_MOOD:
 		box_no = LOT->node[(creature->LOT.zone_count * GetRandomControl()) >> 15].box_number;
 
-		if (ValidBox(item, info->zone_number, box_no) && creature->LOT.required_box == NO_BOX)
+		if (ValidBox(item, info->zone_number, box_no) && creature->LOT.required_box == 2047)
 		{
 			if (EscapeBox(item, enemy, box_no))
-			{
 				TargetBox(&creature->LOT, box_no);
-			}
 			else if (info->zone_number == info->enemy_zone && StalkBox(item, enemy, box_no) && !violent)
 			{
 				TargetBox(&creature->LOT, box_no);
@@ -720,20 +764,26 @@ void GetCreatureMood(ITEM_INFO* item, AI_INFO* info, long violent)
 			{
 			case BORED_MOOD:
 			case STALK_MOOD:
+
 				if (info->zone_number == info->enemy_zone)
 					creature->mood = ATTACK_MOOD;
 				else if (item->hit_status)
 					creature->mood = ESCAPE_MOOD;
+
 				break;
 
 			case ATTACK_MOOD:
+
 				if (info->zone_number != info->enemy_zone)
 					creature->mood = BORED_MOOD;
+
 				break;
 
 			case ESCAPE_MOOD:
+
 				if (info->zone_number == info->enemy_zone)
 					creature->mood = ATTACK_MOOD;
+
 				break;
 			}
 		}
@@ -821,21 +871,32 @@ long CreatureCreature(short item_number)
 
 long BadFloor(long x, long y, long z, long box_height, long next_height, short room_number, LOT_INFO* LOT)
 {
-	auto* floor = GetFloor(x, y, z, &room_number);
-	if (floor->box == NO_BOX)
-		return TRUE;
+	FLOOR_INFO* floor;
+	BOX_INFO* box;
+
+	floor = GetFloor(x, y, z, &room_number);
+
+	if (floor->box == 2047)
+		return 1;
+
 	if (LOT->is_jumping)
-		return FALSE;
-	auto* box = &boxes[floor->box];
+		return 0;
+
+	box = &boxes[floor->box];
+
 	if (box->overlap_index & LOT->block_mask)
-		return TRUE;
+		return 1;
+
 	if (box_height - box->height > LOT->step || box_height - box->height < LOT->drop)
-		return TRUE;
+		return 1;
+
 	if (box_height - box->height < -LOT->step && box->height > next_height)
-		return TRUE;
-	if (LOT->fly != 0 && y > box->height + LOT->fly)
-		return TRUE;
-	return FALSE;
+		return 1;
+
+	if (LOT->fly && y > box->height + LOT->fly)
+		return 1;
+
+	return 0;
 }
 
 long CreatureAnimation(short item_number, short angle, short tilt)
@@ -851,8 +912,9 @@ long CreatureAnimation(short item_number, short angle, short tilt)
 	short room_number, rad;
 
 	item = &items[item_number];
-	creature = GetCreatureInfo(item);
-	if (creature == NULL)
+	creature = (CREATURE_INFO*)item->data;
+
+	if (!creature)
 		return 0;
 
 	LOT = &creature->LOT;
@@ -1227,21 +1289,27 @@ void CreatureTilt(ITEM_INFO* item, short angle)
 
 void CreatureJoint(ITEM_INFO* item, short joint, short required)
 {
-	auto* creature = GetCreatureInfo(item);
-	if (creature == NULL)
+	CREATURE_INFO* creature;
+	short change;
+
+	creature = (CREATURE_INFO*)item->data;
+
+	if (!creature)
 		return;
 
-	auto change = required - creature->joint_rotation[joint];
-	if (change > ANGLE(3))
-		change = ANGLE(3);
-	else if (change < -ANGLE(3))
-		change = -ANGLE(3);
+	change = required - creature->joint_rotation[joint];
+
+	if (change > 546)
+		change = 546;
+	else if (change < -546)
+		change = -546;
 
 	creature->joint_rotation[joint] += change;
-	if (creature->joint_rotation[joint] > ANGLE(67))
-		creature->joint_rotation[joint] = ANGLE(67);
-	else if (creature->joint_rotation[joint] < -ANGLE(67))
-		creature->joint_rotation[joint] = -ANGLE(67);
+
+	if (creature->joint_rotation[joint] > 0x3000)
+		creature->joint_rotation[joint] = 0x3000;
+	else if (creature->joint_rotation[joint] < -0x3000)
+		creature->joint_rotation[joint] = -0x3000;
 }
 
 void CreatureFloat(short item_number)
@@ -1540,7 +1608,7 @@ void FindAITargetObject(CREATURE_INFO* creature, short obj_num)
 	{
 		aiObj = &AIObjects[i];
 
-		if (aiObj->object_number != obj_num || aiObj->ocb != item->item_flags[3] || aiObj->room_number == 255)
+		if (aiObj->object_number != obj_num || aiObj->trigger_flags != item->item_flags[3] || aiObj->room_number == 255)
 			continue;
 
 		zone = ground_zone[creature->LOT.zone][flip_status];
@@ -1565,7 +1633,7 @@ void FindAITargetObject(CREATURE_INFO* creature, short obj_num)
 		enemy->pos.z_pos = aiObj->z;
 		enemy->pos.y_rot = aiObj->y_rot;
 		enemy->flags = aiObj->flags;
-		enemy->ocb = aiObj->ocb;
+		enemy->trigger_flags = aiObj->trigger_flags;
 		enemy->box_number = aiObj->box_number;
 
 		if (!(enemy->flags & 0x20))
@@ -1731,104 +1799,4 @@ long MoveCreature3DPos(PHD_3DPOS* srcpos, PHD_3DPOS* destpos, long velocity, sho
 
 	return srcpos->x_pos == destpos->x_pos && srcpos->y_pos == destpos->y_pos &&
 		srcpos->z_pos == destpos->z_pos && srcpos->y_rot == destpos->y_rot;
-}
-
-long GetSectorIndex(ROOM_INFO* r, int x, int z)
-{
-	return ((z - r->z) >> WALL_SHIFT) + r->x_size * ((x - r->x) >> WALL_SHIFT);
-}
-
-long GetSectorIndex(ROOM_INFO* r, ITEM_INFO* item)
-{
-	return ((item->pos.z_pos - r->z) >> WALL_SHIFT) + r->x_size * ((item->pos.x_pos - r->x) >> WALL_SHIFT);
-}
-
-CREATURE_INFO* GetCreatureInfo(ITEM_INFO* item)
-{
-	return static_cast<CREATURE_INFO*>(item->data);
-}
-
-void SetAnimation(ITEM_INFO* item, int anim_index, int frame_index)
-{
-	item->anim_number = objects[item->object_number].anim_index + anim_index;
-	auto* anim = &anims[item->anim_number];
-	item->frame_number = anim->frame_base + frame_index;
-	item->current_anim_state = anim->current_anim_state;
-	item->goal_anim_state = item->current_anim_state;
-}
-
-void SetAnimation(ITEM_INFO* item, int anim_index, int state_index, int frame_index)
-{
-	item->anim_number = objects[item->object_number].anim_index + anim_index;
-	item->frame_number = anims[item->anim_number].frame_base + frame_index;
-	item->current_anim_state = state_index;
-	item->goal_anim_state = state_index;
-}
-
-ITEM_INFO* GetNearestTarget(ITEM_INFO* item, long targetedObjNum)
-{
-	ITEM_INFO* new_target = NULL;
-	int maxDist = INT_MAX;
-
-	for (int i = 0; i < 5; i++)
-	{
-		auto* creature = &baddie_slots[i];
-		if (creature->item_num == NO_ITEM || item->index == creature->item_num)
-			continue;
-		auto* target = &items[creature->item_num];
-		if (target->object_number == targetedObjNum)
-		{
-			auto x = target->pos.x_pos - item->pos.x_pos;
-			auto z = target->pos.z_pos - item->pos.z_pos;
-			auto dist = SQUARE(x) + SQUARE(z);
-			if (dist < maxDist)
-			{
-				new_target = target;
-				maxDist = dist;
-			}
-		}
-	}
-
-	return new_target;
-}
-
-void DamageTarget(ITEM_INFO* item, ITEM_INFO* target, int damage)
-{
-	if (target != NULL && target->hit_points > 0)
-	{
-		target->hit_points -= damage;
-		target->hit_status = TRUE;
-	}
-}
-
-void EFF_ShootProjectileFromItem(ITEM_INFO* item, short extra)
-{
-	if (item->data == NULL)
-		return;
-	// TODO: Found a way to unhardcode it !
-	switch (item->object_number)
-	{
-	case DEMIGOD2:
-	case DEMIGOD3:
-		DoDemigodProjectiles(item, extra);
-		break;
-	}
-}
-
-void EFF_DoDamageFromItem(ITEM_INFO* item, short extra)
-{
-	if (item->data == NULL)
-		return;
-	// TODO: Found a way to unhardcode it !
-	switch (item->object_number)
-	{
-	case DEMIGOD1:
-		DoDemigodHammerSlam(item, extra);
-		break;
-	}
-}
-
-bool IsAnimValid(ITEM_INFO* item, long anim_required)
-{
-	return (item->anim_number - objects[item->object_number].anim_index) == anim_required;
 }

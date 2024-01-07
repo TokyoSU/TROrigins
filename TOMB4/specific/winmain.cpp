@@ -242,7 +242,7 @@ void WinProcessCommands(long cmd)
 		App.dx.WaitAtBeginScene = 0;
 		Log(5, "Game Thread Resumed");
 
-		if (App.dx.flags & DXF_FULLSCREEN)
+		if (App.dx.Flags & DXF_FULLSCREEN)
 		{
 			SetCursor(0);
 			ShowCursor(0);
@@ -423,12 +423,12 @@ void ClearSurfaces()
 	r.y2 = App.dx.rViewport.top + App.dx.rViewport.bottom;
 	r.x2 = App.dx.rViewport.left + App.dx.rViewport.right;
 
-	if (App.dx.flags & DXF_HWR)
+	if (App.dx.Flags & DXF_HWR)
 		DXAttempt(App.dx.lpViewport->Clear2(1, &r, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0, 1.0F, 0));
 
 	S_DumpScreen();
 
-	if (App.dx.flags & DXF_HWR)
+	if (App.dx.Flags & DXF_HWR)
 		DXAttempt(App.dx.lpViewport->Clear2(1, &r, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0, 1.0F, 0));
 
 	S_DumpScreen();
@@ -556,17 +556,17 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmd
 
 	if (!DXCreate(dm->w, dm->h, dm->bpp, App.StartFlags, &App.dx, App.hWnd, WS_OVERLAPPEDWINDOW))
 	{
-		MessageBox(0, GetScriptText(TXT_Failed_To_Setup_DirectX), "Tomb Raider IV", 0);
+		MessageBox(0, SCRIPT_TEXT(TXT_Failed_To_Setup_DirectX), "Tomb Raider IV", 0);
 		return 0;
 	}
 
 	CoInitializeEx(0, COINIT_MULTITHREADED);
 
-	WinSetStyle(G_dxptr->flags & DXF_FULLSCREEN, G_dxptr->WindowStyle);
+	WinSetStyle(G_dxptr->Flags & DXF_FULLSCREEN, G_dxptr->WindowStyle);
 	UpdateWindow(App.hWnd);
 	ShowWindow(App.hWnd, nShowCmd);
 
-	if (App.dx.flags & DXF_FULLSCREEN)
+	if (App.dx.Flags & DXF_FULLSCREEN)
 	{
 		SetCursor(0);
 		ShowCursor(0);

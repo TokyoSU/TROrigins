@@ -28,10 +28,11 @@ void undraw_pistol_mesh_left(long weapon_type)
 	{
 		WeaponObject(weapon_type);
 		lara.mesh_ptrs[LM_LHAND] = meshes[objects[LARA].mesh_index + LM_LHAND * 2];
+
 		if (weapon_type == WEAPON_PISTOLS)
-			lara.holster_l = LARA_HOLSTERS_PISTOLS;
+			lara.holster = LARA_HOLSTERS_PISTOLS;
 		else if (weapon_type == WEAPON_UZI)
-			lara.holster_l = LARA_HOLSTERS_UZIS;
+			lara.holster = LARA_HOLSTERS_UZIS;
 	}
 }
 
@@ -39,12 +40,13 @@ void undraw_pistol_mesh_right(long weapon_type)
 {
 	WeaponObject(weapon_type);
 	lara.mesh_ptrs[LM_RHAND] = meshes[objects[LARA].mesh_index + LM_RHAND * 2];
+
 	if (weapon_type == WEAPON_PISTOLS)
-		lara.holster_r = LARA_HOLSTERS_PISTOLS;
+		lara.holster = LARA_HOLSTERS_PISTOLS;
 	else if (weapon_type == WEAPON_UZI)
-		lara.holster_r = LARA_HOLSTERS_UZIS;
+		lara.holster = LARA_HOLSTERS_UZIS;
 	else if (weapon_type == WEAPON_REVOLVER)
-		lara.holster_r = LARA_HOLSTERS_SIXSHOOTER;
+		lara.holster = LARA_HOLSTERS_SIXSHOOTER;
 }
 
 static void set_arm_info(LARA_ARM* arm, long frame)
@@ -93,14 +95,14 @@ void ready_pistols(long weapon_type)
 
 void draw_pistol_meshes(long weapon_type)
 {
-	long mesh_index = objects[WeaponObjectMesh(weapon_type)].mesh_index;
-	lara.holster_r = LARA_HOLSTERS;
+	long mesh_index;
+
+	mesh_index = objects[WeaponObjectMesh(weapon_type)].mesh_index;
+	lara.holster = LARA_HOLSTERS;
 	lara.mesh_ptrs[LM_RHAND] = meshes[mesh_index + LM_RHAND * 2];
+
 	if (weapon_type != WEAPON_REVOLVER)
-	{
 		lara.mesh_ptrs[LM_LHAND] = meshes[mesh_index + LM_LHAND * 2];
-		lara.holster_l = LARA_HOLSTERS;
-	}
 }
 
 void draw_pistols(long weapon_type)
@@ -224,7 +226,7 @@ void AnimatePistols(long weapon_type)
 
 	sound_already = 0;
 
-	if (lara_item->mesh_bits & MESHBITS(14))
+	if (lara_item->mesh_bits)
 	{
 		if (SmokeCountL)
 		{
@@ -252,10 +254,7 @@ void AnimatePistols(long weapon_type)
 			GetLaraJointPos(&pos, 14);
 			TriggerGunSmoke(pos.x, pos.y, pos.z, 0, 0, 0, 0, SmokeWeapon, SmokeCountL);
 		}
-	}
 
-	if (lara_item->mesh_bits & MESHBITS(11))
-	{
 		if (SmokeCountR)
 		{
 			switch (SmokeWeapon)

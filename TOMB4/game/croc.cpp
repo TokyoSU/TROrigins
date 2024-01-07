@@ -359,7 +359,7 @@ void TriggerLocust(ITEM_INFO* item)
 
 	fx = &Locusts[fx_number];
 
-	if (item->object_number == LOCUST_EMITTER)
+	if (item->object_number == FISH)
 	{
 		vec.x = item->pos.x_pos;
 		vec.y = item->pos.y_pos;
@@ -417,10 +417,10 @@ void ControlLocustEmitter(short item_number)
 	if (!TriggerActive(item))
 		return;
 
-	if (item->ocb)
+	if (item->trigger_flags)
 	{
 		TriggerLocust(item);
-		item->ocb--;
+		item->trigger_flags--;
 	}
 	else
 		KillItem(item_number);
@@ -634,7 +634,7 @@ void TriggerCrocgodMissileFlame(short fx_number, long xv, long yv, long zv)
 	sptr->Yvel = (short)yv;
 	sptr->Zvel = (short)zv;
 	sptr->Friction = 34;
-	sptr->flags = 538;
+	sptr->Flags = 538;
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 
 	if (GetRandomControl() & 1)

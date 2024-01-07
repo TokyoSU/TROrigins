@@ -732,9 +732,11 @@ ulong mGetAngle(long x, long z, long x1, long z1)
 
 void AlterFOV(short fov)
 {
+	long fov_width;
+
 	CurrentFov = fov;
 	fov /= 2;
-	long fov_width = phd_winheight * 320 / 240;
+	fov_width = phd_winheight * 320 / 240;
 	LfAspectCorrection = 1.0F; // must always be 1.0 for unstretched view
 	phd_persp = (fov_width / 2) * phd_cos(fov) / phd_sin(fov);
 	f_persp = (float)phd_persp;
@@ -865,7 +867,7 @@ void InitWindow(long x, long y, long w, long h, long znear, long zfar, long fov,
 	f_centerx = float(w / 2);
 	phd_zfar = zfar << W2V_SHIFT;
 	f_centery = float(h / 2);
-	AlterFOV(ANGLE(fov));
+	AlterFOV(short(182 * fov));
 	SetupZRange(phd_znear, phd_zfar);
 	phd_right = phd_winxmax;
 	phd_bottom = phd_winymax;

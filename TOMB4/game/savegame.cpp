@@ -355,7 +355,7 @@ void SaveLevelData(long FullSave)
 	ITEM_INFO* item;
 	ROOM_INFO* r;
 	OBJECT_INFO* obj;
-	MESH_INFO* static_mesh;
+	MESH_INFO* mesh;
 	CREATURE_INFO* creature;
 	ulong flags;
 	long k, flare_age;
@@ -396,11 +396,11 @@ void SaveLevelData(long FullSave)
 
 		for (int j = 0; j < r->num_meshes; j++)
 		{
-			static_mesh = &r->static_mesh[j];
+			mesh = &r->mesh[j];
 
-			if (static_mesh->object_number >= SHATTER0)
+			if (mesh->static_number >= SHATTER0)
 			{
-				word |= ((static_mesh->intensity2 & 1) << k);
+				word |= ((mesh->Flags & 1) << k);
 				k++;
 
 				if (k == 16)
@@ -490,7 +490,7 @@ void SaveLevelData(long FullSave)
 				if (item->timer)
 					packed |= 0x800;
 
-				if (item->ocb)
+				if (item->trigger_flags)
 					packed |= 0x1000;
 
 				if (obj->save_hitpoints && item->hit_points != obj->hit_points)
@@ -555,7 +555,7 @@ void SaveLevelData(long FullSave)
 				if (obj->save_flags)
 				{
 					flags = item->flags;
-					flags |= item->activated << 16;
+					flags |= item->active << 16;
 					flags |= item->status << 17;
 					flags |= item->gravity_status << 19;
 					flags |= item->hit_status << 20;
@@ -587,15 +587,10 @@ void SaveLevelData(long FullSave)
 						WriteSG(&item->timer, sizeof(short));
 
 					if (packed & 0x1000)
-						WriteSG(&item->ocb, sizeof(short));
+						WriteSG(&item->trigger_flags, sizeof(short));
 
 					if (obj->intelligent)
-					{
-						size_t carried_count = item->carried_item_list.size();
-						WriteSG(&carried_count, sizeof(size_t));
-						for (auto& carrieditem : item->carried_item_list)
-							WriteSG(&carrieditem, sizeof(short));
-					}
+						WriteSG(&item->carried_item, sizeof(short));
 
 					if (flags & 0x80000000)
 					{
@@ -609,7 +604,7 @@ void SaveLevelData(long FullSave)
 						WriteSG(&creature->ai_target.room_number, sizeof(short));
 						WriteSG(&creature->ai_target.box_number, sizeof(ushort));
 						WriteSG(&creature->ai_target.flags, sizeof(short));
-						WriteSG(&creature->ai_target.ocb, sizeof(short));
+						WriteSG(&creature->ai_target.trigger_flags, sizeof(short));
 						WriteSG(&creature->ai_target.pos, sizeof(PHD_3DPOS));
 
 						lflags = creature->LOT.can_jump;
@@ -656,7 +651,7 @@ void SaveLevelData(long FullSave)
 
 		for (int i = level_items; i < 256; i++)
 		{
-			if (item->activated && (item->object_number == FLARE_ITEM || item->object_number == BURNING_TORCH_ITEM))
+			if (item->active && (item->object_number == FLARE_ITEM || item->object_number == BURNING_TORCH_ITEM))
 				byte++;
 
 			item++;
@@ -667,7 +662,7 @@ void SaveLevelData(long FullSave)
 
 		for (int i = level_items; i < 256; i++)
 		{
-			if (item->activated && (item->object_number == FLARE_ITEM || item->object_number == BURNING_TORCH_ITEM))
+			if (item->active && (item->object_number == FLARE_ITEM || item->object_number == BURNING_TORCH_ITEM))
 			{
 				if (item->object_number == FLARE_ITEM)
 					byte = 0;
@@ -746,7 +741,7 @@ void SaveLevelData(long FullSave)
 
 		for (int i = level_items; i < 256; i++)
 		{
-			if (item->activated && item->object_number == CLOCKWORK_BEETLE)
+			if (item->active && item->object_number == CLOCKWORK_BEETLE)
 			{
 				byte = 1;
 				break;
@@ -756,10 +751,11 @@ void SaveLevelData(long FullSave)
 		}
 
 		WriteSG(&byte, sizeof(uchar));
+
 		if (byte)
 		{
 			WriteSG(&item->pos, sizeof(PHD_3DPOS));
-			WriteSG(item->item_flags, sizeof(long) * 4);
+			WriteSG(item->item_flags, sizeof(short) * 4);
 		}
 
 		if (gfCurrentLevel == 1)
@@ -797,7 +793,7 @@ void RestoreLevelData(long FullSave)
 	CREATURE_INFO* creature;
 	FLOOR_INFO* floor;
 	OBJECT_INFO* obj;
-	MESH_INFO* static_mesh;
+	MESH_INFO* mesh;
 	ulong flags;
 	long k, flare_age;
 	ushort word, packed, uroom_number, uword;
@@ -831,9 +827,9 @@ void RestoreLevelData(long FullSave)
 
 		for (int j = 0; j < r->num_meshes; j++)
 		{
-			static_mesh = &r->static_mesh[j];
+			mesh = &r->mesh[j];
 
-			if (static_mesh->object_number >= SHATTER0)
+			if (mesh->static_number >= SHATTER0)
 			{
 				if (k == 16)
 				{
@@ -841,13 +837,13 @@ void RestoreLevelData(long FullSave)
 					k = 0;
 				}
 
-				static_mesh->intensity2 ^= (uword ^ static_mesh->intensity2) & 1;
+				mesh->Flags ^= (uword ^ mesh->Flags) & 1;
 
-				if (!static_mesh->intensity2)
+				if (!mesh->Flags)
 				{
 					room_number = i;
-					floor = GetFloor(static_mesh->x, static_mesh->y, static_mesh->z, &room_number);
-					GetHeight(floor, static_mesh->x, static_mesh->y, static_mesh->z);
+					floor = GetFloor(mesh->x, mesh->y, mesh->z, &room_number);
+					GetHeight(floor, mesh->x, mesh->y, mesh->z);
 					TestTriggers(trigger_index, 1, 0);
 					floor->stopper = 0;
 				}
@@ -967,37 +963,30 @@ void RestoreLevelData(long FullSave)
 				item->flags = (short)flags;
 
 				if (packed & 0x80)
-					ReadSG(&item->item_flags[0], sizeof(long));
+					ReadSG(&item->item_flags[0], sizeof(short));
+
 				if (packed & 0x100)
-					ReadSG(&item->item_flags[1], sizeof(long));
+					ReadSG(&item->item_flags[1], sizeof(short));
+
 				if (packed & 0x200)
-					ReadSG(&item->item_flags[2], sizeof(long));
+					ReadSG(&item->item_flags[2], sizeof(short));
+
 				if (packed & 0x400)
-					ReadSG(&item->item_flags[3], sizeof(long));
+					ReadSG(&item->item_flags[3], sizeof(short));
 
 				if (packed & 0x800)
 					ReadSG(&item->timer, sizeof(short));
 
 				if (packed & 0x1000)
-					ReadSG(&item->ocb, sizeof(short));
+					ReadSG(&item->trigger_flags, sizeof(short));
 
 				if (obj->intelligent)
-				{
-					size_t carried_count = 0;
-					short carrieditem = NO_ITEM;
-					ReadSG(&carried_count, sizeof(size_t));
-					for (int i = 0; i < carried_count; i++)
-					{
-						ReadSG(&carrieditem, sizeof(short));
-						if (carrieditem != NO_ITEM)
-							item->carried_item_list.push_back(carrieditem);
-					}
-				}
+					ReadSG(&item->carried_item, sizeof(short));
 
-				if (flags & 0x10000 && !item->activated)
+				if (flags & 0x10000 && !item->active)
 					AddActiveItem(i);
 
-				item->activated = (flags >> 16) & 1;
+				item->active = (flags >> 16) & 1;
 				item->status = (flags >> 17) & 3;
 				item->gravity_status = (flags >> 19) & 1;
 				item->hit_status = (flags >> 20) & 1;
@@ -1017,11 +1006,15 @@ void RestoreLevelData(long FullSave)
 					{
 						ReadSG(creature, 22);
 						creature->enemy = (ITEM_INFO*)((long)creature->enemy + (long)malloc_buffer);
+
+						if (creature->enemy < 0)
+							creature->enemy = 0;
+
 						ReadSG(&creature->ai_target.object_number, sizeof(short));
 						ReadSG(&creature->ai_target.room_number, sizeof(short));
 						ReadSG(&creature->ai_target.box_number, sizeof(ushort));
 						ReadSG(&creature->ai_target.flags, sizeof(short));
-						ReadSG(&creature->ai_target.ocb, sizeof(short));
+						ReadSG(&creature->ai_target.trigger_flags, sizeof(short));
 						ReadSG(&creature->ai_target.pos, sizeof(PHD_3DPOS));
 						ReadSG(&lflags, sizeof(char));
 						creature->LOT.can_jump = (lflags & 1) == 1;

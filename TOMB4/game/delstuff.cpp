@@ -242,7 +242,7 @@ void DrawLara(ITEM_INFO* item, long mirror)
 
 	if (!(gfLevelFlags & GF_YOUNGLARA))
 	{
-		obj = &objects[lara.holster_l];
+		obj = &objects[lara.holster];
 		meshpp = &meshes[obj->mesh_index];
 		meshpp += 8;
 		mMXPtr[M00] = lara_matrices[1 * 12 + M00];
@@ -259,9 +259,7 @@ void DrawLara(ITEM_INFO* item, long mirror)
 		mMXPtr[M23] = lara_matrices[1 * 12 + M23];
 		phd_PutPolygons(*meshpp, -1);
 
-		obj = &objects[lara.holster_r];
-		meshpp = &meshes[obj->mesh_index];
-		meshpp += 16;
+		meshpp += 8;
 		mMXPtr[M00] = lara_matrices[4 * 12 + M00];
 		mMXPtr[M01] = lara_matrices[4 * 12 + M01];
 		mMXPtr[M02] = lara_matrices[4 * 12 + M02];

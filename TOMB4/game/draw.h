@@ -23,7 +23,7 @@ void DrawRooms(short CurrentRoom);
 void RenderIt(short CurrentRoom);
 long DrawPhaseGame();
 void GetRoomBounds();
-void SetRoomBounds(ROOM_PORTAL* door, long rn, ROOM_INFO* actualRoom);
+void SetRoomBounds(short* door, long rn, ROOM_INFO* actualRoom);
 void DrawEffect(short fx_num);
 void PrintObjects(short room_number);
 long GetFrames(ITEM_INFO* item, short* frm[], long* rate);

@@ -86,7 +86,7 @@ void TriggerWraithFlame(long x, long y, long z, short xv, short yv, short zv, lo
 	sptr->y = y;
 	sptr->z = (GetRandomControl() & 0x1F) + z - 16;
 	sptr->Friction = 85;
-	sptr->flags = 522;
+	sptr->Flags = 522;
 	sptr->Xvel = xv;
 	sptr->Yvel = yv;
 	sptr->Zvel = zv;
@@ -156,7 +156,7 @@ void TriggerWraithEffect(long x, long y, long z, short vel, long objnum)
 		sptr->Yvel = (GetRandomControl() & 0x7F) - 64;
 		sptr->Zvel = short((rad * phd_cos(ang)) >> W2V_SHIFT);
 		sptr->Friction = 4;
-		sptr->flags = 522;
+		sptr->Flags = 522;
 		sptr->MaxYvel = 0;
 		sptr->Scalar = 3;
 		sptr->Gravity = (GetRandomControl() & 0x7F) - 64;
@@ -198,7 +198,7 @@ void WraithControl(short item_number)
 		dx = r->x + (r->y_size << 9) - item->pos.x_pos;
 		dz = r->z + (r->x_size << 9) - item->pos.z_pos;
 		dist = SQUARE(dx) + SQUARE(dz);
-		y = r->y + ((r->bottom_floor - r->top_ceiling) >> 1);
+		y = r->y + ((r->minfloor - r->maxceiling) >> 1);
 		dy = y - abs((dist >> 13) - 768);
 	}
 
@@ -277,7 +277,8 @@ void WraithControl(short item_number)
 		for (int i = room[item->room_number].item_number; i != NO_ITEM; i = item2->next_item)
 		{
 			item2 = &items[i];
-			if (item2->activated)
+
+			if (item2->active)
 			{
 				if (item->object_number == WRAITH1 && item2->object_number == WRAITH2 ||	//wraith 1 and 2 wanna fite
 					item->object_number == WRAITH2 && item2->object_number == WRAITH1 ||	//wraith 2 and 1 wanna fite
@@ -302,10 +303,10 @@ void WraithControl(short item_number)
 			{
 				if (item->item_flags[1] < 30)
 				{
-					if (item->object_number == WRAITH2 && item->ocb && !flip_stats[item->ocb])
+					if (item->object_number == WRAITH2 && item->trigger_flags && !flip_stats[item->trigger_flags])
 					{
-						FlipMap(item->ocb);
-						flip_stats[item->ocb] = 1;
+						FlipMap(item->trigger_flags);
+						flip_stats[item->trigger_flags] = 1;
 					}
 
 					KillItem(item_number);
@@ -352,9 +353,9 @@ void WraithControl(short item_number)
 				ShockwaveExplosion(item, 0x606060, -32);
 				ShockwaveExplosion(item, 0x303030, 48);
 				target->hit_points = 0;
-				target->ocb--;
+				target->trigger_flags--;
 
-				if (target->ocb > 0)
+				if (target->trigger_flags > 0)
 					target->frame_number = anims[target->anim_number].frame_base;
 
 				KillItem(item_number);

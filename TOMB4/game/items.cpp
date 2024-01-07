@@ -6,7 +6,6 @@
 #include "control.h"
 #include "effects.h"
 #include "lara.h"
-#include "box.h"
 
 short next_fx_active;
 short next_item_active;
@@ -25,7 +24,7 @@ void InitialiseItemArray(short num)
 	for (int i = level_items + 1; i < num; i++)
 	{
 		item->next_item = i;
-		item->activated = false;
+		item->active = 0;
 		item++;
 	}
 
@@ -46,8 +45,8 @@ void KillItem(short item_num)
 
 	DetatchSpark(item_num, 128);
 	item = &items[item_num];
-	item->activated = false;
-	item->really_active = false;
+	item->active = 0;
+	item->really_active = 0;
 
 	if (next_item_active == item_num)
 		next_item_active = item->next_active;
@@ -111,8 +110,11 @@ short CreateItem()
 
 void InitialiseItem(short item_num)
 {
-	auto* item = &items[item_num];
-	item->index = item_num;
+	ITEM_INFO* item;
+	ROOM_INFO* r;
+	FLOOR_INFO* floor;
+
+	item = &items[item_num];
 	item->anim_number = objects[item->object_number].anim_index;
 	item->frame_number = anims[item->anim_number].frame_base;
 	item->current_anim_state = anims[item->anim_number].current_anim_state;
@@ -122,31 +124,31 @@ void InitialiseItem(short item_num)
 	item->pos.z_rot = 0;
 	item->fallspeed = 0;
 	item->speed = 0;
-	item->activated = false;
+	item->active = 0;
 	item->status = ITEM_INACTIVE;
-	item->gravity_status = false;
-	item->hit_status = false;
-	item->looked_at = false;
-	item->dynamic_light = false;
-	item->ai_bits = NULL;
-	item->really_active = false;
+	item->gravity_status = 0;
+	item->hit_status = 0;
+	item->looked_at = 0;
+	item->dynamic_light = 0;
+	item->ai_bits = 0;
+	item->really_active = 0;
 	item->item_flags[0] = 0;
 	item->item_flags[1] = 0;
 	item->item_flags[2] = 0;
 	item->item_flags[3] = 0;
 	item->hit_points = objects[item->object_number].hit_points;
-	item->poisoned = false;
-	item->collidable = true;
+	item->poisoned = 0;
+	item->collidable = 1;
 	item->timer = 0;
 
 	if (item->object_number == SIXSHOOTER_ITEM || item->object_number == CROSSBOW_ITEM || item->object_number == SHOTGUN_ITEM)
-		item->mesh_bits = MESHBITS(0); // Show only mesh 0
+		item->mesh_bits = 1;
 	else if (item->object_number == SARCOPHAGUS_CUT)
 		item->mesh_bits = 5;
 	else if (item->object_number == HORUS_STATUE)
 		item->mesh_bits = 1607;
 	else
-		item->mesh_bits = MESHBITS_ALL;
+		item->mesh_bits = -1;
 
 	item->touch_bits = 0;
 	item->after_death = 0;
@@ -169,10 +171,10 @@ void InitialiseItem(short item_num)
 		item->status = ITEM_ACTIVE;
 	}
 
-	auto* r = &room[item->room_number];
+	r = &room[item->room_number];
 	item->next_item = r->item_number;
 	r->item_number = item_num;
-	auto* floor = &r->floor[GetSectorIndex(r, item)];
+	floor = &r->floor[((item->pos.z_pos - r->z) >> 10) + r->x_size * ((item->pos.x_pos - r->x) >> 10)];
 	item->floor = floor->floor << 8;
 	item->box_number = floor->box;
 
@@ -191,24 +193,24 @@ void InitialiseItem(short item_num)
 
 void RemoveActiveItem(short item_num)
 {
-	auto* item = &items[item_num];
-	if (!item->activated)
+	short linknum;
+
+	if (!items[item_num].active)
 		return;
 
-	item->activated = false;
+	items[item_num].active = 0;
+
 	if (next_item_active == item_num)
+		next_item_active = items[item_num].next_active;
+	else
 	{
-		next_item_active = item->next_active;
-		return;
-	}
-	
-	for (auto linknum = next_item_active; linknum != NO_ITEM; linknum = items[linknum].next_active)
-	{
-		auto* link = &items[linknum];
-		if (link->next_active == item_num)
+		for (linknum = next_item_active; linknum != NO_ITEM; linknum = items[linknum].next_active)
 		{
-			link->next_active = item->next_active;
-			break;
+			if (items[linknum].next_active == item_num)
+			{
+				items[linknum].next_active = items[item_num].next_active;
+				break;
+			}
 		}
 	}
 }
@@ -238,20 +240,22 @@ void RemoveDrawnItem(short item_num)
 
 void AddActiveItem(short item_num)
 {
-	auto* item = &items[item_num];
-	auto* obj = &objects[item->object_number];
+	ITEM_INFO* item;
+
+	item = &items[item_num];
 	item->flags |= IFL_TRIGGERED;
 
-	if (obj->control != NULL && !item->activated)
+	if (objects[item->object_number].control)
 	{
-		item->activated = true;
-		item->next_active = next_item_active;
-		next_item_active = item_num;
+		if (!item->active)
+		{
+			item->active = 1;
+			item->next_active = next_item_active;
+			next_item_active = item_num;
+		}
 	}
 	else
-	{
 		item->status = ITEM_INACTIVE;
-	}
 }
 
 void ItemNewRoom(short item_num, short room_num)
@@ -269,7 +273,8 @@ void ItemNewRoom(short item_num, short room_num)
 	}
 
 	item = &items[item_num];
-	if (item->room_number != NO_ROOM)
+
+	if (item->room_number != 255)
 	{
 		r = &room[item->room_number];
 		linknum = r->item_number;

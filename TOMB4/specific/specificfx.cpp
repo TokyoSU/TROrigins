@@ -32,22 +32,22 @@
 
 static long ShadowTable[NUM_TRIS * 3] =	//num of triangles * 3 points
 {
-	4, 1, 5,
-	5, 1, 6,	//top part
-	6, 1, 2,
-	6, 2, 7,
-	//
-	8, 4, 9,
-	9, 4, 5,
-	9, 5, 10,	//middle part
-	10, 5, 6,
-	10, 6, 11,
-	11, 6, 7,
-	//
-	13, 8, 9,
-	13, 9, 14,	//bottom part
-	14, 9, 10,
-	14, 10, 11
+4, 1, 5,
+5, 1, 6,	//top part
+6, 1, 2,
+6, 2, 7,
+//
+8, 4, 9,
+9, 4, 5,
+9, 5, 10,	//middle part
+10, 5, 6,
+10, 6, 11,
+11, 6, 7,
+//
+13, 8, 9,
+13, 9, 14,	//bottom part
+14, 9, 10,
+14, 10, 11
 };
 
 static char flare_table[121] =
@@ -96,7 +96,7 @@ static uchar TargetGraphColTab[48] =
 	255, 255, 0
 };
 
-static uchar SplashLinks[32]
+static uchar SplashLinks[347]
 {
 	16, 18, 0, 2,
 	18, 20, 2, 4,
@@ -105,10 +105,28 @@ static uchar SplashLinks[32]
 	24, 26, 8, 10,
 	26, 28, 10, 12,
 	28, 30, 12, 14,
-	30, 16, 14, 0
-};
+	30, 16, 14, 0,
+	//actual links end here
+	//the rest is the secret message from Richard Flower, newlines added for readability
+	
+	//Tomb Raider IV - The Last Revelation  -- Dedicated to my fiance Jay for putting up with this game taking over our lifes,
+	//my step sons Craig,Jamie & Aiden (Show this to your mates at school, they'll believe you now!!),
+	//also for my daughters Sophie and Jody - See you in another hex dump - Richard Flower 11/11/1999
 
-static uchar LaserShades[32] = {};
+	84, 111, 109, 98, 32, 82, 97, 105, 100, 101, 114, 32, 73, 86, 32, 45, 32, 84, 104, 101, 32, 76, 97, 115,
+	116, 32, 82, 101, 118, 101, 108, 97, 116, 105, 111, 110, 32, 32, 45, 45, 32, 68, 101, 100, 105, 99, 97, 116,
+	101, 100, 32, 116, 111, 32, 109, 121, 32, 102, 105, 97, 110, 99, 101, 32, 74, 97, 121, 32, 102, 111, 114, 32,
+	112, 117, 116, 116, 105, 110, 103, 32, 117, 112, 32, 119, 105, 116, 104, 32, 116, 104, 105, 115, 32, 103, 97, 109,
+	101, 32, 116, 97, 107, 105, 110, 103, 32, 111, 118, 101, 114, 32, 111, 117, 114, 32, 108, 105, 102, 101, 115, 44,
+	109, 121, 32, 115, 116, 101, 112, 32, 115, 111, 110, 115, 32, 67, 114, 97, 105, 103, 44, 74, 97, 109, 105, 101,
+	32, 38, 32, 65, 105, 100, 101, 110, 32, 40, 83, 104, 111, 119, 32, 116, 104, 105, 115, 32, 116, 111, 32, 121,
+	111, 117, 114, 32, 109, 97, 116, 101, 115, 32, 97, 116, 32, 115, 99, 104, 111, 111, 108, 44, 32, 116, 104, 101,
+	121, 39, 108, 108, 32, 98, 101, 108, 105, 101, 118, 101, 32, 121, 111, 117, 32, 110, 111, 119, 33, 33, 41, 44,
+	97, 108, 115, 111, 32, 102, 111, 114, 32, 109, 121, 32, 100, 97, 117, 103, 104, 116, 101, 114, 115, 32, 83, 111,
+	112, 104, 105, 101, 32, 97, 110, 100, 32, 74, 111, 100, 121, 32, 45, 32, 83, 101, 101, 32, 121, 111, 117, 32, 105,
+	110, 32, 97, 110, 111, 116, 104, 101, 114, 32, 104, 101, 120, 32, 100, 117, 109, 112, 32, 45, 32, 82, 105, 99,
+	104, 97, 114, 100, 32, 70, 108, 111, 119, 101, 114, 32, 49, 49, 47, 49, 49, 47, 49, 57, 57, 57, 0, 0, 0, 0
+};
 
 MESH_DATA* targetMeshP;
 long DoFade;
@@ -623,7 +641,7 @@ void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, long* xyptr, long* zptr)
 
 	v = MyVertexBuffer;
 
-	if (sptr->flags & 8)
+	if (sptr->Flags & 8)
 	{
 		z1 = zptr[0];
 		
@@ -636,7 +654,7 @@ void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, long* xyptr, long* zptr)
 			return;
 		}
 
-		if (sptr->flags & 2)
+		if (sptr->Flags & 2)
 		{
 			scale = sptr->Size << sptr->Scalar;
 			s1 = ((phd_persp * sptr->Size) << sptr->Scalar) / z1;
@@ -665,7 +683,7 @@ void S_DrawDrawSparks(SPARKS* sptr, long smallest_size, long* xyptr, long* zptr)
 
 		if (x1 + s1h >= phd_winxmin && x1 - s1h < phd_winxmax && y1 + s2h >= phd_winymin && y1 - s2h < phd_winymax)
 		{
-			if (sptr->flags & 0x10)
+			if (sptr->Flags & 0x10)
 			{
 				sin = rcossin_tbl[sptr->RotAng << 1];
 				cos = rcossin_tbl[(sptr->RotAng << 1) + 1];
@@ -2332,7 +2350,7 @@ void InitBinoculars()
 
 void DrawBinoculars()
 {
-	MESH_DATA* static_mesh;
+	MESH_DATA* mesh;
 	D3DTLVERTEX* v;
 	TEXTURESTRUCT* tex;
 	D3DTLVERTEX* vtx;
@@ -2345,14 +2363,14 @@ void DrawBinoculars()
 	vtx = MyVertexBuffer;
 
 	if (LaserSight)
-		static_mesh = targetMeshP;
+		mesh = targetMeshP;
 	else
-		static_mesh = binocsMeshP;
+		mesh = binocsMeshP;
 
-	static_mesh->SourceVB->Lock(DDLOCK_READONLY, (void**)&v, 0);
+	mesh->SourceVB->Lock(DDLOCK_READONLY, (void**)&v, 0);
 	clip = clipflags;
 
-	for (int i = 0; i < static_mesh->nVerts; i++)
+	for (int i = 0; i < mesh->nVerts; i++)
 	{
 		clipdistance = 0;
 		vtx[i] = v[i];
@@ -2372,13 +2390,13 @@ void DrawBinoculars()
 		*clip++ = clipdistance;
 	}
 
-	static_mesh->SourceVB->Unlock();
-	quad = static_mesh->gt4;
-	tri = static_mesh->gt3;
+	mesh->SourceVB->Unlock();
+	quad = mesh->gt4;
+	tri = mesh->gt3;
 
 	if (LaserSight)
 	{
-		for (int i = 0; i < static_mesh->ngt4; i++, quad += 6)
+		for (int i = 0; i < mesh->ngt4; i++, quad += 6)
 		{
 			tex = &textinfo[quad[4] & 0x7FFF];
 			drawbak = tex->drawtype;
@@ -2397,7 +2415,7 @@ void DrawBinoculars()
 			tex->drawtype = drawbak;
 		}
 
-		for (int i = 0, j = 0; i < static_mesh->ngt3; i++, tri += 5)
+		for (int i = 0, j = 0; i < mesh->ngt3; i++, tri += 5)
 		{
 			tex = &textinfo[tri[3] & 0x7FFF];
 			drawbak = tex->drawtype;
@@ -2418,7 +2436,7 @@ void DrawBinoculars()
 	}
 	else
 	{
-		for (int i = 0; i < static_mesh->ngt4; i++, quad += 6)
+		for (int i = 0; i < mesh->ngt4; i++, quad += 6)
 		{
 			tex = &textinfo[quad[4] & 0x7FFF];
 			drawbak = tex->drawtype;
@@ -2437,7 +2455,7 @@ void DrawBinoculars()
 			tex->drawtype = drawbak;
 		}
 
-		for (int i = 0; i < static_mesh->ngt3; i++, tri += 5)
+		for (int i = 0; i < mesh->ngt3; i++, tri += 5)
 		{
 			tex = &textinfo[tri[3] & 0x7FFF];
 			drawbak = tex->drawtype;
@@ -2566,139 +2584,18 @@ void DrawWraithTrail(ITEM_INFO* item)
 	phd_PopMatrix();
 }
 
-static void S_UpdateLaserShades()
-{
-	for (int lp = 0; lp < 32; lp++)
-	{
-		auto s = LaserShades[lp];
-		auto r = GetRandomDraw();
-
-		if (r < 1024)
-			r = (r & 0xF) + 16;
-		else if (r < 4096)
-			r &= 7;
-		else if (!(r & 0x70))
-			r &= 3;
-		else
-			r = 0;
-
-		if (r != 0)
-		{
-			s += (uchar)r;
-			if (s > 127)
-				s = 127;
-		}
-		else if (s > 16)
-			s -= s >> 3;
-		else
-			s = 16;
-
-		LaserShades[lp] = s;
-	}
-}
-
-static void mCalcPoint(long x, long y, long z, FVECTOR* result)
-{
-	result->x = (x * mMXPtr[M00] + y * mMXPtr[M01] + z * mMXPtr[M02] + mMXPtr[M03]);
-	result->y = (x * mMXPtr[M10] + y * mMXPtr[M11] + z * mMXPtr[M12] + mMXPtr[M13]);
-	result->z = (x * mMXPtr[M20] + y * mMXPtr[M21] + z * mMXPtr[M22] + mMXPtr[M23]);
-}
-
-static void ProjectPCoord(float x, float y, float z, float perspz, long* result)
-{
-	result[0] = long(float(x * perspz + f_centerx));
-	result[1] = long(float(y * perspz + f_centery));
-	result[2] = long(z);
-}
-
-void S_DrawLaser(ITEM_INFO* item, GAME_VECTOR* src, GAME_VECTOR* target, uchar cr, uchar cg, uchar cb)
-{
-	D3DTLVERTEX* v = MyVertexBuffer;
-	long x0, y0, z0, x1, y1, z1;
-	long x, y, z;
-
-	S_UpdateLaserShades();
-
-	PHD_VECTOR laserPos[33];
-	long* colors = (long*)&tsv_buffer[512];
-	long dx = target->x - src->x;
-	long dy = 0;
-	long dz = target->z - src->z;
-	long distance = (long)phd_sqrt(SQUARE(dx) + SQUARE(dz));
-	long nSegments = distance >> 9;
-	if (nSegments < 8)
-		nSegments = 8;
-	else if (nSegments > 32)
-		nSegments = 32;
-
-	FVECTOR vec;
-	dx = (target->x - src->x) / nSegments;
-	dy = (target->y - src->y) / nSegments;
-	dz = (target->z - src->z) / nSegments;
-	x = 0;
-	y = 0;
-	z = 0;
-
-	// Draw all lines.
-	colors = (long*)&tsv_buffer[512];// Same but colors.
-	x0 = laserPos[0].x;
-	y0 = laserPos[0].y;
-	z0 = laserPos[0].z;
-	x += dx;
-	y += dy;
-	z += dz;
-
-	for (int i = 1; i < nSegments; i++)
-	{
-		mCalcPoint(src->x + x, src->y + y, src->z + z, &vec);
-		ProjectPCoord(vec.x, vec.y, vec.z, f_persp / vec.z, (long*)&laserPos[i]);
-		x1 = laserPos[i].x;
-		y1 = laserPos[i].y;
-		z1 = laserPos[i].z;
-
-		if (ClipLine(x0, y0, z0, x1, y1, z1, phd_winxmin, phd_winymin, phd_winxmax, phd_winymax))
-		{
-			uchar r = RGBA_GETRED(colors[i]);
-			uchar g = RGBA_GETGREEN(colors[i]);
-			uchar b = RGBA_GETBLUE(colors[i]);
-			uchar a = RGBA_GETALPHA(colors[i]);
-
-			v[0].sx = (float)x0;
-			v[0].sy = (float)y0;
-			v[0].sz = (float)z0;
-			v[0].rhw = f_mpersp / v[0].sz * f_moneopersp;
-			v[0].color = RGBA(r, g, b, a);
-			v[0].specular = RGBA(0, 0, 0, 255);
-			v[1].sx = (float)x1;
-			v[1].sy = (float)y1;
-			v[1].sz = (float)z1;
-			v[1].rhw = f_mpersp / v[1].sz * f_moneopersp;
-			v[1].color = RGBA(r, g, b, a);
-			v[1].specular = RGBA(0, 0, 0, 255);
-
-			AddLineSorted(&v[0], &v[1], DT_DRAW_NOZ_NOAL_TEX_LINE);
-		}
-
-		x += dx;
-		y += dy;
-		z += dz;
-		x0 = x1;
-		y0 = y1;
-		z0 = z1;
-	}
-
-}
-
 void DrawDrips()
 {
-	D3DTLVERTEX* v = MyVertexBuffer;
+	D3DTLVERTEX* v;
 	DRIP_STRUCT* drip;
 	FVECTOR vec;
 	long* XY;
 	long* Z;
-	long* offsets;
+	long* pos;
 	float perspz;
 	long x0, y0, z0, x1, y1, z1, r, g, b;
+
+	v = MyVertexBuffer;
 
 	phd_PushMatrix();
 	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
@@ -2706,50 +2603,52 @@ void DrawDrips()
 	for (int i = 0; i < 32; i++)
 	{
 		drip = &Drips[i];
+
 		if (!drip->On)
 			continue;
 
 		XY = (long*)&tsv_buffer[0];
 		Z = (long*)&tsv_buffer[512];
-		offsets = (long*)&tsv_buffer[1024];
+		pos = (long*)&tsv_buffer[1024];
+		pos[0] = drip->x - lara_item->pos.x_pos;
+		pos[1] = drip->y - lara_item->pos.y_pos;
+		pos[2] = drip->z - lara_item->pos.z_pos;
 
-		offsets[0] = drip->x - lara_item->pos.x_pos;
-		offsets[1] = drip->y - lara_item->pos.y_pos;
-		offsets[2] = drip->z - lara_item->pos.z_pos;
-		if (offsets[0] < -SECTOR(20) || offsets[0] > SECTOR(20) ||
-			offsets[1] < -SECTOR(20) || offsets[1] > SECTOR(20) ||
-			offsets[2] < -SECTOR(20) || offsets[2] > SECTOR(20))
+		if (pos[0] < -20480 || pos[0] > 20480 || pos[1] < -20480 || pos[1] > 20480 || pos[2] < -20480 || pos[2] > 20480)
 			continue;
 
-		vec.x = offsets[0] * mMXPtr[M00] + offsets[1] * mMXPtr[M01] + offsets[2] * mMXPtr[M02] + mMXPtr[M03];
-		vec.y = offsets[0] * mMXPtr[M10] + offsets[1] * mMXPtr[M11] + offsets[2] * mMXPtr[M12] + mMXPtr[M13];
-		vec.z = offsets[0] * mMXPtr[M20] + offsets[1] * mMXPtr[M21] + offsets[2] * mMXPtr[M22] + mMXPtr[M23];
+		vec.x = pos[0] * mMXPtr[M00] + pos[1] * mMXPtr[M01] + pos[2] * mMXPtr[M02] + mMXPtr[M03];
+		vec.y = pos[0] * mMXPtr[M10] + pos[1] * mMXPtr[M11] + pos[2] * mMXPtr[M12] + mMXPtr[M13];
+		vec.z = pos[0] * mMXPtr[M20] + pos[1] * mMXPtr[M21] + pos[2] * mMXPtr[M22] + mMXPtr[M23];
+
 		perspz = f_persp / vec.z;
 		XY[0] = long(vec.x * perspz + f_centerx);
 		XY[1] = long(vec.y * perspz + f_centery);
 		Z[0] = (long)vec.z;
 
-		offsets[1] -= drip->Yvel >> 6;
+		pos[1] -= drip->Yvel >> 6;
+
 		if (room[drip->RoomNumber].flags & ROOM_NOT_INSIDE)
 		{
-			offsets[0] -= SmokeWindX >> 1;
-			offsets[1] -= SmokeWindZ >> 1;
+			pos[0] -= SmokeWindX >> 1;
+			pos[1] -= SmokeWindZ >> 1;
 		}
 
-		vec.x = offsets[0] * mMXPtr[M00] + offsets[1] * mMXPtr[M01] + offsets[2] * mMXPtr[M02] + mMXPtr[M03];
-		vec.y = offsets[0] * mMXPtr[M10] + offsets[1] * mMXPtr[M11] + offsets[2] * mMXPtr[M12] + mMXPtr[M13];
-		vec.z = offsets[0] * mMXPtr[M20] + offsets[1] * mMXPtr[M21] + offsets[2] * mMXPtr[M22] + mMXPtr[M23];
+		vec.x = pos[0] * mMXPtr[M00] + pos[1] * mMXPtr[M01] + pos[2] * mMXPtr[M02] + mMXPtr[M03];
+		vec.y = pos[0] * mMXPtr[M10] + pos[1] * mMXPtr[M11] + pos[2] * mMXPtr[M12] + mMXPtr[M13];
+		vec.z = pos[0] * mMXPtr[M20] + pos[1] * mMXPtr[M21] + pos[2] * mMXPtr[M22] + mMXPtr[M23];
+
 		perspz = f_persp / vec.z;
 		XY[2] = long(vec.x * perspz + f_centerx);
 		XY[3] = long(vec.y * perspz + f_centery);
 		Z[1] = (long)vec.z;
 
-		if (Z[0] == 0)
+		if (!Z[0])
 			continue;
 
-		if (Z[0] > SECTOR(20))
+		if (Z[0] > 20480)
 		{
-			drip->On = FALSE;
+			drip->On = 0;
 			continue;
 		}
 
@@ -2770,8 +2669,8 @@ void DrawDrips()
 			v[0].sy = (float)y0;
 			v[0].sz = (float)z0;
 			v[0].rhw = f_mpersp / v[0].sz * f_moneopersp;
-			v[0].color = RGBA(r, g, b, 255);
-			v[0].specular = RGBA(0, 0, 0, 255);
+			v[0].color = RGBA(r, g, b, 0xFF);
+			v[0].specular = 0xFF000000;
 
 			r >>= 1;
 			g >>= 1;
@@ -2781,10 +2680,10 @@ void DrawDrips()
 			v[1].sy = (float)y1;
 			v[1].sz = (float)z1;
 			v[1].rhw = f_mpersp / v[1].sz * f_moneopersp;
-			v[1].color = RGBA(r, g, b, 255);
-			v[1].specular = RGBA(0, 0, 0, 255);
+			v[1].color = RGBA(r, g, b, 0xFF);
+			v[1].specular = 0xFF000000;
 
-			AddLineSorted(&v[0], &v[1], DT_DRAW_NOZ_NOAL_TEX_LINE);
+			AddLineSorted(v, &v[1], 6);
 		}
 	}
 
@@ -2891,7 +2790,7 @@ void DrawBubbles()
 		v[1].specular = 0xFF000000;
 		v[2].specular = 0xFF000000;
 		v[3].specular = 0xFF000000;
-		tex.drawtype = DT_DRAW_NOZ_NOATSP_TEX_TRI;
+		tex.drawtype = 2;
 		tex.flag = 0;
 		tex.tpage = sprite->tpage;
 		tex.u1 = sprite->x1;
@@ -2902,7 +2801,7 @@ void DrawBubbles()
 		tex.u3 = sprite->x2;
 		tex.u4 = sprite->x1;
 		tex.v4 = sprite->y2;
-		AddQuadSorted(v, 0, 1, 2, 3, &tex, FALSE);
+		AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
 		bubble++;
 	}
 
@@ -2919,16 +2818,18 @@ void DrawShockwaves()
 	long* XY;
 	long* Z;
 	long* offsets;
-	long v, x1, y1, x2, y2, x3, y3, x4, y4, r, g, b;
+	long v, x1, y1, x2, y2, x3, y3, x4, y4, r, g, b, c;
 	short rad;
 
 	vtx = MyVertexBuffer;
+
 	sprite = &spriteinfo[objects[DEFAULT_SPRITES].mesh_index + 8];
 	offsets = (long*)&tsv_buffer[1024];
 
 	for (int i = 0; i < 16; i++)
 	{
 		wave = &ShockWaves[i];
+
 		if (!wave->life)
 			continue;
 
@@ -3020,15 +2921,17 @@ void DrawShockwaves()
 				b = (b * wave->life) >> 3;
 			}
 
-			vtx[0].color = RGBA(r, g, b, 255);
-			vtx[1].color = RGBA(r, g, b, 255);
-			vtx[2].color = RGBA(r, g, b, 255);
-			vtx[3].color = RGBA(r, g, b, 255);
-			vtx[0].specular = RGBA(0, 0, 0, 255);
-			vtx[1].specular = RGBA(0, 0, 0, 255);
-			vtx[2].specular = RGBA(0, 0, 0, 255);
-			vtx[3].specular = RGBA(0, 0, 0, 255);
-			tex.drawtype = DT_DRAW_NOZ_NOATSP_TEX_TRI;
+			c = RGBA(b, g, r, 0xFF);
+			vtx[0].color = c;
+			vtx[1].color = c;
+			vtx[2].color = c;
+			vtx[3].color = c;
+			vtx[0].specular = 0xFF000000;
+			vtx[1].specular = 0xFF000000;
+			vtx[2].specular = 0xFF000000;
+			vtx[3].specular = 0xFF000000;
+
+			tex.drawtype = 2;
 			tex.flag = 0;
 			tex.tpage = sprite->tpage;
 			tex.u1 = sprite->x1;
@@ -3039,7 +2942,7 @@ void DrawShockwaves()
 			tex.v3 = sprite->y1;
 			tex.u4 = sprite->x1;
 			tex.v4 = sprite->y1;
-			AddQuadSorted(vtx, 0, 1, 2, 3, &tex, TRUE);
+			AddQuadSorted(vtx, 0, 1, 2, 3, &tex, 1);
 
 			XY += 2;
 			Z++;
@@ -3145,23 +3048,23 @@ void DrawTrainFloorStrip(long x, long z, TEXTURESTRUCT* tex, long y_and_flags)
 			y4 = XY[17];
 
 			if (j < 7)
-				spec = (j + 1) * RGB(16, 16, 16);
+				spec = (j + 1) * 0x101010;
 			else if (j >= 33)
-				spec = (40 - j) * RGB(16, 16, 16);
+				spec = (40 - j) * 0x101010;
 			else
-				spec = RGB(128, 128, 128);
+				spec = 0x808080;
 
 			setXYZ4(v, x1, y1, z1, x2, y2, z2, x4, y4, z4, x3, y3, z3, clipflags);
-			spec = ((spec & 255) - 1) << 25;
-			v[0].color = RGBA(255, 255, 255, 255);
-			v[1].color = RGBA(255, 255, 255, 255);
-			v[2].color = RGBA(255, 255, 255, 255);
-			v[3].color = RGBA(255, 255, 255, 255);
+			spec = ((spec & 0xFF) - 1) << 25;
+			v[0].color = 0xFFFFFFFF;
+			v[1].color = 0xFFFFFFFF;
+			v[2].color = 0xFFFFFFFF;
+			v[3].color = 0xFFFFFFFF;
 			v[0].specular = spec;
 			v[1].specular = spec;
 			v[2].specular = spec;
 			v[3].specular = spec;
-			AddQuadSorted(v, 0, 1, 2, 3, tex, FALSE);
+			AddQuadSorted(v, 0, 1, 2, 3, tex, 0);
 		}
 
 		num += 20;
@@ -3187,9 +3090,10 @@ void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ri
 	v = MyVertexBuffer;
 	offsets = (long*)&tsv_buffer[1024];
 
-	for (int i = 0; i < MAX_SPLASHES; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		splash = &splashes[i];
+
 		if (!(splash->flags & 1))
 			continue;
 
@@ -3277,7 +3181,7 @@ void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ri
 				if (b > 255)
 					b = 255;
 
-				c0 = RGBA(r, g, b, 255);
+				c0 = RGBA(r, g, b, 0xFF);
 
 				r = (splash->life - (splash->life >> 2)) << 1;
 				g = (splash->life - (splash->life >> 2)) << 1;
@@ -3292,15 +3196,16 @@ void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ri
 				if (b > 255)
 					b = 255;
 
-				c1 = RGBA(r, g, b, 255);
+				c1 = RGBA(r, g, b, 0xFF);
+
 				v[0].color = c0;
 				v[1].color = c0;
 				v[2].color = c1;
 				v[3].color = c1;
-				v[0].specular = RGBA(0, 0, 0, 255);
-				v[1].specular = RGBA(0, 0, 0, 255);
-				v[2].specular = RGBA(0, 0, 0, 255);
-				v[3].specular = RGBA(0, 0, 0, 255);
+				v[0].specular = 0xFF000000;
+				v[1].specular = 0xFF000000;
+				v[2].specular = 0xFF000000;
+				v[3].specular = 0xFF000000;
 				tex.drawtype = 2;
 				tex.flag = 0;
 				tex.tpage = sprite->tpage;
@@ -3312,7 +3217,7 @@ void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ri
 				tex.u3 = sprite->x2;
 				tex.u4 = sprite->x1;
 				tex.v4 = sprite->y2;
-				AddQuadSorted(v, 0, 1, 2, 3, &tex, TRUE);
+				AddQuadSorted(v, 0, 1, 2, 3, &tex, 1);
 			}
 		}
 	}
@@ -3320,6 +3225,7 @@ void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ri
 	for (int i = 0; i < 16; i++)
 	{
 		ripple = &ripples[i];
+
 		if (!(ripple->flags & 1))
 			continue;
 
@@ -3444,20 +3350,23 @@ void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ri
 
 		if (r > 255)
 			r = 255;
+
 		if (g > 255)
 			g = 255;
+
 		if (b > 255)
 			b = 255;
 
-		c0 = RGBA(r, g, b, 255);
+		c0 = RGBA(r, g, b, 0xFF);
+
 		v[0].color = c0;
 		v[1].color = c0;
 		v[2].color = c0;
 		v[3].color = c0;
-		v[0].specular = RGBA(0, 0, 0, 255);
-		v[1].specular = RGBA(0, 0, 0, 255);
-		v[2].specular = RGBA(0, 0, 0, 255);
-		v[3].specular = RGBA(0, 0, 0, 255);
+		v[0].specular = 0xFF000000;
+		v[1].specular = 0xFF000000;
+		v[2].specular = 0xFF000000;
+		v[3].specular = 0xFF000000;
 		tex.drawtype = 2;
 		tex.flag = 0;
 		tex.tpage = sprite->tpage;
@@ -3469,17 +3378,20 @@ void S_DrawSplashes()	//	(also draws ripples and underwater blood (which is a ri
 		tex.u3 = sprite->x2;
 		tex.u4 = sprite->x1;
 		tex.v4 = sprite->y2;
-		AddQuadSorted(v, 0, 1, 2, 3, &tex, TRUE);
+		AddQuadSorted(v, 0, 1, 2, 3, &tex, 1);
 	}
 }
 
 bool ClipLine(long& x1, long& y1, long z1, long& x2, long& y2, long z2, long xMin, long yMin, long w, long h)
 {
 	float clip;
+
 	if (z1 < 20 || z2 < 20)
 		return 0;
+
 	if (x1 < xMin && x2 < xMin || y1 < yMin && y2 < yMin)
 		return 0;
+
 	if (x1 > w && x2 > w || y1 > h && y2 > h)
 		return 0;
 
@@ -3566,12 +3478,14 @@ void S_DrawFireSparks(long size, long life)
 	for (int i = 0; i < 20; i++)
 	{
 		sptr = &fire_spark[i];
+
 		if (!sptr->On)
 			continue;
 
 		dx = sptr->x >> (2 - size);
 		dy = sptr->y >> (2 - size);
 		dz = sptr->z >> (2 - size);
+
 		if (dx < -0x5000 || dx > 0x5000 || dy < -0x5000 || dy > 0x5000 || dz < -0x5000 || dz > 0x5000)
 			continue;
 
@@ -3591,16 +3505,18 @@ void S_DrawFireSparks(long size, long life)
 			continue;
 
 		newSize = (((phd_persp * sptr->Size) << 2) / Z[0]) >> (2 - size);
+
 		if (newSize > (sptr->Size << 2))
 			newSize = (sptr->Size << 2);
 		else if (newSize < 4)
 			newSize = 4;
+
 		newSize >>= 1;
 
 		if (XY[0] + newSize < phd_winxmin || XY[0] - newSize >= phd_winxmax || XY[1] + newSize < phd_winymin || XY[1] - newSize >= phd_winymax)
 			continue;
 
-		if (sptr->flags & 16)
+		if (sptr->Flags & 0x10)
 		{
 			ang = sptr->RotAng << 1;
 			s = rcossin_tbl[ang];
@@ -3647,14 +3563,15 @@ void S_DrawFireSparks(long size, long life)
 		g = (g * life) >> 8;
 		b = (b * life) >> 8;
 		col = RGBA(r, g, b, 0xFF);
+
 		v[0].color = col;
 		v[1].color = col;
 		v[2].color = col;
 		v[3].color = col;
-		v[0].specular = RGBA(0, 0, 0, 255);
-		v[1].specular = RGBA(0, 0, 0, 255);
-		v[2].specular = RGBA(0, 0, 0, 255);
-		v[3].specular = RGBA(0, 0, 0, 255);
+		v[0].specular = 0xFF000000;
+		v[1].specular = 0xFF000000;
+		v[2].specular = 0xFF000000;
+		v[3].specular = 0xFF000000;
 		tex.drawtype = 2;
 		tex.flag = 0;
 		tex.tpage = sprite->tpage;
@@ -3824,6 +3741,7 @@ void DrawBlood()
 	for (int i = 0; i < 32; i++)
 	{
 		bptr = &blood[i];
+
 		if (!bptr->On)
 			continue;
 
@@ -3831,9 +3749,7 @@ void DrawBlood()
 		dy = bptr->y - lara_item->pos.y_pos;
 		dz = bptr->z - lara_item->pos.z_pos;
 
-		if (dx < -SECTOR(20) || dx > SECTOR(20) ||
-			dy < -SECTOR(20) || dy > SECTOR(20) ||
-			dz < -SECTOR(20) || dz > SECTOR(20))
+		if (dx < -0x5000 || dx > 0x5000 || dy < -0x5000 || dy > 0x5000 || dz < -0x5000 || dz > 0x5000)
 			continue;
 
 		offsets[0] = dx;
@@ -3851,6 +3767,7 @@ void DrawBlood()
 			continue;
 
 		size = ((phd_persp * bptr->Size) << 1) / Z[0];
+
 		if (size > (bptr->Size << 1))
 			size = (bptr->Size << 1);
 		else if (size < 4)
@@ -3897,7 +3814,7 @@ void DrawBlood()
 		tex.v3 = sprite->y2;
 		tex.u4 = sprite->x1;
 		tex.v4 = sprite->y2;
-		AddQuadSorted(v, 0, 1, 2, 3, &tex, FALSE);
+		AddQuadSorted(v, 0, 1, 2, 3, &tex, 0);
 	}
 
 	phd_PopMatrix();
@@ -3992,7 +3909,7 @@ void S_DrawSmokeSparks()
 			continue;
 		}
 
-		if (sptr->flags & 0x10)
+		if (sptr->Flags & 0x10)
 		{
 			ang = sptr->RotAng << 1;
 			s = rcossin_tbl[ang];
@@ -4134,6 +4051,7 @@ void DoUwEffect()
 	for (int i = 0; i < 256; i++)
 	{
 		p = &uwdust[i];
+
 		if (!p->pos.x)
 			continue;
 
@@ -4155,6 +4073,7 @@ void DoUwEffect()
 		{
 			if (p->life > 16)
 				p->life = 16;
+
 			continue;
 		}
 
@@ -4162,6 +4081,7 @@ void DoUwEffect()
 			continue;
 
 		size = (phd_persp * (p->yvel >> 3)) / (Z[0] >> 4);
+
 		if (size < 1)
 			size = 6;
 		else if (size > 12)
@@ -4189,9 +4109,9 @@ void DoUwEffect()
 		v[0].color = col;
 		v[1].color = col;
 		v[2].color = col;
-		v[0].specular = RGBA(0, 0, 0, 255);
-		v[1].specular = RGBA(0, 0, 0, 255);
-		v[2].specular = RGBA(0, 0, 0, 255);
+		v[0].specular = 0xFF000000;
+		v[1].specular = 0xFF000000;
+		v[2].specular = 0xFF000000;
 		tex.drawtype = 2;
 		tex.flag = 0;
 		tex.tpage = sprite->tpage;
@@ -4201,7 +4121,7 @@ void DoUwEffect()
 		tex.v2 = sprite->y2;
 		tex.u3 = sprite->x1;
 		tex.v3 = sprite->y2;
-		AddTriSorted(v, 0, 1, 2, &tex, FALSE);
+		AddTriSorted(v, 0, 1, 2, &tex, 0);
 	}
 
 	phd_PopMatrix();
@@ -4399,10 +4319,10 @@ void DrawLightning()
 					v[1].color = c;
 					v[2].color = c;
 					v[3].color = c;
-					v[0].specular = RGBA(0, 0, 0, 255);
-					v[1].specular = RGBA(0, 0, 0, 255);
-					v[2].specular = RGBA(0, 0, 0, 255);
-					v[3].specular = RGBA(0, 0, 0, 255);
+					v[0].specular = 0xFF000000;
+					v[1].specular = 0xFF000000;
+					v[2].specular = 0xFF000000;
+					v[3].specular = 0xFF000000;
 					tex.drawtype = 2;
 					tex.flag = 0;
 					tex.tpage = sprite->tpage;

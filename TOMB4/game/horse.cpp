@@ -57,7 +57,7 @@ void HorsemanControl(short item_number)
 			{
 				item2 = &items[i];
 
-				if (item2->object_number == HORSE && item->ocb == item2->ocb)
+				if (item2->object_number == HORSE && item->trigger_flags == item2->trigger_flags)
 				{
 					item->item_flags[0] = i;
 					item2->flags |= IFL_TRIGGERED;
@@ -549,7 +549,7 @@ void TriggerHorsemanRicochets(PHD_VECTOR* pos, long yrot, long num)
 		sptr->Yvel = (random & 0xFFF) - 2048;
 		sptr->Zvel = rcossin_tbl[rot + 1] >> 2;
 		sptr->Friction = 34;
-		sptr->flags = 0;
+		sptr->Flags = 0;
 		sptr->MaxYvel = 0;
 	}
 
@@ -589,7 +589,7 @@ void TriggerHorsemanRicochets(PHD_VECTOR* pos, long yrot, long num)
 		sptr->Size = sptr->sSize;
 		sptr->dSize = sptr->sSize >> 1;
 		sptr->Friction = 34;
-		sptr->flags = 26;
+		sptr->Flags = 26;
 		sptr->MaxYvel = 0;
 	}
 }

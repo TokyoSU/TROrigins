@@ -29,7 +29,6 @@ void InitTarget_2();
 void InitBinoculars();
 void DrawBinoculars();
 void DrawWraithTrail(ITEM_INFO* item);
-void S_DrawLaser(ITEM_INFO* item, GAME_VECTOR* src, GAME_VECTOR* target, uchar cr, uchar cg, uchar cb);
 void DrawDrips();
 void DrawBubbles();
 void DrawShockwaves();

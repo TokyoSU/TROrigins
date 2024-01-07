@@ -28,7 +28,6 @@
 #include "../game/lara.h"
 #include "output.h"
 #include "../game/gameflow.h"
-#include "../tomb4/level_loader.h"
 
 TEXTURESTRUCT* textinfo;
 SPRITESTRUCT* spriteinfo;
@@ -48,17 +47,22 @@ short* mesh_base;
 long nAnimUVRanges;
 long number_cameras;
 short nAIObjects;
+
+static FILE* level_fp;
+static char* FileData;
+static char* CompressedData;
 static long num_items;
-CLevelReader lvr;
 
 unsigned int __stdcall LoadLevel(void* name)
 {
-	long version;
+	OBJECT_INFO* obj;
+	TEXTURESTRUCT* tex;
+	char* pData;
+	long version, size, compressedSize;
 	short RTPages, OTPages, BTPages;
 
 	Log(2, "LoadLevel");
 	FreeLevel();
-	const char* filePath = reinterpret_cast<const char*>(name);
 	memset(malloc_ptr, 0, MALLOC_SIZE);
 	memset(&lara, 0, sizeof(LARA_INFO));
 
@@ -73,16 +77,29 @@ unsigned int __stdcall LoadLevel(void* name)
 	S_InitLoadBar(20);
 	S_LoadBar();
 
-	if (lvr.Load(filePath) && lvr.IsValid())
+	CompressedData = 0;
+	FileData = 0;
+	level_fp = 0;
+	level_fp = FileOpen((const char*)name);
+
+	if (level_fp)
 	{
-		version = lvr.GetLong();
-		RTPages = lvr.GetShort();
-		OTPages = lvr.GetShort();
-		BTPages = lvr.GetShort();
+		fread(&version, 1, 4, level_fp);
+		fread(&RTPages, 1, 2, level_fp);
+		fread(&OTPages, 1, 2, level_fp);
+		fread(&BTPages, 1, 2, level_fp);
 
 		Log(7, "Process Level Data");
-
 		LoadTextures(RTPages, OTPages, BTPages);
+		fread(&size, 1, 4, level_fp);
+		fread(&compressedSize, 1, 4, level_fp);
+		CompressedData = (char*)malloc(compressedSize);
+		FileData = (char*)malloc(size);
+		fread(CompressedData, compressedSize, 1u, level_fp);
+		Decompress(FileData, CompressedData, compressedSize, size);
+		free(CompressedData);
+
+		pData = FileData;
 		S_LoadBar();
 
 		LoadRooms();
@@ -121,14 +138,16 @@ unsigned int __stdcall LoadLevel(void* name)
 		if (acm_ready && !App.SoundDisabled)
 			LoadSamples();
 
+		free(pData);
 		S_LoadBar();
 
 		for (int i = 0; i < 3; i++)
 		{
-			auto* obj = &objects[WATERFALL1 + i];
+			obj = &objects[WATERFALL1 + i];
+
 			if (obj->loaded)
 			{
-				auto* tex = &textinfo[mesh_vtxbuf[obj->mesh_index]->gt4[4] & 0x7FFF];
+				tex = &textinfo[mesh_vtxbuf[obj->mesh_index]->gt4[4] & 0x7FFF];
 				AnimatingWaterfalls[i] = tex;
 				AnimatingWaterfallsV[i] = (long)tex->v1;
 			}
@@ -145,8 +164,8 @@ unsigned int __stdcall LoadLevel(void* name)
 
 		SetFadeClip(0, 1);
 		reset_cutseq_vars();
+		FileClose(level_fp);
 	}
-	lvr.Release();
 
 	LevelLoadingThread.active = 0;
 	_endthreadex(1);
@@ -156,6 +175,7 @@ unsigned int __stdcall LoadLevel(void* name)
 long S_LoadLevelFile(long num)
 {
 	char name[80];
+
 	Log(2, "S_LoadLevelFile");
 	strcpy(name, &gfFilenameWad[gfFilenameOffset[num]]);
 	strcat(name, ".TR4");
@@ -169,7 +189,7 @@ long S_LoadLevelFile(long num)
 void FreeLevel()
 {
 	MESH_DATA** vbuf;
-	MESH_DATA* static_mesh;
+	MESH_DATA* mesh;
 	ROOM_INFO* r;
 
 	Log(2, "FreeLevel");
@@ -177,12 +197,12 @@ void FreeLevel()
 	for (int i = 0; i < num_level_meshes; i++)
 	{
 		vbuf = &mesh_vtxbuf[i];
-		static_mesh = *vbuf;
+		mesh = *vbuf;
 
-		if (static_mesh->SourceVB)
+		if (mesh->SourceVB)
 		{
-			Log(4, "Released %s @ %x - RefCnt = %d", "Mesh VB", static_mesh->SourceVB, static_mesh->SourceVB->Release());
-			static_mesh->SourceVB = 0;
+			Log(4, "Released %s @ %x - RefCnt = %d", "Mesh VB", mesh->SourceVB, mesh->SourceVB->Release());
+			mesh->SourceVB = 0;
 		}
 	}
 	
@@ -297,6 +317,7 @@ long LoadFile(const char* name, char** dest)
 		return 0;
 
 	size = FileSize(file);
+
 	if (!*dest)
 		*dest = (char*)malloc(size);
 
@@ -322,11 +343,10 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 	LPDIRECT3DTEXTUREX pTex;
 	uchar* TextureData;
 	long* d;
-	char* FileData, *CompressedData;
 	char* pData;
 	char* pComp;
 	char* s;
-	long format, skip, uncompressedSize, compressedSize, nTex, c;
+	long format, skip, size, compressedSize, nTex, c;
 	uchar r, g, b, a;
 
 	Log(2, "LoadTextures");
@@ -345,30 +365,43 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 
 	if (format <= 1)
 	{
-		uncompressedSize = lvr.GetLong(); // 32Bit
-		compressedSize = lvr.GetLong();
-		FileData = lvr.GetCompressedData(uncompressedSize, compressedSize);
-		uncompressedSize = lvr.GetLong(); // 16Bit
-		compressedSize = lvr.GetLong();
-		lvr.Seek(compressedSize);
+		fread(&size, 1, 4, level_fp);
+		fread(&compressedSize, 1, 4, level_fp);
+
+		CompressedData = (char*)malloc(compressedSize);
+		FileData = (char*)malloc(size);
+
+		fread(CompressedData, compressedSize, 1, level_fp);
+		Decompress(FileData, CompressedData, compressedSize, size);
+
+		fread(&size, 1, 4, level_fp);
+		fread(&compressedSize, 1, 4, level_fp);
+		fseek(level_fp, compressedSize, SEEK_CUR);
+		free(CompressedData);
 	}
 	else
 	{
-		uncompressedSize = lvr.GetLong(); // 32Bit
-		compressedSize = lvr.GetLong();
-		lvr.Seek(compressedSize);
-		uncompressedSize = lvr.GetLong(); // 16Bit
-		compressedSize = lvr.GetLong();
-		FileData = lvr.GetCompressedData(uncompressedSize, compressedSize);
+		fread(&size, 1, 4, level_fp);
+		fread(&compressedSize, 1, 4, level_fp);
+		fseek(level_fp, compressedSize, SEEK_CUR);
+
+		fread(&size, 1, 4, level_fp);
+		fread(&compressedSize, 1, 4, level_fp);
+
+		CompressedData = (char*)malloc(compressedSize);
+		FileData = (char*)malloc(size);
+		fread(CompressedData, compressedSize, 1, level_fp);
+		Decompress(FileData, CompressedData, compressedSize, size);
+		free(CompressedData);
 	}
 
 	pData = FileData;
 
 	Log(5, "RTPages %d", RTPages);
-	uncompressedSize = RTPages * skip * 0x10000;
-	TextureData = (uchar*)malloc(uncompressedSize);
-	memcpy(TextureData, FileData, uncompressedSize);
-	FileData += uncompressedSize;
+	size = RTPages * skip * 0x10000;
+	TextureData = (uchar*)malloc(size);
+	memcpy(TextureData, FileData, size);
+	FileData += size;
 	S_LoadBar();
 
 	for (int i = 0; i < RTPages; i++)
@@ -389,10 +422,10 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 	free(TextureData);
 
 	Log(5, "OTPages %d", OTPages);
-	uncompressedSize = OTPages * skip * 0x10000;
-	TextureData = (uchar*)malloc(uncompressedSize);
-	memcpy(TextureData, FileData, uncompressedSize);
-	FileData += uncompressedSize;
+	size = OTPages * skip * 0x10000;
+	TextureData = (uchar*)malloc(size);
+	memcpy(TextureData, FileData, size);
+	FileData += size;
 	S_LoadBar();
 
 	for (int i = 0; i < OTPages; i++)
@@ -417,10 +450,10 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 
 	if (BTPages)
 	{
-		uncompressedSize = BTPages * skip * 0x10000;
-		TextureData = (uchar*)malloc(uncompressedSize);
-		memcpy(TextureData, FileData, uncompressedSize);
-		FileData += uncompressedSize;
+		size = BTPages * skip * 0x10000;
+		TextureData = (uchar*)malloc(size);
+		memcpy(TextureData, FileData, size);
+		FileData += size;
 
 		for (int i = 0; i < BTPages; i++)
 		{
@@ -461,28 +494,33 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 
 	free(pData);
 
-	uncompressedSize = lvr.GetLong();
-	compressedSize = lvr.GetLong();
-	FileData = lvr.GetCompressedData(uncompressedSize, compressedSize);
+	fread(&size, 1, 4, level_fp);
+	fread(&compressedSize, 1, 4, level_fp);
+	CompressedData = (char*)malloc(compressedSize);
+	FileData = (char*)malloc(size);
+	fread(CompressedData, compressedSize, 1, level_fp);
+	Decompress(FileData, CompressedData, compressedSize, size);
+	free(CompressedData);
+
 	pData = FileData;
 	TextureData = (uchar*)malloc(0x40000);
 
-	if (gfCurrentLevel == 0) // main menu logo
+	if (!gfCurrentLevel)	//main menu logo
 	{
 		pComp = 0;
 		CompressedData = 0;
 
 		if (Gameflow->Language == US)
-			uncompressedSize = LoadFile("data\\uslogo.pak", &CompressedData);
+			size = LoadFile("data\\uslogo.pak", &CompressedData);
 		else if (Gameflow->Language == GERMAN)
-			uncompressedSize = LoadFile("data\\grlogo.pak", &CompressedData);
+			size = LoadFile("data\\grlogo.pak", &CompressedData);
 		else if (Gameflow->Language == FRENCH)
-			uncompressedSize = LoadFile("data\\frlogo.pak", &CompressedData);
+			size = LoadFile("data\\frlogo.pak", &CompressedData);
 		else
-			uncompressedSize = LoadFile("data\\uklogo.pak", &CompressedData);
+			size = LoadFile("data\\uklogo.pak", &CompressedData);
 
 		pComp = (char*)malloc(*(long*)CompressedData);
-		Decompress(pComp, CompressedData + 4, uncompressedSize - 4, *(long*)CompressedData);
+		Decompress(pComp, CompressedData + 4, size - 4, *(long*)CompressedData);
 		free(CompressedData);
 
 		for (int i = 0; i < 2; i++)
@@ -560,15 +598,16 @@ bool LoadTextures(long RTPages, long OTPages, long BTPages)
 bool LoadRooms()
 {
 	ROOM_INFO* r;
-	long size, number_portals;
+	long size, nDoors;
 
 	Log(2, "LoadRooms");
 	wibble = 0;
 	NumLevelFogBulbs = 0;
-
-	// Read Rooms
-	number_rooms = lvr.GetShort();
+	FileData += sizeof(long);
+	number_rooms = *(short*)FileData;
+	FileData += sizeof(short);
 	Log(7, "Number Of Rooms %d", number_rooms);
+
 	if (number_rooms < 0 || number_rooms > 1024)
 	{
 		Log(1, "Incorrect Number Of Rooms");
@@ -576,113 +615,105 @@ bool LoadRooms()
 	}
 
 	room = (ROOM_INFO*)game_malloc(number_rooms * sizeof(ROOM_INFO));
-	if (room == NULL)
+
+	if (!room)
 		return 0;
 
 	for (int i = 0; i < number_rooms; i++)
 	{
 		r = &room[i];
-		r->x = lvr.GetLong();
+
+		r->x = *(long*)FileData;
+		FileData += sizeof(long);
+
 		r->y = 0;
-		r->z = lvr.GetLong();
-		r->bottom_floor = lvr.GetLong(); // bottom
-		r->top_ceiling = lvr.GetLong(); // top
 
-		r->data.nVerts = lvr.GetShort();
-		r->data.verts = (TR_VERTEX*)game_malloc(sizeof(TR_VERTEX) * r->data.nVerts);
-		for (int j = 0; j < r->data.nVerts; j++)
-		{
-			r->data.verts[j].pos.x = lvr.GetShort();
-			r->data.verts[j].pos.y = lvr.GetShort();
-			r->data.verts[j].pos.z = lvr.GetShort();
-			r->data.verts[j].lighting1 = lvr.GetShort();
-			r->data.verts[j].attributes = lvr.GetShort();
-			r->data.verts[j].lighting2 = lvr.GetShort();
-		}
+		r->z = *(long*)FileData;
+		FileData += sizeof(long);
 
-		r->data.gt4cnt = lvr.GetShort();
-		r->data.gt4 = (ROOM_FACE4*)game_malloc(sizeof(ROOM_FACE4) * r->data.gt4cnt);
-		for (int j = 0; j < r->data.gt4cnt; j++)
-		{
-			r->data.gt4[j].vertices[0] = lvr.GetShort();
-			r->data.gt4[j].vertices[1] = lvr.GetShort();
-			r->data.gt4[j].vertices[2] = lvr.GetShort();
-			r->data.gt4[j].vertices[3] = lvr.GetShort();
-			r->data.gt4[j].texture = lvr.GetShort();
-			r->data.gt4[j].lighting_effect = lvr.GetShort();
-		}
+		r->minfloor = *(long*)FileData;
+		FileData += sizeof(long);
 
-		r->data.gt3cnt = lvr.GetShort();
-		r->data.gt3 = (ROOM_FACE3*)game_malloc(sizeof(ROOM_FACE3) * r->data.gt3cnt);
-		for (int j = 0; j < r->data.gt3cnt; j++)
-		{
-			r->data.gt3[j].vertices[0] = lvr.GetShort();
-			r->data.gt3[j].vertices[1] = lvr.GetShort();
-			r->data.gt3[j].vertices[2] = lvr.GetShort();
-			r->data.gt3[j].texture = lvr.GetShort();
-			r->data.gt3[j].lighting_effect = lvr.GetShort();
-		}
+		r->maxceiling = *(long*)FileData;
+		FileData += sizeof(long);
 
-		number_portals = lvr.GetShort();
-		if (number_portals)
+		size = *(long*)FileData;
+		FileData += sizeof(long);
+		r->data = (short*)game_malloc(size * sizeof(short));
+		memcpy(r->data, FileData, size * sizeof(short));
+		FileData += size * sizeof(short);
+
+		nDoors = *(short*)FileData;
+		FileData += sizeof(short);
+
+		if (nDoors)
 		{
-			r->door = (ROOM_DOORS*)game_malloc(sizeof(ROOM_DOORS));
-			r->door->portal_count = number_portals;
-			r->door->portals = (ROOM_PORTAL*)game_malloc(sizeof(ROOM_PORTAL) * r->door->portal_count);
-			for (int j = 0; j < r->door->portal_count; j++)
-			{
-				auto& portal = r->door->portals[j];
-				portal.adjoiningRoom = lvr.GetShort();
-				portal.normal.x = lvr.GetShort();
-				portal.normal.y = lvr.GetShort();
-				portal.normal.z = lvr.GetShort();
-				portal.vertices[0].x = lvr.GetShort();
-				portal.vertices[0].y = lvr.GetShort();
-				portal.vertices[0].z = lvr.GetShort();
-				portal.vertices[1].x = lvr.GetShort();
-				portal.vertices[1].y = lvr.GetShort();
-				portal.vertices[1].z = lvr.GetShort();
-				portal.vertices[2].x = lvr.GetShort();
-				portal.vertices[2].y = lvr.GetShort();
-				portal.vertices[2].z = lvr.GetShort();
-				portal.vertices[3].x = lvr.GetShort();
-				portal.vertices[3].y = lvr.GetShort();
-				portal.vertices[3].z = lvr.GetShort();
-			}
+			r->door = (short*)game_malloc((16 * nDoors + 1) * sizeof(short));
+			r->door[0] = (short)nDoors;
+			memcpy(r->door + 1, FileData, 16 * nDoors * sizeof(short));
+			FileData += 16 * nDoors * sizeof(short);
 		}
 		else
-		{
-			r->door = nullptr;
-		}
+			r->door = 0;
 
-		r->x_size = lvr.GetShort();
-		r->y_size = lvr.GetShort();
-		r->floor = lvr.GetStructGameMalloc<FLOOR_INFO>(r->x_size * r->y_size);
-		r->ambient = lvr.GetLong();
-		r->num_lights = lvr.GetShort();
+		r->x_size = *(short*)FileData;
+		FileData += sizeof(short);
+
+		r->y_size = *(short*)FileData;
+		FileData += sizeof(short);
+
+		size = r->x_size * r->y_size * sizeof(FLOOR_INFO);
+		r->floor = (FLOOR_INFO*)game_malloc(size);
+		memcpy(r->floor, FileData, size);
+		FileData += size;
+
+		r->ambient = *(long*)FileData;
+		FileData += sizeof(long);
+
+		r->num_lights = *(short*)FileData;
+		FileData += sizeof(short);
 
 		if (r->num_lights)
-			r->light = lvr.GetStructGameMalloc<LIGHTINFO>(r->num_lights);
+		{
+			size = sizeof(LIGHTINFO) * r->num_lights;
+			r->light = (LIGHTINFO*)game_malloc(size);
+			memcpy(r->light, FileData, size);
+			FileData += size;
+		}
 		else
-			r->light = nullptr;
+			r->light = 0;
 
-		r->num_meshes = lvr.GetShort();
+		r->num_meshes = *(short*)FileData;
+		FileData += sizeof(short);
+
 		if (r->num_meshes)
 		{
-			r->static_mesh = lvr.GetStructGameMalloc<MESH_INFO>(r->num_meshes);
+			size = sizeof(MESH_INFO) * r->num_meshes;
+			r->mesh = (MESH_INFO*)game_malloc(size);
+			memcpy(r->mesh, FileData, size);
+			FileData += size;
+
 			for (int j = 0; j < r->num_meshes; j++)
-				r->static_mesh[j].intensity2 = 1;
+				r->mesh[j].Flags = 1;
 		}
 		else
-		{
-			r->static_mesh = nullptr;
-		}
+			r->mesh = 0;
 
-		r->flipped_room = lvr.GetShort();
-		r->flags = lvr.GetShort();
-		r->mesh_effect = lvr.GetChar();
-		r->reverb_type = lvr.GetChar();
-		r->flip_number = lvr.GetChar();
+		r->flipped_room = *(short*)FileData;
+		FileData += sizeof(short);
+
+		r->flags = *(short*)FileData;
+		FileData += sizeof(short);
+
+		r->MeshEffect = *(char*)FileData;
+		FileData += sizeof(char);
+
+		r->ReverbType = *(char*)FileData;
+		FileData += sizeof(char);
+
+		r->FlipNumber = *(char*)FileData;
+		FileData += sizeof(char);
+
 		r->left = 0x7FFF;
 		r->top = 0x7FFF;
 		r->bound_active = 0;
@@ -694,12 +725,12 @@ bool LoadRooms()
 	}
 
 	BuildOutsideTable();
-
-	// Read Floor Data
-	size = lvr.GetLong();
-	floor_data = lvr.GetStructGameMalloc<short>(size);
+	size = *(long*)FileData;
+	FileData += sizeof(long);
+	floor_data = (short*)game_malloc(2 * size);
+	memcpy(floor_data, FileData, 2 * size);
+	FileData += sizeof(short) * size;
 	Log(0, "Floor Data Size %d @ %x", size, floor_data);
-
 	return 1;
 }
 
@@ -707,7 +738,7 @@ bool LoadObjects()
 {
 	OBJECT_INFO* obj;
 	STATIC_INFO* stat;
-	short** static_mesh;
+	short** mesh;
 	short** mesh_size;
 	long size, num, slot;
 	static long num_meshes, num_anims;
@@ -716,47 +747,87 @@ bool LoadObjects()
 	memset(objects, 0, sizeof(objects));
 	memset(static_objects, 0, sizeof(STATIC_INFO) * NUMBER_STATIC_OBJECTS);
 
-	size = lvr.GetLong();
-	mesh_base = lvr.GetStructGameMalloc<short>(size);
+	size = *(long*)FileData;
+	FileData += sizeof(long);
+	mesh_base = (short*)game_malloc(size * sizeof(short));
+	memcpy(mesh_base, FileData, size * sizeof(short));
+	FileData += size * sizeof(short);
 
-	size = lvr.GetLong();
-	meshes = lvr.GetArrayStructGameMalloc<short>(size);
-	for (int i = 0; i < size; i++)
+	size = *(long*)FileData;
+	FileData += sizeof(long);
+	meshes = (short**)game_malloc(2 * size * sizeof(short*));
+	memcpy(meshes, FileData, size * sizeof(short*));
+	FileData += size * sizeof(short*);
+
+	for (int i=0;i<size;i++)
 		meshes[i] = mesh_base + (long)meshes[i] / 2;
+
 	num_meshes = size;
 
-	num_anims = lvr.GetLong();
-	anims = lvr.GetStructGameMalloc<ANIM_STRUCT>(num_anims);
+	num_anims = *(long*)FileData;
+	FileData += sizeof(long);
+	anims = (ANIM_STRUCT*)game_malloc(sizeof(ANIM_STRUCT) * num_anims);
+	memcpy(anims, FileData, sizeof(ANIM_STRUCT) * num_anims);
+	FileData += sizeof(ANIM_STRUCT) * num_anims;
 
-	size = lvr.GetLong();
-	changes = lvr.GetStructGameMalloc<CHANGE_STRUCT>(size);
+	size = *(long*)FileData;
+	FileData += sizeof(long);
+	changes = (CHANGE_STRUCT*)game_malloc(sizeof(CHANGE_STRUCT) * size);
+	memcpy(changes, FileData, sizeof(CHANGE_STRUCT) * size);
+	FileData += sizeof(CHANGE_STRUCT) * size;
 
-	size = lvr.GetLong();
-	ranges = lvr.GetStructGameMalloc<RANGE_STRUCT>(size);
+	size = *(long*)FileData;
+	FileData += sizeof(long);
+	ranges = (RANGE_STRUCT*)game_malloc(sizeof(RANGE_STRUCT) * size);
+	memcpy(ranges, FileData, sizeof(RANGE_STRUCT) * size);
+	FileData += sizeof(RANGE_STRUCT) * size;
 
-	size = lvr.GetLong();
-	commands = lvr.GetStructGameMalloc<short>(size);
+	size = *(long*)FileData;
+	FileData += sizeof(long);
+	commands = (short*)game_malloc(sizeof(short) * size);
+	memcpy(commands, FileData, sizeof(short) * size);
+	FileData += sizeof(short) * size;
 
-	size = lvr.GetLong();
-	bones = lvr.GetStructGameMalloc<long>(size);
+	size = *(long*)FileData;
+	FileData += sizeof(long);
+	bones = (long*)game_malloc(sizeof(long) * size);
+	memcpy(bones, FileData, sizeof(long) * size);
+	FileData += sizeof(long) * size;
 
-	size = lvr.GetLong();
-	frames =  lvr.GetStructGameMalloc<short>(size);
+	size = *(long*)FileData;
+	FileData += sizeof(long);
+	frames = (short*)game_malloc(sizeof(short) * size);
+	memcpy(frames, FileData, sizeof(short) * size);
+	FileData += sizeof(short) * size;
 
 	for (int i = 0; i < num_anims; i++)
 		anims[i].frame_ptr = (short*)((long)anims[i].frame_ptr + (long)frames);
 
-	num = lvr.GetLong();
+	num = *(long*)FileData;
+	FileData += sizeof(long);
+
 	for (int i = 0; i < num; i++)
 	{
-		slot = lvr.GetLong();
+		slot = *(long*)FileData;
+		FileData += sizeof(long);
 		obj = &objects[slot];
-		obj->nmeshes = lvr.GetShort();
-		obj->mesh_index = lvr.GetShort();
-		obj->bone_index = lvr.GetLong();
-		obj->frame_base = &frames[lvr.GetLong()];
-		obj->anim_index = lvr.GetShort();
-		obj->loaded = TRUE;
+
+		obj->nmeshes = *(short*)FileData;
+		FileData += sizeof(short);
+
+		obj->mesh_index = *(short*)FileData;
+		FileData += sizeof(short);
+
+		obj->bone_index = *(long*)FileData;
+		FileData += sizeof(long);
+
+		obj->frame_base = (short*)(*(short**)FileData);
+		FileData += sizeof(short*);
+
+		obj->anim_index = *(short*)FileData;
+		FileData += sizeof(short);
+
+		obj->loaded = 1;
 	}
 
 	CreateSkinningData();
@@ -767,40 +838,39 @@ bool LoadObjects()
 		obj->mesh_index *= 2;
 	}
 
-	static_mesh = meshes;
+	mesh = meshes;
 	mesh_size = &meshes[num_meshes];
-	memcpy(mesh_size, static_mesh, num_meshes * 4);
+	memcpy(mesh_size, mesh, num_meshes * 4);
 
 	for (int i = 0; i < num_meshes; i++)
 	{
-		*static_mesh++ = *mesh_size;
-		*static_mesh++ = *mesh_size;
+		*mesh++ = *mesh_size;
+		*mesh++ = *mesh_size;
 		mesh_size++;
 	}
 
 	InitialiseObjects();
 
-	num = lvr.GetLong();
+	num = *(long*)FileData;	//statics
+	FileData += sizeof(long);
+
 	for (int i = 0; i < num; i++)
 	{
-		slot = lvr.GetLong();
+		slot = *(long*)FileData;
+		FileData += sizeof(long);
 		stat = &static_objects[slot];
-		stat->mesh_number = lvr.GetShort();
-		// visibility
-		stat->x_minp = lvr.GetShort();
-		stat->x_maxp = lvr.GetShort();
-		stat->y_minp = lvr.GetShort();
-		stat->y_maxp = lvr.GetShort();
-		stat->z_minp = lvr.GetShort();
-		stat->z_maxp = lvr.GetShort();
-		// collision
-		stat->x_minc = lvr.GetShort();
-		stat->x_maxc = lvr.GetShort();
-		stat->y_minc = lvr.GetShort();
-		stat->y_maxc = lvr.GetShort();
-		stat->z_minc = lvr.GetShort();
-		stat->z_maxc = lvr.GetShort();
-		stat->flags = lvr.GetShort();
+
+		stat->mesh_number = *(short*)FileData;
+		FileData += sizeof(short);
+
+		memcpy(&stat->x_minp, FileData, 6 * sizeof(short));
+		FileData += 6 * sizeof(short);
+
+		memcpy(&stat->x_minc, FileData, 6 * sizeof(short));
+		FileData += 6 * sizeof(short);
+
+		stat->flags = *(short*)FileData;
+		FileData += sizeof(short);
 	}
 
 	for (int i = 0; i < NUMBER_STATIC_OBJECTS; i++)
@@ -822,13 +892,16 @@ bool LoadSprites()
 	long num_sprites, num_slots, slot;
 
 	Log(2, "LoadSprites");
-	num_sprites = lvr.GetLong();
+	FileData += 3;
+	num_sprites = *(long*)FileData;
+	FileData += sizeof(long);
 	spriteinfo = (SPRITESTRUCT*)game_malloc(sizeof(SPRITESTRUCT) * num_sprites);
 
 	for (int i = 0; i < num_sprites; i++)
 	{
 		sptr = &spriteinfo[i];
-		lvr.GetCopyToPtr(&sprite, sizeof(PHDSPRITESTRUCT));
+		memcpy(&sprite, FileData, sizeof(PHDSPRITESTRUCT));
+		FileData += sizeof(PHDSPRITESTRUCT);
 		sptr->height = sprite.height;
 		sptr->offset = sprite.offset;
 		sptr->tpage = sprite.tpage;
@@ -844,26 +917,34 @@ bool LoadSprites()
 		sptr->tpage++;
 	}
 
-	num_slots = lvr.GetLong();
+	num_slots = *(long*)FileData;
+	FileData += sizeof(long);
+
 	if (num_slots <= 0)
 		return 1;
 
 	for (int i = 0; i < num_slots; i++)
 	{
-		slot = lvr.GetLong();
+		slot = *(long*)FileData;
+		FileData += sizeof(long);
+
 		if (slot >= NUMBER_OBJECTS)
 		{
 			slot -= NUMBER_OBJECTS;
 			stat = &static_objects[slot];
-			stat->mesh_number = lvr.GetShort();
-			stat->mesh_number = lvr.GetShort();
+			stat->mesh_number = *(short*)FileData;
+			FileData += sizeof(short);
+			stat->mesh_number = *(short*)FileData;
+			FileData += sizeof(short);
 		}
 		else
 		{
 			obj = &objects[slot];
-			obj->nmeshes = lvr.GetShort();
-			obj->mesh_index = lvr.GetShort();
-			obj->loaded = TRUE;
+			obj->nmeshes = *(short*)FileData;
+			FileData += sizeof(short);
+			obj->mesh_index = *(short*)FileData;
+			FileData += sizeof(short);
+			obj->loaded = 1;
 		}
 	}
 
@@ -873,14 +954,24 @@ bool LoadSprites()
 bool LoadCameras()
 {
 	Log(2, "LoadCameras");
-	number_cameras = lvr.GetLong();
-	if (number_cameras)
-		camera.fixed = lvr.GetStructGameMalloc<OBJECT_VECTOR>(number_cameras);
+	number_cameras = *(long*)FileData;
+	FileData += sizeof(long);
 
-	number_spotcams = lvr.GetShort();
-	lvr.GetShort(); // TODO: Check to move it to long !
+	if (number_cameras)
+	{
+		camera.fixed = (OBJECT_VECTOR*)game_malloc(number_cameras * sizeof(OBJECT_VECTOR));
+		memcpy(camera.fixed, FileData, number_cameras * sizeof(OBJECT_VECTOR));
+		FileData += number_cameras * sizeof(OBJECT_VECTOR);
+	}
+
+	number_spotcams = *(short*)FileData;
+	FileData += sizeof(long);				//<<---- look at me
+
 	if (number_spotcams)
-		lvr.GetCopyToPtr(SpotCam, number_spotcams * sizeof(SPOTCAM));
+	{
+		memcpy(SpotCam, FileData, number_spotcams * sizeof(SPOTCAM));
+		FileData += number_spotcams * sizeof(SPOTCAM);
+	}
 
 	return 1;
 }
@@ -888,11 +979,16 @@ bool LoadCameras()
 bool LoadSoundEffects()
 {
 	Log(2, "LoadSoundEffects");
-	number_sound_effects = lvr.GetLong();
+	number_sound_effects = *(long*)FileData;
+	FileData += sizeof(long);
 	Log(8, "Number of SFX %d", number_sound_effects);
 
 	if (number_sound_effects)
-		sound_effects = lvr.GetStructGameMalloc<OBJECT_VECTOR>(number_sound_effects);
+	{
+		sound_effects = (OBJECT_VECTOR*)game_malloc(number_sound_effects * sizeof(OBJECT_VECTOR));
+		memcpy(sound_effects, FileData, number_sound_effects * sizeof(OBJECT_VECTOR));
+		FileData += number_sound_effects * sizeof(OBJECT_VECTOR);
+	}
 
 	return 1;
 }
@@ -903,25 +999,40 @@ bool LoadBoxes()
 	long size;
 
 	Log(2, "LoadBoxes");
+	num_boxes = *(long*)FileData;
+	FileData += sizeof(long);
 
-	num_boxes = lvr.GetLong();
-	boxes = lvr.GetStructGameMalloc<BOX_INFO>(num_boxes);
+	boxes = (BOX_INFO*)game_malloc(sizeof(BOX_INFO) * num_boxes);
+	memcpy(boxes, FileData, sizeof(BOX_INFO) * num_boxes);
+	FileData += sizeof(BOX_INFO) * num_boxes;
 
-	size = lvr.GetLong();
-	overlap = lvr.GetStructGameMalloc<ushort>(size);
+	size = *(long*)FileData;
+	FileData += sizeof(long);
+	overlap = (ushort*)game_malloc(sizeof(ushort) * size);
+	memcpy(overlap, FileData, sizeof(ushort) * size);
+	FileData += sizeof(ushort) * size;
 
 	for (int i = 0; i < 2; i++)
 	{
-		for (int j = 0; j < 5; j++)
-			ground_zone[j][i] = lvr.GetStructGameMalloc<short>(num_boxes);
+		for (int j = 0; j < 4; j++)
+		{
+			ground_zone[j][i] = (short*)game_malloc(sizeof(short) * num_boxes);
+			memcpy(ground_zone[j][i], FileData, sizeof(short) * num_boxes);
+			FileData += sizeof(short) * num_boxes;
+		}
+
+		ground_zone[4][i] = (short*)game_malloc(sizeof(short) * num_boxes);
+		memcpy(ground_zone[4][i], FileData, sizeof(short) * num_boxes);
+		FileData += sizeof(short) * num_boxes;
 	}
 
 	for (int i = 0; i < num_boxes; i++)
 	{
 		box = &boxes[i];
+
 		if (box->overlap_index & 0x8000)
 			box->overlap_index |= 0x4000;
-		else if ((gfLevelFlags & GF_TRAIN) && box->height > -256)
+		else if (gfLevelFlags & GF_TRAIN && box->height > -256)
 			box->overlap_index |= 0xC000;
 	}
 
@@ -930,9 +1041,15 @@ bool LoadBoxes()
 
 bool LoadAnimatedTextures()
 {
-	long num_anim_ranges = lvr.GetLong();
-	aranges = lvr.GetStructGameMalloc<short>(num_anim_ranges);
-	nAnimUVRanges = lvr.GetChar();
+	long num_anim_ranges;
+
+	num_anim_ranges = *(long*)FileData;
+	FileData += sizeof(long);
+	aranges = (short*)game_malloc(num_anim_ranges * 2);
+	memcpy(aranges, FileData, num_anim_ranges * 2);
+	FileData += num_anim_ranges * sizeof(short);
+	nAnimUVRanges = *(char*)FileData;
+	FileData += sizeof(char);
 	return 1;
 }
 
@@ -943,15 +1060,18 @@ bool LoadTextureInfos()
 	long val;
 
 	Log(2, "LoadTextureInfos");
+	FileData += 3;
 
-	val = lvr.GetLong();
+	val = *(long*)FileData;
+	FileData += sizeof(long);
 	Log(5, "Texture Infos : %d", val);
 	textinfo = (TEXTURESTRUCT*)game_malloc(val * sizeof(TEXTURESTRUCT));
 
 	for (int i = 0; i < val; i++)
 	{
 		t = &textinfo[i];
-		lvr.GetCopyToPtr(&tex, sizeof(PHDTEXTURESTRUCT));
+		memcpy(&tex, FileData, sizeof(PHDTEXTURESTRUCT));
+		FileData += sizeof(PHDTEXTURESTRUCT);
 		t->drawtype = tex.drawtype;
 		t->tpage = tex.tpage & 0x7FFF;
 		t->flag = tex.tpage ^ (tex.tpage ^ tex.flag) & 0x7FFF;
@@ -979,9 +1099,10 @@ bool LoadItems()
 	long x, y, z;
 
 	Log(2, "LoadItems");
+	num_items = *(long*)FileData;
+	FileData += 4;
 
-	num_items = lvr.GetLong();
-	if (num_items <= 0)
+	if (!num_items)
 		return 1;
 
 	items = (ITEM_INFO*)game_malloc(256 * sizeof(ITEM_INFO));
@@ -991,15 +1112,33 @@ bool LoadItems()
 	for (int i = 0; i < num_items; i++)
 	{
 		item = &items[i];
-		item->object_number = lvr.GetShort();
-		item->room_number = lvr.GetShort();
-		item->pos.x_pos = lvr.GetLong();
-		item->pos.y_pos = lvr.GetLong();
-		item->pos.z_pos = lvr.GetLong();
-		item->pos.y_rot = lvr.GetShort();
-		item->shade = lvr.GetShort();
-		item->ocb = lvr.GetShort();
-		item->flags = lvr.GetShort();
+
+		item->object_number = *(short*)FileData;
+		FileData += sizeof(short);
+
+		item->room_number = *(short*)FileData;
+		FileData += sizeof(short);
+
+		item->pos.x_pos = *(long*)FileData;
+		FileData += sizeof(long);
+
+		item->pos.y_pos = *(long*)FileData;
+		FileData += sizeof(long);
+
+		item->pos.z_pos = *(long*)FileData;
+		FileData += sizeof(long);
+
+		item->pos.y_rot = *(short*)FileData;
+		FileData += sizeof(short);
+
+		item->shade = *(short*)FileData;
+		FileData += sizeof(short);
+
+		item->trigger_flags = *(short*)FileData;
+		FileData += sizeof(short);
+
+		item->flags = *(short*)FileData;
+		FileData += sizeof(short);
 	}
 
 	for (int i = 0; i < num_items; i++)
@@ -1008,25 +1147,27 @@ bool LoadItems()
 	for (int i = 0; i < number_rooms; i++)
 	{
 		r = &room[i];
+
 		for (int j = 0; j < r->num_meshes; j++)
 		{
-			auto* statmesh = &r->static_mesh[j];
-			x = (statmesh->x - r->x) >> WALL_SHIFT;
-			z = (statmesh->z - r->z) >> WALL_SHIFT;
+			x = (r->mesh[j].x - r->x) >> 10;
+			z = (r->mesh[j].z - r->z) >> 10;
 
 			floor = &(r->floor[x * r->x_size + z]);
-			if (!(boxes[floor->box].overlap_index & 0x4000))
+
+			if (!(boxes[floor->box].overlap_index & 0x4000) && (gfCurrentLevel != 4 || i != 19 && i != 23 && i != 16))
 			{
-				stat = &static_objects[statmesh->object_number];
+				stat = &static_objects[r->mesh[j].static_number];
 				y = floor->floor << 8;
 
-				if (y <= (statmesh->y - stat->y_maxc + 512) && y < statmesh->y - stat->y_minc)
+				if (y <= (r->mesh[j].y - stat->y_maxc + 512) && y < r->mesh[j].y - stat->y_minc)
 				{
-					if (!stat->x_maxc || !stat->x_minc || !stat->z_maxc || !stat->z_minc || (stat->x_maxc ^ stat->x_minc) & 0x8000 && (stat->z_maxc ^ stat->z_minc) & 0x8000)
+					if (!stat->x_maxc || !stat->x_minc || !stat->z_maxc || !stat->z_minc ||
+						(stat->x_maxc ^ stat->x_minc) & 0x8000 && (stat->z_maxc ^ stat->z_minc) & 0x8000)
 					{
-						x = (statmesh->x - r->x) >> WALL_SHIFT;
-						z = (statmesh->z - r->z) >> WALL_SHIFT;
-						r->floor[x * r->x_size + z].stopper = TRUE;
+						x = (r->mesh[j].x - r->x) >> 10;
+						z = (r->mesh[j].z - r->z) >> 10;
+						r->floor[x * r->x_size + z].stopper = 1;
 					}
 				}
 			}
@@ -1036,59 +1177,86 @@ bool LoadItems()
 	return 1;
 }
 
-bool LoadAIInfo()
+bool LoadCinematic()
 {
-	long num_ai = lvr.GetLong();
-	if (num_ai > 0)
-	{
-		nAIObjects = (short)num_ai;
-		AIObjects = lvr.GetStructGameMalloc<AIOBJECT>(num_ai);
-	}
+	FileData += sizeof(short);
 	return 1;
 }
 
-bool LoadCinematic()
+bool LoadAIInfo()
 {
-	// No cinematic think !
+	long num_ai;
+
+	num_ai = *(long*)FileData;
+	FileData += sizeof(long);
+
+	if (num_ai)
+	{
+		nAIObjects = (short)num_ai;
+		AIObjects = (AIOBJECT*)game_malloc(sizeof(AIOBJECT) * num_ai);
+		memcpy(AIObjects, FileData, sizeof(AIOBJECT) * num_ai);
+		FileData += sizeof(AIOBJECT) * num_ai;
+	}
+
 	return 1;
 }
 
 bool LoadSamples()
 {
-	int finalSoundMapSize = lvr.GetInt();
-	if (finalSoundMapSize != MAX_SAMPLES)
+	long num_samples, uncomp_size, comp_size;
+	static long num_sample_infos;
+
+	Log(2, "LoadSamples");
+	sample_lut = (short*)game_malloc(MAX_SAMPLES * sizeof(short));
+	memcpy(sample_lut, FileData, MAX_SAMPLES * sizeof(short));
+	FileData += MAX_SAMPLES * sizeof(short);
+	num_sample_infos = *(long*)FileData;
+	FileData += sizeof(long);
+	Log(8, "Number Of Sample Infos %d", num_sample_infos);
+
+	if (!num_sample_infos)
 	{
-		Log(1, "Failed to load sound maps, size is wrong: %d, expected: %d", finalSoundMapSize, MAX_SAMPLES);
-		return FALSE;
+		Log(1, "No Sample Infos");
+		return 0;
 	}
-	sample_lut = lvr.GetStructGameMalloc<short>(finalSoundMapSize);
 
-	long finalSoundInfoListSize = lvr.GetShort();
-	sample_infos = lvr.GetStructGameMalloc<SAMPLE_INFO>(finalSoundInfoListSize);
+	sample_infos = (SAMPLE_INFO*)game_malloc(sizeof(SAMPLE_INFO) * num_sample_infos);
+	memcpy(sample_infos, FileData, sizeof(SAMPLE_INFO) * num_sample_infos);
+	FileData += sizeof(SAMPLE_INFO) * num_sample_infos;
+	num_samples = *(long*)FileData;
+	FileData += sizeof(long);
 
-	long soundIndicesSize = lvr.GetLong();
-	if (soundIndicesSize > 0)
+	if (!num_samples)
 	{
-		for (int i = 0; i < soundIndicesSize; i++)
-			lvr.GetInt();
+		Log(1, "No Samples");
+		return 0;
 	}
 
+	Log(8, "Number Of Samples %d", num_samples);
+	fread(&num_samples, 1, 4, level_fp);
 	InitSampleDecompress();
-	int sampleListSize = lvr.GetInt();
-	for (int i = 0; i < sampleListSize; i++)
+
+	if (num_samples <= 0)
 	{
-		int uncomp_size = lvr.GetInt();
-		int comp_size = lvr.GetInt();
-		lvr.GetCopyToPtr(samples_buffer, comp_size);
+		FreeSampleDecompress();
+		return 1;
+	}
+
+	for (int i = 0; i < num_samples; i++)
+	{
+		fread(&uncomp_size, 1, 4, level_fp);
+		fread(&comp_size, 1, 4, level_fp);
+		fread(samples_buffer, comp_size, 1, level_fp);
+
 		if (!DXCreateSampleADPCM(samples_buffer, comp_size, uncomp_size, i))
 		{
 			FreeSampleDecompress();
-			return FALSE;
+			return 0;
 		}
 	}
 
 	FreeSampleDecompress();
-	return TRUE;
+	return 1;
 }
 
 void S_GetUVRotateTextures()

@@ -22,7 +22,7 @@ static ROOM_DYNAMIC RoomDynamics[MAX_DYNAMICS];
 static long nRoomDynamics;
 
 MESH_DATA** mesh_vtxbuf;
-BUCKETS Bucket[MAX_BUCKETS];
+TEXTUREBUCKET Bucket[20];
 float clip_left;
 float clip_top;
 float clip_right;
@@ -106,8 +106,8 @@ void ProcessRoomVertices(ROOM_INFO* r)
 
 		if (i < r->nWaterVerts)
 		{
-			rnd = WaterTable[r->mesh_effect][rndoff & 0x3F].random;
-			vtx.y += WaterTable[r->mesh_effect][((wibble >> 2) + rnd) & 0x3F].choppy;
+			rnd = WaterTable[r->MeshEffect][rndoff & 0x3F].random;
+			vtx.y += WaterTable[r->MeshEffect][((wibble >> 2) + rnd) & 0x3F].choppy;
 		}
 
 		vPos.x = vtx.x * D3DMView._11 + vtx.y * D3DMView._21 + vtx.z * D3DMView._31 + D3DMView._41;
@@ -213,9 +213,9 @@ void ProcessRoomVertices(ROOM_INFO* r)
 		{
 			rndoff = long((vtx.x / 64.0F) + (vtx.y / 64.0F) + (vtx.z / 128.0F)) & 0xFC;
 
-			rnd = WaterTable[r->mesh_effect][rndoff & 0x3C].random;
-			shimmer = WaterTable[r->mesh_effect][((wibble >> 2) + rnd) & 0x3F].shimmer;
-			abs = WaterTable[r->mesh_effect][((wibble >> 2) + rnd) & 0x3F].abs;
+			rnd = WaterTable[r->MeshEffect][rndoff & 0x3C].random;
+			shimmer = WaterTable[r->MeshEffect][((wibble >> 2) + rnd) & 0x3F].shimmer;
+			abs = WaterTable[r->MeshEffect][((wibble >> 2) + rnd) & 0x3F].abs;
 			col = (shimmer + abs) << 3;
 			cR += col;
 			cG += col;
@@ -285,108 +285,126 @@ void ProcessRoomData(ROOM_INFO* r)
 	PCLIGHT_INFO* pclight;
 	FOGBULB_STRUCT* bulb;
 	D3DVERTEXBUFFERDESC vb;
+	short* data_ptr;
 	short* faces;
 	short* prelight;
 	float intensity;
 	long nWaterVerts, nShoreVerts, nRestOfVerts, nLights, nBulbs;
 	ushort cR, cG, cB;
 
-	r->nVerts = r->data.nVerts;
-	if (r->nVerts <= 0)
+	data_ptr = r->data;
+	r->nVerts = *data_ptr++;
+
+	if (!r->nVerts)
 	{
 		r->num_lights = 0;
-		r->SourceVB = NULL;
+		r->SourceVB = 0;
 		return;
 	}
 
-	r->gt4cnt = r->data.gt4cnt;
-	r->gt3cnt = r->data.gt3cnt;
+	data_ptr += r->nVerts * 6;
+	r->FaceData = data_ptr;
+	r->gt4cnt = *data_ptr++;
+	data_ptr += r->gt4cnt * 5;
+	r->gt3cnt = *data_ptr;
 	r->verts = (D3DVECTOR*)game_malloc(sizeof(D3DVECTOR) * r->nVerts);
-	faces = (short*)malloc(sizeof(short) * r->nVerts);
-	prelight = (short*)malloc(sizeof(short) * r->nVerts);
+	faces = (short*)malloc(2 * r->nVerts);
+	prelight = (short*)malloc(2 * r->nVerts);
+	data_ptr = r->data + 1;	//go to vert data
 	nWaterVerts = 0;
 
 	for (int i = 0; i < r->nVerts; i++)	//get water verts
 	{
-		auto vertice = r->data.verts[i];
-		if (vertice.attributes & 0x2000)
+		if (data_ptr[4] & 0x2000)
 		{
-			r->verts[nWaterVerts].x = (float)vertice.pos.x;
-			r->verts[nWaterVerts].y = (float)vertice.pos.y;
-			r->verts[nWaterVerts].z = (float)vertice.pos.z;
-			prelight[nWaterVerts] = vertice.lighting2;
+			r->verts[nWaterVerts].x = (float)data_ptr[0];
+			r->verts[nWaterVerts].y = (float)data_ptr[1];
+			r->verts[nWaterVerts].z = (float)data_ptr[2];
+			prelight[nWaterVerts] = data_ptr[5];
 			faces[i] = short(nWaterVerts | 0x8000);
 			nWaterVerts++;
 		}
+
+		data_ptr += 6;
 	}
 
+	data_ptr = r->data + 1;
 	nShoreVerts = 0;
+
 	for (int i = 0; i < r->nVerts; i++)	//again for shore verts
 	{
-		auto vertice = r->data.verts[i];
-		if (vertice.attributes & 0x4000 && !(vertice.attributes & 0x2000))
+		if (data_ptr[4] & 0x4000 && !(data_ptr[4] & 0x2000))
 		{
-			r->verts[nShoreVerts + nWaterVerts].x = (float)vertice.pos.x;
-			r->verts[nShoreVerts + nWaterVerts].y = (float)vertice.pos.y;
-			r->verts[nShoreVerts + nWaterVerts].z = (float)vertice.pos.z;
-			prelight[nShoreVerts + nWaterVerts] = vertice.lighting2;
+			r->verts[nShoreVerts + nWaterVerts].x = (float)data_ptr[0];
+			r->verts[nShoreVerts + nWaterVerts].y = (float)data_ptr[1];
+			r->verts[nShoreVerts + nWaterVerts].z = (float)data_ptr[2];
+			prelight[nShoreVerts + nWaterVerts] = data_ptr[5];
 			faces[i] = short(nShoreVerts + nWaterVerts);
 			nShoreVerts++;
 		}
+
+		data_ptr += 6;
 	}
 
+	data_ptr = r->data + 1;
 	nRestOfVerts = 0;
+
 	for (int i = 0; i < r->nVerts; i++)	//one more for everything else
 	{
-		auto vertice = r->data.verts[i];
-		if (!(vertice.attributes & 0x4000) && !(vertice.attributes & 0x2000))
+		if (!(data_ptr[4] & 0x4000) && !(data_ptr[4] & 0x2000))
 		{
-			r->verts[nRestOfVerts + nShoreVerts + nWaterVerts].x = (float)vertice.pos.x;
-			r->verts[nRestOfVerts + nShoreVerts + nWaterVerts].y = (float)vertice.pos.y;
-			r->verts[nRestOfVerts + nShoreVerts + nWaterVerts].z = (float)vertice.pos.z;
-			prelight[nRestOfVerts + nShoreVerts + nWaterVerts] = vertice.lighting2;
+			r->verts[nRestOfVerts + nShoreVerts + nWaterVerts].x = (float)data_ptr[0];
+			r->verts[nRestOfVerts + nShoreVerts + nWaterVerts].y = (float)data_ptr[1];
+			r->verts[nRestOfVerts + nShoreVerts + nWaterVerts].z = (float)data_ptr[2];
+			prelight[nRestOfVerts + nShoreVerts + nWaterVerts] = data_ptr[5];
 			faces[i] = short(nRestOfVerts + nShoreVerts + nWaterVerts);
 			nRestOfVerts++;
 		}
+
+		data_ptr += 6;
 	}
 
+	data_ptr = r->FaceData + 1;
 	r->nWaterVerts = nWaterVerts;
 	r->nShoreVerts = nShoreVerts;
 
-	for (int i = 0; i < r->gt4cnt; i++)	// quad
+	for (int i = 0; i < r->gt4cnt; i++)	//get quad data
 	{
-		auto& gt4 = r->data.gt4[i];
-		if (faces[gt4.vertices[0]] & 0x8000 || faces[gt4.vertices[1]] & 0x8000 || faces[gt4.vertices[2]] & 0x8000 || faces[gt4.vertices[3]] & 0x8000)
-			gt4.texture |= 0x4000;
-		gt4.vertices[0] = faces[gt4.vertices[0]] & 0x7FFF;
-		gt4.vertices[1] = faces[gt4.vertices[1]] & 0x7FFF;
-		gt4.vertices[2] = faces[gt4.vertices[2]] & 0x7FFF;
-		gt4.vertices[3] = faces[gt4.vertices[3]] & 0x7FFF;
+		if (faces[data_ptr[0]] & 0x8000 || faces[data_ptr[1]] & 0x8000 || faces[data_ptr[2]] & 0x8000 || faces[data_ptr[3]] & 0x8000)
+			data_ptr[4] |= 0x4000;
+
+		data_ptr[0] = faces[data_ptr[0]] & 0x7FFF;
+		data_ptr[1] = faces[data_ptr[1]] & 0x7FFF;
+		data_ptr[2] = faces[data_ptr[2]] & 0x7FFF;
+		data_ptr[3] = faces[data_ptr[3]] & 0x7FFF;
+		data_ptr += 5;	//onto the next quad
 	}
 
-	for (int i = 0; i < r->gt3cnt; i++)	// tris
+	data_ptr++;//skip over tri count
+
+	for (int i = 0; i < r->gt3cnt; i++)	//tris
 	{
-		auto& gt3 = r->data.gt3[i];
-		gt3.vertices[0] = faces[gt3.vertices[0]] & 0x7FFF;
-		gt3.vertices[1] = faces[gt3.vertices[1]] & 0x7FFF;
-		gt3.vertices[2] = faces[gt3.vertices[2]] & 0x7FFF;
+		data_ptr[0] = faces[data_ptr[0]] & 0x7FFF;
+		data_ptr[1] = faces[data_ptr[1]] & 0x7FFF;
+		data_ptr[2] = faces[data_ptr[2]] & 0x7FFF;
+		data_ptr += 4;
 	}
 
 	free(faces);
-
 	CreateVertexNormals(r);
-	r->prelight = (long*)game_malloc(sizeof(long) * r->nVerts);
-	r->prelightwater = (long*)game_malloc(sizeof(long) * r->nVerts);
+	r->prelight = (long*)game_malloc(4 * r->nVerts);
+	r->prelightwater = (long*)game_malloc(4 * r->nVerts);
 	r->watercalc = 0;
 	vb.dwNumVertices = r->nVerts;
 	vb.dwSize = sizeof(D3DVERTEXBUFFERDESC);
 	vb.dwCaps = 0;
 	vb.dwFVF = D3DFVF_VERTEX;
 	DXAttempt(App.dx.lpD3D->CreateVertexBuffer(&vb, &r->SourceVB, D3DDP_DONOTCLIP, 0));
-	r->SourceVB->Lock(DDLOCK_WRITEONLY, (LPVOID*)&vptr, 0);
+	r->SourceVB->Lock(DDLOCK_WRITEONLY, (void**)&vptr, 0);
 	r->posx = (float)r->x;
 	r->posy = (float)r->y;
 	r->posz = (float)r->z;
+	data_ptr = r->data + 1;
 
 	for (int i = 0; i < r->nVerts; i++)
 	{
@@ -405,11 +423,12 @@ void ProcessRoomData(ROOM_INFO* r)
 		cB = ushort((cB * water_color_B) >> 8);
 		r->prelightwater[i] = RGBA(cR, cG, cB, 0xFF);
 		vptr++;
+		data_ptr += 6;
 	}
 
 	r->SourceVB->Unlock();
 	free(prelight);
-	r->pclight = NULL;
+	r->pclight = 0;
 
 	if (r->num_lights)
 	{
@@ -420,6 +439,7 @@ void ProcessRoomData(ROOM_INFO* r)
 		for (int i = 0; i < r->num_lights; i++)
 		{
 			light = &r->light[i];
+
 			if (light->Type == LIGHT_FOG)
 			{
 				if (NumLevelFogBulbs >= 20)
@@ -442,7 +462,7 @@ void ProcessRoomData(ROOM_INFO* r)
 			}
 			else
 			{
-				if (light->r <= 0 && light->g <= 0 && light->b <= 0 && light->Type == LIGHT_SPOT)
+				if (!light->r && !light->g && !light->b && light->Type == LIGHT_SPOT)
 					continue;
 
 				pclight = &r->pclight[nLights];
@@ -460,7 +480,7 @@ void ProcessRoomData(ROOM_INFO* r)
 				pclight->b *= intensity;
 
 				if (r->light[nLights].Type)
-					pclight->shadow = long(intensity * 255.0f);
+					pclight->shadow = long(intensity * 255);
 
 				pclight->x = (float)light->x;
 				pclight->y = (float)light->y;
@@ -479,10 +499,10 @@ void ProcessRoomData(ROOM_INFO* r)
 				pclight->InnerAngle = 2 * acos(light->Inner);
 				pclight->OuterAngle = 2 * acos(light->Outer);
 
-				if (r->light[nLights].Type == LIGHT_SPOT && pclight->OuterAngle > (float)M_PI)
+				if (r->light[nLights].Type == LIGHT_SPOT && pclight->OuterAngle > 3.1415927F)
 				{
 					Log(1, "SpotLight Corrected");
-					pclight->OuterAngle = (float)M_PI;
+					pclight->OuterAngle = 3.1415927F;
 				}
 
 				pclight->Cutoff = light->Cutoff;
@@ -498,6 +518,8 @@ void ProcessRoomData(ROOM_INFO* r)
 void InsertRoom(ROOM_INFO* r)
 {
 	TEXTURESTRUCT* pTex; 
+	short* data;
+	short numQuads, numTris;
 	bool doublesided;
 
 	clip_left = r->left;
@@ -510,28 +532,31 @@ void InsertRoom(ROOM_INFO* r)
 		ProcessRoomDynamics(r);
 		ProcessRoomVertices(r);
 
-		for (int i = 0; i < r->data.gt4cnt; i++)
-		{
-			auto gt4 = r->data.gt4[i];
-			pTex = &textinfo[gt4.texture & 0x3FFF];
-			doublesided = (gt4.texture >> 15) & 1;
+		data = r->FaceData;
+		numQuads = *data++;
 
-			if (pTex->drawtype == 0)
-				AddQuadZBuffer(MyVertexBuffer, gt4.vertices[0], gt4.vertices[1], gt4.vertices[2], gt4.vertices[3], pTex, doublesided);
+		for (int i = 0; i < numQuads; i++, data += 5)
+		{
+			pTex = &textinfo[data[4] & 0x3FFF];
+			doublesided = (data[4] >> 15) & 1;
+
+			if (!pTex->drawtype)
+				AddQuadZBuffer(MyVertexBuffer, data[0], data[1], data[2], data[3], pTex, doublesided);
 			else if (pTex->drawtype <= 2)
-				AddQuadSorted(MyVertexBuffer, gt4.vertices[0], gt4.vertices[1], gt4.vertices[2], gt4.vertices[3], pTex, doublesided);
+				AddQuadSorted(MyVertexBuffer, data[0], data[1], data[2], data[3], pTex, doublesided);
 		}
 
-		for (int i = 0; i < r->data.gt3cnt; i++)
-		{
-			auto gt3 = r->data.gt3[i];
-			pTex = &textinfo[gt3.texture & 0x3FFF];
-			doublesided = (gt3.texture >> 15) & 1;
+		numTris = *data++;
 
-			if (pTex->drawtype == 0)
-				AddTriZBuffer(MyVertexBuffer, gt3.vertices[0], gt3.vertices[1], gt3.vertices[2], pTex, doublesided);
+		for (int i = 0; i < numTris; i++, data += 4)
+		{
+			pTex = &textinfo[data[3] & 0x3FFF];
+			doublesided = (data[3] >> 15) & 1;
+
+			if (!pTex->drawtype)
+				AddTriZBuffer(MyVertexBuffer, data[0], data[1], data[2], pTex, doublesided);
 			else if (pTex->drawtype <= 2)
-				AddTriSorted(MyVertexBuffer, gt3.vertices[0], gt3.vertices[1], gt3.vertices[2], pTex, doublesided);
+				AddTriSorted(MyVertexBuffer, data[0], data[1], data[2], pTex, doublesided);
 		}
 	}
 }
@@ -539,6 +564,7 @@ void InsertRoom(ROOM_INFO* r)
 void CalcTriFaceNormal(D3DVECTOR* p1, D3DVECTOR* p2, D3DVECTOR* p3, D3DVECTOR* N)
 {
 	FVECTOR u, v;
+
 	u.x = p1->x - p2->x;
 	u.y = p1->y - p2->y;
 	u.z = p1->z - p2->z;
@@ -552,7 +578,7 @@ void CalcTriFaceNormal(D3DVECTOR* p1, D3DVECTOR* p2, D3DVECTOR* p3, D3DVECTOR* N
 
 void ProcessMeshData(long num_meshes)
 {
-	MESH_DATA* static_mesh;
+	MESH_DATA* mesh;
 	D3DVERTEX* vtx;
 	D3DVERTEXBUFFERDESC buf;
 	short* mesh_ptr;
@@ -565,7 +591,7 @@ void ProcessMeshData(long num_meshes)
 	mesh_vtxbuf = (MESH_DATA**)game_malloc(4 * num_meshes);
 	mesh_base = (short*)malloc_ptr;
 	last_mesh_ptr = 0;
-	static_mesh = (MESH_DATA*)num_meshes;
+	mesh = (MESH_DATA*)num_meshes;
 
 	for (int i = 0; i < num_meshes; i++)
 	{
@@ -573,39 +599,39 @@ void ProcessMeshData(long num_meshes)
 
 		if (mesh_ptr == last_mesh_ptr)
 		{
-			meshes[i] = (short*)static_mesh;
-			mesh_vtxbuf[i] = static_mesh;
+			meshes[i] = (short*)mesh;
+			mesh_vtxbuf[i] = mesh;
 		}
 		else
 		{
 			last_mesh_ptr = mesh_ptr;
-			static_mesh = (MESH_DATA*)game_malloc(sizeof(MESH_DATA));
-			memset(static_mesh, 0, sizeof(MESH_DATA));
-			meshes[i] = (short*)static_mesh;
-			mesh_vtxbuf[i] = static_mesh;
-			static_mesh->x = mesh_ptr[0];
-			static_mesh->y = mesh_ptr[1];
-			static_mesh->z = mesh_ptr[2];
-			static_mesh->r = mesh_ptr[3];
-			static_mesh->flags = mesh_ptr[4];
-			static_mesh->nVerts = mesh_ptr[5] & 0xFF;
+			mesh = (MESH_DATA*)game_malloc(sizeof(MESH_DATA));
+			memset(mesh, 0, sizeof(MESH_DATA));
+			meshes[i] = (short*)mesh;
+			mesh_vtxbuf[i] = mesh;
+			mesh->x = mesh_ptr[0];
+			mesh->y = mesh_ptr[1];
+			mesh->z = mesh_ptr[2];
+			mesh->r = mesh_ptr[3];
+			mesh->flags = mesh_ptr[4];
+			mesh->nVerts = mesh_ptr[5] & 0xFF;
 			lp = 0;
 
-			if (!static_mesh->nVerts)
+			if (!mesh->nVerts)
 				lp = mesh_ptr[5] >> 8;
 
 			mesh_ptr += 6;
 
-			if (static_mesh->nVerts)
+			if (mesh->nVerts)
 			{
-				buf.dwNumVertices = static_mesh->nVerts;
+				buf.dwNumVertices = mesh->nVerts;
 				buf.dwSize = sizeof(D3DVERTEXBUFFERDESC);
 				buf.dwCaps = 0;
 				buf.dwFVF = D3DFVF_TEX1 | D3DFVF_NORMAL | D3DFVF_XYZ;
-				DXAttempt(App.dx.lpD3D->CreateVertexBuffer(&buf, &static_mesh->SourceVB, 0, 0));
-				static_mesh->SourceVB->Lock(DDLOCK_WRITEONLY, (LPVOID*)&vtx, 0);
+				DXAttempt(App.dx.lpD3D->CreateVertexBuffer(&buf, &mesh->SourceVB, 0, 0));
+				mesh->SourceVB->Lock(DDLOCK_WRITEONLY, (LPVOID*)&vtx, 0);
 
-				for (int j = 0; j < static_mesh->nVerts; j++)
+				for (int j = 0; j < mesh->nVerts; j++)
 				{
 					vtx[j].x = mesh_ptr[0];
 					vtx[j].y = mesh_ptr[1];
@@ -613,72 +639,72 @@ void ProcessMeshData(long num_meshes)
 					mesh_ptr += 3;
 				}
 
-				static_mesh->nNorms = mesh_ptr[0];
+				mesh->nNorms = mesh_ptr[0];
 				mesh_ptr++;
 
-				if (!static_mesh->nNorms)
-					static_mesh->nNorms = static_mesh->nVerts;
+				if (!mesh->nNorms)
+					mesh->nNorms = mesh->nVerts;
 
-				if (static_mesh->nNorms > 0)
+				if (mesh->nNorms > 0)
 				{
-					static_mesh->Normals = (D3DVECTOR*)game_malloc(static_mesh->nNorms * sizeof(D3DVECTOR));
+					mesh->Normals = (D3DVECTOR*)game_malloc(mesh->nNorms * sizeof(D3DVECTOR));
 
-					for (int j = 0; j < static_mesh->nVerts; j++)
+					for (int j = 0; j < mesh->nVerts; j++)
 					{
 						vtx[j].nx = mesh_ptr[0];
 						vtx[j].ny = mesh_ptr[1];
 						vtx[j].nz = mesh_ptr[2];
 						mesh_ptr += 3;
 						D3DNormalise((D3DVECTOR*)&vtx[j].nx);
-						static_mesh->Normals[j].x = vtx[j].nx;
-						static_mesh->Normals[j].y = vtx[j].ny;
-						static_mesh->Normals[j].z = vtx[j].nz;
+						mesh->Normals[j].x = vtx[j].nx;
+						mesh->Normals[j].y = vtx[j].ny;
+						mesh->Normals[j].z = vtx[j].nz;
 					}
 
-					static_mesh->prelight = 0;
+					mesh->prelight = 0;
 				}
 				else
 				{
-					static_mesh->Normals = 0;
-					static_mesh->prelight = (long*)game_malloc(4 * static_mesh->nVerts);
+					mesh->Normals = 0;
+					mesh->prelight = (long*)game_malloc(4 * mesh->nVerts);
 
-					for (int j = 0; j < static_mesh->nVerts; j++)
+					for (int j = 0; j < mesh->nVerts; j++)
 					{
 						c = 255 - (mesh_ptr[0] >> 5);
-						static_mesh->prelight[j] = RGBONLY(c, c, c);
+						mesh->prelight[j] = RGBONLY(c, c, c);
 						mesh_ptr++;
 					}
 				}
 
-				static_mesh->SourceVB->Unlock();
+				mesh->SourceVB->Unlock();
 			}
 			else
 				mesh_ptr += 6 * lp + 1;
 
-			static_mesh->ngt4 = mesh_ptr[0];
+			mesh->ngt4 = mesh_ptr[0];
 			mesh_ptr++;
 
-			if (static_mesh->ngt4)
+			if (mesh->ngt4)
 			{
-				static_mesh->gt4 = (short*)game_malloc(12 * static_mesh->ngt4);
-				lp = 6 * static_mesh->ngt4;
+				mesh->gt4 = (short*)game_malloc(12 * mesh->ngt4);
+				lp = 6 * mesh->ngt4;
 
 				for (int j = 0; j < lp; j++)
-					static_mesh->gt4[j] = mesh_ptr[j];
+					mesh->gt4[j] = mesh_ptr[j];
 
 				mesh_ptr += lp;
 			}
 
-			static_mesh->ngt3 = mesh_ptr[0];
+			mesh->ngt3 = mesh_ptr[0];
 			mesh_ptr++;
 
-			if (static_mesh->ngt3)
+			if (mesh->ngt3)
 			{
-				static_mesh->gt3 = (short*)game_malloc(10 * static_mesh->ngt3);
-				lp = 5 * static_mesh->ngt3;
+				mesh->gt3 = (short*)game_malloc(10 * mesh->ngt3);
+				lp = 5 * mesh->ngt3;
 
 				for (int j = 0; j < lp; j++)
-					static_mesh->gt3[j] = mesh_ptr[j];
+					mesh->gt3[j] = mesh_ptr[j];
 			}
 		}
 	}
@@ -688,15 +714,17 @@ void ProcessMeshData(long num_meshes)
 
 void InitBuckets()
 {
-	for (int i = 0; i < MAX_BUCKETS; i++)
+	TEXTUREBUCKET* bucket;
+
+	for (int i = 0; i < 20; i++)
 	{
-		auto* bucket = &Bucket[i];
+		bucket = &Bucket[i];
 		bucket->tpage = -1;
 		bucket->nVtx = 0;
 	}
 }
 
-void DrawBucket(BUCKETS* bucket)
+void DrawBucket(TEXTUREBUCKET* bucket)
 {
 	if (bucket->tpage == 1)
 		bucket->tpage = 1;
@@ -739,10 +767,10 @@ void DrawBucket(BUCKETS* bucket)
 
 void FindBucket(long tpage, D3DTLBUMPVERTEX** Vpp, long** nVtxpp)
 {
-	BUCKETS* bucket;
+	TEXTUREBUCKET* bucket;
 	long nVtx, biggest;
 
-	for (int i = 0; i < MAX_BUCKETS; i++)
+	for (int i = 0; i < 20; i++)
 	{
 		bucket = &Bucket[i];
 
@@ -767,9 +795,10 @@ void FindBucket(long tpage, D3DTLBUMPVERTEX** Vpp, long** nVtxpp)
 	nVtx = 0;
 	biggest = 0;
 
-	for (int i = 0; i < MAX_BUCKETS; i++)
+	for (int i = 0; i < 20; i++)
 	{
 		bucket = &Bucket[i];
+
 		if (bucket->tpage == -1)
 		{
 			bucket->tpage = tpage;
@@ -795,7 +824,7 @@ void FindBucket(long tpage, D3DTLBUMPVERTEX** Vpp, long** nVtxpp)
 
 void DrawBuckets()
 {
-	BUCKETS* bucket;
+	TEXTUREBUCKET* bucket;
 
 	if (App.BumpMapping)
 	{
@@ -808,9 +837,10 @@ void DrawBuckets()
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
 
-		for (int i = 0; i < MAX_BUCKETS; i++)
+		for (int i = 0; i < 20; i++)
 		{
 			bucket = &Bucket[i];
+
 			if (Textures[bucket->tpage].bump && bucket->nVtx)
 			{
 				DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[Textures[bucket->tpage].bumptpage].tex));
@@ -827,9 +857,10 @@ void DrawBuckets()
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
 
-		for (int i = 0; i < MAX_BUCKETS; i++)
+		for (int i = 0; i < 20; i++)
 		{
 			bucket = &Bucket[i];
+
 			if (Textures[bucket->tpage].bump && bucket->nVtx)
 			{
 				DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[bucket->tpage].tex));
@@ -842,9 +873,10 @@ void DrawBuckets()
 
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
 
-		for (int i = 0; i < MAX_BUCKETS; i++)
+		for (int i = 0; i < 20; i++)
 		{
 			bucket = &Bucket[i];
+
 			if (!Textures[bucket->tpage].bump && bucket->nVtx)
 			{
 				DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[bucket->tpage].tex));
@@ -857,7 +889,7 @@ void DrawBuckets()
 	}
 	else
 	{
-		for (int i = 0; i < MAX_BUCKETS; i++)
+		for (int i = 0; i < 20; i++)
 		{
 			bucket = &Bucket[i];
 			DrawBucket(bucket);
@@ -872,63 +904,89 @@ void CreateVertexNormals(ROOM_INFO* r)
 	D3DVECTOR p3;
 	D3DVECTOR n1;
 	D3DVECTOR n2;
+	short* data;
+	short nQuads;
+	short nTris;
 
+	data = r->FaceData;
 	r->fnormals = (D3DVECTOR*)game_malloc(sizeof(D3DVECTOR) * (r->gt3cnt + r->gt4cnt));
-	for (int i = 0; i < r->data.gt4cnt; i++)
+	nQuads = *data++;
+
+	for (int i = 0; i < nQuads; i++)
 	{
-		auto gt4 = r->data.gt4[i];
-		p1 = r->verts[gt4.vertices[0]];
-		p2 = r->verts[gt4.vertices[1]];
-		p3 = r->verts[gt4.vertices[2]];
+		p1 = r->verts[data[0]];
+		p2 = r->verts[data[1]];
+		p3 = r->verts[data[2]];
 		CalcTriFaceNormal(&p1, &p2, &p3, &n1);
-		p1 = r->verts[gt4.vertices[0]];
-		p2 = r->verts[gt4.vertices[2]];
-		p3 = r->verts[gt4.vertices[3]];
+
+		p1 = r->verts[data[0]];
+		p2 = r->verts[data[2]];
+		p3 = r->verts[data[3]];
 		CalcTriFaceNormal(&p1, &p2, &p3, &n2);
+
 		n1.x += n2.x;
 		n1.y += n2.y;
 		n1.z += n2.z;
 		D3DNormalise(&n1);
 		r->fnormals[i] = n1;
+		data += 5;
 	}
 
-	for (int i = 0; i < r->data.gt3cnt; i++)
+	nTris = *data++;
+
+	for (int i = 0; i < nTris; i++)
 	{
-		auto gt3 = r->data.gt3[i];
-		p1 = r->verts[gt3.vertices[0]];
-		p2 = r->verts[gt3.vertices[1]];
-		p3 = r->verts[gt3.vertices[2]];
+		p1 = r->verts[data[0]];
+		p2 = r->verts[data[1]];
+		p3 = r->verts[data[2]];
 		CalcTriFaceNormal(&p1, &p2, &p3, &n1);
 		D3DNormalise(&n1);
-		r->fnormals[r->data.gt4cnt + i] = n1;
+		r->fnormals[nQuads + i] = n1;
+		data += 4;
 	}
+
 	r->vnormals = (D3DVECTOR*)game_malloc(sizeof(D3DVECTOR) * r->nVerts);
+
+	data = r->FaceData;
+	nQuads = *data++;
+
+	data += nQuads * 5;
+	nTris = *data;
 
 	for (int i = 0; i < r->nVerts; i++)
 	{
 		n1.x = 0;
 		n1.y = 0;
 		n1.z = 0;
-		for (int j = 0; j < r->gt4cnt; j++)
+
+		data = r->FaceData + 1;
+
+		for (int j = 0; j < nQuads; j++)
 		{
-			auto gt4 = r->data.gt4[j];
-			if ((gt4.vertices[0] == i) || (gt4.vertices[1] == i) || (gt4.vertices[2] == i) || (gt4.vertices[3] == i))
+			if (data[0] == i || data[1] == i || data[2] == i || data[3] == i)
 			{
 				n1.x += r->fnormals[j].x;
 				n1.y += r->fnormals[j].y;
 				n1.z += r->fnormals[j].z;
 			}
+
+			data += 5;
 		}
-		for (int j = 0; j < r->gt3cnt; j++)
+
+		data++;
+
+		for (int j = 0; j < nTris; j++)
 		{
-			auto gt3 = r->data.gt3[j];
-			if ((gt3.vertices[0] == i) || (gt3.vertices[1] == i) || (gt3.vertices[2] == i))
+			if (data[0] == i || data[1] == i || data[2] == i)
 			{
-				n1.x += r->fnormals[r->data.gt4cnt + j].x;
-				n1.y += r->fnormals[r->data.gt4cnt + j].y;
-				n1.z += r->fnormals[r->data.gt4cnt + j].z;
+				n1.x += r->fnormals[nQuads + j].x;
+				n1.y += r->fnormals[nQuads + j].y;
+				n1.z += r->fnormals[nQuads + j].z;
 			}
+
+			data += 4;
 		}
+
 		D3DNormalise(&n1);
 		r->vnormals[i] = n1;
 	}

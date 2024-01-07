@@ -47,7 +47,7 @@ void DeathSlideCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 				do AnimateLara(l); while (l->current_anim_state != AS_NULL);
 
-				if (!item->activated)
+				if (!item->active)
 					AddActiveItem(item_number);
 
 				item->status = ITEM_ACTIVE;

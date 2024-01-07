@@ -25,11 +25,7 @@
 #include <xaudio2fx.h>
 #include <mmreg.h>
 #include <MSAcm.h>
-#include <vector>
 
 #include "../../resource.h"
-
-template<class T>
-using VectorList = std::vector<T>;
 
 #endif //PCH_H

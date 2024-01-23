@@ -753,7 +753,7 @@ static void S_DrawTile(long x, long y, long w, long h, LPDIRECT3DTEXTUREX t, lon
 	App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTFG_POINT);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, 0);
 	DXAttempt(App.dx.lpD3DDevice->SetTexture(0, t));
-	App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, FVF, v, 4, D3DDP_DONOTCLIP | D3DDP_DONOTUPDATEEXTENTS);
+	App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLEFAN, D3DFVF_TLVERTEX_TR, v, 4, D3DDP_DONOTCLIP | D3DDP_DONOTUPDATEEXTENTS);
 	App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, 1);
 
 	if (App.Filtering)

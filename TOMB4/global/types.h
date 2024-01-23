@@ -26,13 +26,51 @@
 
 #define NO_HEIGHT	-32512
 #define NO_ITEM	-1
-#define FVF (D3DFVF_TEX2 | D3DFVF_SPECULAR | D3DFVF_DIFFUSE | D3DFVF_XYZRHW)
 #define W2V_SHIFT	14
 #define MAX_SAMPLES	370
 #define MAX_DYNAMICS	64
 #define MALLOC_SIZE	15000000	//15MB
 
+#ifndef RGB_MAKE
+#define RGBA_SETALPHA(rgba, x)	(((x) << 24) | ((rgba) & 0x00ffffff))
+#define RGBA_GETALPHA(rgb)		((rgb) >> 24)
+#define RGBA_GETRED(rgb)		(((rgb) >> 16) & 0xff)
+#define RGBA_GETGREEN(rgb)		(((rgb) >> 8) & 0xff)
+#define RGBA_GETBLUE(rgb)		((rgb) & 0xff)
+#define RGBA_MAKE(r, g, b, a)	((D3DCOLOR) (((a) << 24) | ((r) << 16) | ((g) << 8) | (b)))
+#define RGB_GETRED(rgb)			(((rgb) >> 16) & 0xff)
+#define RGB_GETGREEN(rgb)		(((rgb) >> 8) & 0xff)
+#define RGB_GETBLUE(rgb)		((rgb) & 0xff)
+#define RGB_MAKE(r, g, b)		((D3DCOLOR) (((r) << 16) | ((g) << 8) | (b)))
+#endif // RGB_MAKE
+
 /********************DX defs********************/
+#if (DIRECT3D_VERSION >= 0x900)
+#ifndef D3DFVF_TLVERTEX_TR
+#define D3DFVF_TLVERTEX_TR (D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX2)
+#endif // D3DFVF_TLVERTEX_TR
+#define LPDIRECTDRAWX			
+#define LPDIRECT3DX				LPDIRECT3D9
+#define LPDIRECT3DDEVICEX		LPDIRECT3DDEVICE9
+#define LPDIRECTDRAWSURFACEX	LPDIRECT3DSURFACE9
+#define LPDIRECT3DTEXTUREX		LPDIRECT3DTEXTURE9
+#define LPDIRECTINPUTX			LPDIRECTINPUT8
+#define LPDIRECTINPUTDEVICEX	LPDIRECTINPUTDEVICE8
+#define DIRECT3DMATERIALX		D3DMATERIAL9
+#define LPDIRECT3DMATERIALX		D3DMATERIAL9*
+#define DIRECT3DVIEWPORTX		D3DVIEWPORT9
+#define LPDIRECT3DVIEWPORTX		D3DVIEWPORT9*
+#define DDSURFACEDESCX			D3DLOCKED_RECT
+#define LPDDSURFACEDESCX		D3DLOCKED_RECT*
+#define D3DGUID					IID_IDirect3D9
+#define TEXGUID					IID_IDirect3DTexture9
+#define DIGUID					IID_IDirectInput8
+#define DIDGUID					IID_IDirectInputDevice8
+#define DSNGUID					IID_IDirectSoundNotify
+#else
+#ifndef D3DFVF_TLVERTEX_TR
+#define D3DFVF_TLVERTEX_TR (D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_SPECULAR|D3DFVF_TEX2)
+#endif // D3DFVF_TLVERTEX_TR
 #define LPDIRECTDRAWX			LPDIRECTDRAW4
 #define LPDIRECT3DX				LPDIRECT3D3
 #define LPDIRECT3DDEVICEX		LPDIRECT3DDEVICE3
@@ -50,12 +88,22 @@
 #define DIGUID					IID_IDirectInput8
 #define DIDGUID					IID_IDirectInputDevice8
 #define DSNGUID					IID_IDirectSoundNotify
+#endif
 /***********************************************/
 
 /*typedefs*/
 typedef unsigned char uchar;
 typedef unsigned short ushort;
 typedef unsigned long ulong;
+
+typedef enum {
+	// Hardware renderer
+	POLY_Room = 0,
+	POLY_Objects = 1,
+	POLY_Items = 2,
+	POLY_Effects = 3,
+	POLY_Quad = 4,
+} POLYTYPE;
 
 enum DX_FLAGS
 {

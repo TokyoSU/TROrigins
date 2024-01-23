@@ -58,7 +58,7 @@ void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, sho
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
 		DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[texture].tex));
-		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
+		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, D3DFVF_TLVERTEX_TR, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHATESTENABLE, 1);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
 		break;
@@ -69,7 +69,7 @@ void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, sho
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
 		DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[texture].tex));
-		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
+		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, D3DFVF_TLVERTEX_TR, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 		break;
 
 	case 2:
@@ -82,7 +82,7 @@ void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, sho
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_ONE);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, 0);
 		DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[texture].tex));
-		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
+		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, D3DFVF_TLVERTEX_TR, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, 1);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_SRCALPHA);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
@@ -98,7 +98,7 @@ void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, sho
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
 		DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[texture].tex));
-		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
+		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, D3DFVF_TLVERTEX_TR, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 		break;
 
@@ -111,7 +111,7 @@ void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, sho
 			App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ZWRITEENABLE, 0);
 		}
 
-		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
+		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, D3DFVF_TLVERTEX_TR, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 
 		if (App.dx.lpZBuffer)
 		{
@@ -132,7 +132,7 @@ void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, sho
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE4X);
 		DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[texture].tex));
-		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
+		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, D3DFVF_TLVERTEX_TR, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
 		break;
@@ -146,7 +146,7 @@ void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, sho
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_ONE);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_ONE);
 		DXAttempt(App.dx.lpD3DDevice->SetTexture(0, 0));
-		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_LINELIST, FVF, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
+		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_LINELIST, D3DFVF_TLVERTEX_TR, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 		break;
 
 	case 7:
@@ -159,7 +159,7 @@ void HWR_DrawSortList(D3DTLBUMPVERTEX* info, short num_verts, short texture, sho
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_INVSRCALPHA);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
 		DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[texture].tex));
-		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
+		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, D3DFVF_TLVERTEX_TR, info, num_verts, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 		break;
 	}

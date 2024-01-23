@@ -743,7 +743,7 @@ void DrawBucket(TEXTUREBUCKET* bucket)
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
 		DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[Textures[bucket->tpage].bumptpage].tex));
-		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, D3DDP_DONOTCLIP);
+		App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, D3DFVF_TLVERTEX_TR, bucket->vtx, bucket->nVtx, D3DDP_DONOTCLIP);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, 1);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_DESTCOLOR);
@@ -755,7 +755,7 @@ void DrawBucket(TEXTUREBUCKET* bucket)
 	}
 
 	DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[bucket->tpage].tex));
-	App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
+	App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, D3DFVF_TLVERTEX_TR, bucket->vtx, bucket->nVtx, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 
 	if (App.BumpMapping)
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
@@ -773,7 +773,6 @@ void FindBucket(long tpage, D3DTLBUMPVERTEX** Vpp, long** nVtxpp)
 	for (int i = 0; i < 20; i++)
 	{
 		bucket = &Bucket[i];
-
 		if (bucket->tpage == tpage && bucket->nVtx < 512)
 		{
 			*Vpp = &bucket->vtx[bucket->nVtx];
@@ -798,7 +797,6 @@ void FindBucket(long tpage, D3DTLBUMPVERTEX** Vpp, long** nVtxpp)
 	for (int i = 0; i < 20; i++)
 	{
 		bucket = &Bucket[i];
-
 		if (bucket->tpage == -1)
 		{
 			bucket->tpage = tpage;
@@ -828,8 +826,8 @@ void DrawBuckets()
 
 	if (App.BumpMapping)
 	{
-		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, 0);
-		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
+		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, FALSE);
+		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, FALSE);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_ONE);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_ZERO);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
@@ -837,50 +835,49 @@ void DrawBuckets()
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
 
+		// Draw bump textured bucket.
 		for (int i = 0; i < 20; i++)
 		{
 			bucket = &Bucket[i];
-
 			if (Textures[bucket->tpage].bump && bucket->nVtx)
 			{
 				DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[Textures[bucket->tpage].bumptpage].tex));
-				App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, D3DDP_DONOTCLIP);
+				App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, D3DFVF_TLVERTEX_TR, bucket->vtx, bucket->nVtx, D3DDP_DONOTCLIP);
 				DrawPrimitiveCnt++;
 			}
 		}
 
-		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, 1);
-		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 1);
+		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_FOGENABLE, TRUE);
+		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, TRUE);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_SRCBLEND, D3DBLEND_DESTCOLOR);
 		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_DESTBLEND, D3DBLEND_SRCCOLOR);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
 		App.dx.lpD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
 
+		// Draw original bump textured bucket. 
 		for (int i = 0; i < 20; i++)
 		{
 			bucket = &Bucket[i];
-
 			if (Textures[bucket->tpage].bump && bucket->nVtx)
 			{
 				DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[bucket->tpage].tex));
-				App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
+				App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, D3DFVF_TLVERTEX_TR, bucket->vtx, bucket->nVtx, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 				bucket->nVtx = 0;
 				bucket->tpage = -1;
 				DrawPrimitiveCnt++;
 			}
 		}
 
-		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, 0);
-
+		// Draw the other textured bucket (bump excluded).
+		App.dx.lpD3DDevice->SetRenderState(D3DRENDERSTATE_ALPHABLENDENABLE, FALSE);
 		for (int i = 0; i < 20; i++)
 		{
 			bucket = &Bucket[i];
-
 			if (!Textures[bucket->tpage].bump && bucket->nVtx)
 			{
 				DXAttempt(App.dx.lpD3DDevice->SetTexture(0, Textures[bucket->tpage].tex));
-				App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, FVF, bucket->vtx, bucket->nVtx, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
+				App.dx.lpD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST, D3DFVF_TLVERTEX_TR, bucket->vtx, bucket->nVtx, D3DDP_DONOTUPDATEEXTENTS | D3DDP_DONOTCLIP);
 				bucket->nVtx = 0;
 				bucket->tpage = -1;
 				DrawPrimitiveCnt++;
@@ -890,10 +887,7 @@ void DrawBuckets()
 	else
 	{
 		for (int i = 0; i < 20; i++)
-		{
-			bucket = &Bucket[i];
-			DrawBucket(bucket);
-		}
+			DrawBucket(&Bucket[i]);
 	}
 }
 

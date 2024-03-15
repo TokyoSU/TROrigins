@@ -1,0 +1,871 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="tomb3\pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tomb3\tomb3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\audio.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\dd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\di.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\display.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\drawbars.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\draweffects.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\drawprimitive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\ds.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\dxshell.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\file.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\fmv.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\frontend.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\game.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\hwrender.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\init.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\litesrc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\option.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\output.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\picture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\smain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\specific.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\transform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="specific\winmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="script\interpreter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="script\scripter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="newstuff\discord.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="newstuff\LaraDraw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="newstuff\map.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="newstuff\pausemenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="newstuff\Picture2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="newstuff\psxsaves.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="newstuff\registry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="newstuff\setupdlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\51baton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\51civvy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\51laser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\51rocket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\armysmg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\autogun.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\biggun.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\bird.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\blowpipe.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\boat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\boomute.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\box.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\cinema.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\clawmute.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\cleaner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\cobra.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\collide.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\compy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\control.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\croc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\demo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\diver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\dog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\dragfire.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\draw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\effect2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\effects.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\firehead.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\fish.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\flamer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\flymaker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\footprnt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\fusebox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\gameflow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\hair.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\health.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\hybrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\inventry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\invfunc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\items.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\kayak.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\lara.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\lara1gun.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\lara2gun.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\laraclmb.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\laraelec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\larafire.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\laraflar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\laramisc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\larasurf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\laraswim.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\lasers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\lizman.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\londboss.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\londsec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\lot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\minecart.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\missile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\monkey.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\moveblok.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\mpgun.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\objects.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\objlight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\oilred.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\oilsmg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\orca.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\people.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\pickup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\prisoner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\punk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\quadbike.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\rapmaker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\raptor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\rat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\savegame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\sealmute.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\setup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\shiva.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\sound.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\sphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\sub.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\swat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\target.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\text.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\tiger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\tonyboss.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\train.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\traps.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\trex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\tribeaxe.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\triboss.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\willboss.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\wingmute.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\winston.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3dsystem\3d_gen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3dsystem\hwinsert.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3dsystem\phd_math.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3dsystem\scalespr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="tomb3\pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tomb3\tomb3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\audio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\dd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\di.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\display.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\drawbars.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\draweffects.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\drawprimitive.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\ds.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\dxshell.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\file.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\fmv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\frontend.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\game.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\hwrender.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\init.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\input.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\litesrc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\option.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\output.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\picture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\smain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\specific.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\transform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="specific\winmain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="script\interpreter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="script\scripter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="newstuff\discord.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="newstuff\LaraDraw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="newstuff\map.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="newstuff\pausemenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="newstuff\Picture2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="newstuff\psxsaves.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="newstuff\registry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="newstuff\setupdlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="global\math_tbls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="global\types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\51baton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\51civvy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\51laser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\51rocket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\armysmg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\autogun.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\biggun.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\bird.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\blowpipe.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\boat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\boomute.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\box.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\cinema.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\clawmute.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\cleaner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\cobra.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\collide.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\compy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\control.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\croc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\demo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\diver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\dog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\dragfire.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\draw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\effect2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\effects.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\firehead.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\fish.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\flamer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\flymaker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\footprnt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\fusebox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\gameflow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\hair.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\health.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\hybrid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\inventry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\invfunc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\items.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\kayak.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\lara.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\lara1gun.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\lara2gun.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\laraclmb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\laraelec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\larafire.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\laraflar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\laramisc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\larasurf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\laraswim.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\lasers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\lizman.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\londboss.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\londsec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\lot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\minecart.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\missile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\monkey.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\moveblok.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\mpgun.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\objects.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\objlight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\oilred.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\oilsmg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\orca.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\people.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\pickup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\prisoner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\punk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\quadbike.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\rapmaker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\raptor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\rat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\savegame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\sealmute.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\setup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\shiva.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\sound.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\sphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\sub.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\swat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\target.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\text.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\tiger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\tonyboss.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\train.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\traps.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\trex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\tribeaxe.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\triboss.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\willboss.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\wingmute.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\winston.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3dsystem\3d_gen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3dsystem\hwinsert.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3dsystem\phd_math.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3dsystem\scalespr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="setup.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="tomb3.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="3dsystem\3d_gen.cpp" />
+    <ClCompile Include="3dsystem\hwinsert.cpp" />
+    <ClCompile Include="3dsystem\phd_math.cpp" />
+    <ClCompile Include="3dsystem\scalespr.cpp" />
+    <ClCompile Include="game\51baton.cpp" />
+    <ClCompile Include="game\51civvy.cpp" />
+    <ClCompile Include="game\51laser.cpp" />
+    <ClCompile Include="game\51rocket.cpp" />
+    <ClCompile Include="game\armysmg.cpp" />
+    <ClCompile Include="game\autogun.cpp" />
+    <ClCompile Include="game\biggun.cpp" />
+    <ClCompile Include="game\bird.cpp" />
+    <ClCompile Include="game\blowpipe.cpp" />
+    <ClCompile Include="game\boat.cpp" />
+    <ClCompile Include="game\boomute.cpp" />
+    <ClCompile Include="game\box.cpp" />
+    <ClCompile Include="game\camera.cpp" />
+    <ClCompile Include="game\cinema.cpp" />
+    <ClCompile Include="game\clawmute.cpp" />
+    <ClCompile Include="game\cleaner.cpp" />
+    <ClCompile Include="game\cobra.cpp" />
+    <ClCompile Include="game\collide.cpp" />
+    <ClCompile Include="game\compy.cpp" />
+    <ClCompile Include="game\control.cpp" />
+    <ClCompile Include="game\croc.cpp" />
+    <ClCompile Include="game\demo.cpp" />
+    <ClCompile Include="game\diver.cpp" />
+    <ClCompile Include="game\dog.cpp" />
+    <ClCompile Include="game\dragfire.cpp" />
+    <ClCompile Include="game\draw.cpp" />
+    <ClCompile Include="game\effect2.cpp" />
+    <ClCompile Include="game\effects.cpp" />
+    <ClCompile Include="game\firehead.cpp" />
+    <ClCompile Include="game\fish.cpp" />
+    <ClCompile Include="game\flamer.cpp" />
+    <ClCompile Include="game\flymaker.cpp" />
+    <ClCompile Include="game\footprnt.cpp" />
+    <ClCompile Include="game\fusebox.cpp" />
+    <ClCompile Include="game\gameflow.cpp" />
+    <ClCompile Include="game\hair.cpp" />
+    <ClCompile Include="game\health.cpp" />
+    <ClCompile Include="game\hybrid.cpp" />
+    <ClCompile Include="game\inventry.cpp" />
+    <ClCompile Include="game\invfunc.cpp" />
+    <ClCompile Include="game\items.cpp" />
+    <ClCompile Include="game\kayak.cpp" />
+    <ClCompile Include="game\lara.cpp" />
+    <ClCompile Include="game\lara1gun.cpp" />
+    <ClCompile Include="game\lara2gun.cpp" />
+    <ClCompile Include="game\laraclmb.cpp" />
+    <ClCompile Include="game\laraelec.cpp" />
+    <ClCompile Include="game\larafire.cpp" />
+    <ClCompile Include="game\laraflar.cpp" />
+    <ClCompile Include="game\laramisc.cpp" />
+    <ClCompile Include="game\larasurf.cpp" />
+    <ClCompile Include="game\laraswim.cpp" />
+    <ClCompile Include="game\lasers.cpp" />
+    <ClCompile Include="game\lizman.cpp" />
+    <ClCompile Include="game\londboss.cpp" />
+    <ClCompile Include="game\londsec.cpp" />
+    <ClCompile Include="game\lot.cpp" />
+    <ClCompile Include="game\minecart.cpp" />
+    <ClCompile Include="game\missile.cpp" />
+    <ClCompile Include="game\monkey.cpp" />
+    <ClCompile Include="game\moveblok.cpp" />
+    <ClCompile Include="game\mpgun.cpp" />
+    <ClCompile Include="game\objects.cpp" />
+    <ClCompile Include="game\objlight.cpp" />
+    <ClCompile Include="game\oilred.cpp" />
+    <ClCompile Include="game\oilsmg.cpp" />
+    <ClCompile Include="game\orca.cpp" />
+    <ClCompile Include="game\people.cpp" />
+    <ClCompile Include="game\pickup.cpp" />
+    <ClCompile Include="game\prisoner.cpp" />
+    <ClCompile Include="game\punk.cpp" />
+    <ClCompile Include="game\quadbike.cpp" />
+    <ClCompile Include="game\rapmaker.cpp" />
+    <ClCompile Include="game\raptor.cpp" />
+    <ClCompile Include="game\rat.cpp" />
+    <ClCompile Include="game\savegame.cpp" />
+    <ClCompile Include="game\sealmute.cpp" />
+    <ClCompile Include="game\setup.cpp" />
+    <ClCompile Include="game\shiva.cpp" />
+    <ClCompile Include="game\sound.cpp" />
+    <ClCompile Include="game\sphere.cpp" />
+    <ClCompile Include="game\sub.cpp" />
+    <ClCompile Include="game\swat.cpp" />
+    <ClCompile Include="game\target.cpp" />
+    <ClCompile Include="game\text.cpp" />
+    <ClCompile Include="game\tiger.cpp" />
+    <ClCompile Include="game\tonyboss.cpp" />
+    <ClCompile Include="game\train.cpp" />
+    <ClCompile Include="game\traps.cpp" />
+    <ClCompile Include="game\trex.cpp" />
+    <ClCompile Include="game\tribeaxe.cpp" />
+    <ClCompile Include="game\triboss.cpp" />
+    <ClCompile Include="game\willboss.cpp" />
+    <ClCompile Include="game\wingmute.cpp" />
+    <ClCompile Include="game\winston.cpp" />
+    <ClCompile Include="newstuff\discord.cpp" />
+    <ClCompile Include="newstuff\LaraDraw.cpp" />
+    <ClCompile Include="newstuff\map.cpp" />
+    <ClCompile Include="newstuff\pausemenu.cpp" />
+    <ClCompile Include="newstuff\Picture2.cpp" />
+    <ClCompile Include="newstuff\psxsaves.cpp" />
+    <ClCompile Include="newstuff\registry.cpp" />
+    <ClCompile Include="newstuff\setupdlg.cpp" />
+    <ClCompile Include="script\interpreter.cpp" />
+    <ClCompile Include="script\scripter.cpp" />
+    <ClCompile Include="specific\audio.cpp" />
+    <ClCompile Include="specific\dd.cpp" />
+    <ClCompile Include="specific\di.cpp" />
+    <ClCompile Include="specific\display.cpp" />
+    <ClCompile Include="specific\drawbars.cpp" />
+    <ClCompile Include="specific\draweffects.cpp" />
+    <ClCompile Include="specific\drawprimitive.cpp" />
+    <ClCompile Include="specific\ds.cpp" />
+    <ClCompile Include="specific\dxshell.cpp" />
+    <ClCompile Include="specific\file.cpp" />
+    <ClCompile Include="specific\fmv.cpp" />
+    <ClCompile Include="specific\frontend.cpp" />
+    <ClCompile Include="specific\game.cpp" />
+    <ClCompile Include="specific\hwrender.cpp" />
+    <ClCompile Include="specific\init.cpp" />
+    <ClCompile Include="specific\input.cpp" />
+    <ClCompile Include="specific\litesrc.cpp" />
+    <ClCompile Include="specific\option.cpp" />
+    <ClCompile Include="specific\output.cpp" />
+    <ClCompile Include="specific\picture.cpp" />
+    <ClCompile Include="specific\smain.cpp" />
+    <ClCompile Include="specific\specific.cpp" />
+    <ClCompile Include="specific\texture.cpp" />
+    <ClCompile Include="specific\timer.cpp" />
+    <ClCompile Include="specific\transform.cpp" />
+    <ClCompile Include="specific\utils.cpp" />
+    <ClCompile Include="specific\winmain.cpp" />
+    <ClCompile Include="tomb3\pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="tomb3\tomb3.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="3dsystem\3d_gen.h" />
+    <ClInclude Include="3dsystem\hwinsert.h" />
+    <ClInclude Include="3dsystem\phd_math.h" />
+    <ClInclude Include="3dsystem\scalespr.h" />
+    <ClInclude Include="game\51baton.h" />
+    <ClInclude Include="game\51civvy.h" />
+    <ClInclude Include="game\51laser.h" />
+    <ClInclude Include="game\51rocket.h" />
+    <ClInclude Include="game\armysmg.h" />
+    <ClInclude Include="game\autogun.h" />
+    <ClInclude Include="game\biggun.h" />
+    <ClInclude Include="game\bird.h" />
+    <ClInclude Include="game\blowpipe.h" />
+    <ClInclude Include="game\boat.h" />
+    <ClInclude Include="game\boomute.h" />
+    <ClInclude Include="game\box.h" />
+    <ClInclude Include="game\camera.h" />
+    <ClInclude Include="game\cinema.h" />
+    <ClInclude Include="game\clawmute.h" />
+    <ClInclude Include="game\cleaner.h" />
+    <ClInclude Include="game\cobra.h" />
+    <ClInclude Include="game\collide.h" />
+    <ClInclude Include="game\compy.h" />
+    <ClInclude Include="game\control.h" />
+    <ClInclude Include="game\croc.h" />
+    <ClInclude Include="game\demo.h" />
+    <ClInclude Include="game\diver.h" />
+    <ClInclude Include="game\dog.h" />
+    <ClInclude Include="game\dragfire.h" />
+    <ClInclude Include="game\draw.h" />
+    <ClInclude Include="game\effect2.h" />
+    <ClInclude Include="game\effects.h" />
+    <ClInclude Include="game\firehead.h" />
+    <ClInclude Include="game\fish.h" />
+    <ClInclude Include="game\flamer.h" />
+    <ClInclude Include="game\flymaker.h" />
+    <ClInclude Include="game\footprnt.h" />
+    <ClInclude Include="game\fusebox.h" />
+    <ClInclude Include="game\gameflow.h" />
+    <ClInclude Include="game\hair.h" />
+    <ClInclude Include="game\health.h" />
+    <ClInclude Include="game\hybrid.h" />
+    <ClInclude Include="game\inventry.h" />
+    <ClInclude Include="game\invfunc.h" />
+    <ClInclude Include="game\items.h" />
+    <ClInclude Include="game\kayak.h" />
+    <ClInclude Include="game\lara.h" />
+    <ClInclude Include="game\lara1gun.h" />
+    <ClInclude Include="game\lara2gun.h" />
+    <ClInclude Include="game\laraclmb.h" />
+    <ClInclude Include="game\laraelec.h" />
+    <ClInclude Include="game\larafire.h" />
+    <ClInclude Include="game\laraflar.h" />
+    <ClInclude Include="game\laramisc.h" />
+    <ClInclude Include="game\larasurf.h" />
+    <ClInclude Include="game\laraswim.h" />
+    <ClInclude Include="game\lasers.h" />
+    <ClInclude Include="game\lizman.h" />
+    <ClInclude Include="game\londboss.h" />
+    <ClInclude Include="game\londsec.h" />
+    <ClInclude Include="game\lot.h" />
+    <ClInclude Include="game\minecart.h" />
+    <ClInclude Include="game\missile.h" />
+    <ClInclude Include="game\monkey.h" />
+    <ClInclude Include="game\moveblok.h" />
+    <ClInclude Include="game\mpgun.h" />
+    <ClInclude Include="game\objects.h" />
+    <ClInclude Include="game\objlight.h" />
+    <ClInclude Include="game\oilred.h" />
+    <ClInclude Include="game\oilsmg.h" />
+    <ClInclude Include="game\orca.h" />
+    <ClInclude Include="game\people.h" />
+    <ClInclude Include="game\pickup.h" />
+    <ClInclude Include="game\prisoner.h" />
+    <ClInclude Include="game\punk.h" />
+    <ClInclude Include="game\quadbike.h" />
+    <ClInclude Include="game\rapmaker.h" />
+    <ClInclude Include="game\raptor.h" />
+    <ClInclude Include="game\rat.h" />
+    <ClInclude Include="game\savegame.h" />
+    <ClInclude Include="game\sealmute.h" />
+    <ClInclude Include="game\setup.h" />
+    <ClInclude Include="game\shiva.h" />
+    <ClInclude Include="game\sound.h" />
+    <ClInclude Include="game\sphere.h" />
+    <ClInclude Include="game\sub.h" />
+    <ClInclude Include="game\swat.h" />
+    <ClInclude Include="game\target.h" />
+    <ClInclude Include="game\text.h" />
+    <ClInclude Include="game\tiger.h" />
+    <ClInclude Include="game\tonyboss.h" />
+    <ClInclude Include="game\train.h" />
+    <ClInclude Include="game\traps.h" />
+    <ClInclude Include="game\trex.h" />
+    <ClInclude Include="game\tribeaxe.h" />
+    <ClInclude Include="game\triboss.h" />
+    <ClInclude Include="game\willboss.h" />
+    <ClInclude Include="game\wingmute.h" />
+    <ClInclude Include="game\winston.h" />
+    <ClInclude Include="global\math_tbls.h" />
+    <ClInclude Include="global\types.h" />
+    <ClInclude Include="newstuff\discord.h" />
+    <ClInclude Include="newstuff\LaraDraw.h" />
+    <ClInclude Include="newstuff\map.h" />
+    <ClInclude Include="newstuff\pausemenu.h" />
+    <ClInclude Include="newstuff\Picture2.h" />
+    <ClInclude Include="newstuff\psxsaves.h" />
+    <ClInclude Include="newstuff\registry.h" />
+    <ClInclude Include="newstuff\setupdlg.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="script\interpreter.h" />
+    <ClInclude Include="script\scripter.h" />
+    <ClInclude Include="specific\audio.h" />
+    <ClInclude Include="specific\dd.h" />
+    <ClInclude Include="specific\di.h" />
+    <ClInclude Include="specific\display.h" />
+    <ClInclude Include="specific\drawbars.h" />
+    <ClInclude Include="specific\draweffects.h" />
+    <ClInclude Include="specific\drawprimitive.h" />
+    <ClInclude Include="specific\ds.h" />
+    <ClInclude Include="specific\dxshell.h" />
+    <ClInclude Include="specific\file.h" />
+    <ClInclude Include="specific\fmv.h" />
+    <ClInclude Include="specific\frontend.h" />
+    <ClInclude Include="specific\game.h" />
+    <ClInclude Include="specific\hwrender.h" />
+    <ClInclude Include="specific\init.h" />
+    <ClInclude Include="specific\input.h" />
+    <ClInclude Include="specific\litesrc.h" />
+    <ClInclude Include="specific\option.h" />
+    <ClInclude Include="specific\output.h" />
+    <ClInclude Include="specific\picture.h" />
+    <ClInclude Include="specific\smain.h" />
+    <ClInclude Include="specific\specific.h" />
+    <ClInclude Include="specific\texture.h" />
+    <ClInclude Include="specific\timer.h" />
+    <ClInclude Include="specific\transform.h" />
+    <ClInclude Include="specific\utils.h" />
+    <ClInclude Include="specific\winmain.h" />
+    <ClInclude Include="tomb3\pch.h" />
+    <ClInclude Include="tomb3\tomb3.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico" />
+    <Image Include="setup.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="tomb3.rc" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{e884e3ad-27b7-4be3-a96c-25fc377b4b18}</ProjectGuid>
+    <RootNamespace>TROrigins</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)build\bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\obj\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)build\bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\obj\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)build\bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\obj\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)build\bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\obj\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)3dsystem;$(ProjectDir)game;$(ProjectDir)global;$(ProjectDir)newstuff;$(ProjectDir)newstuff\libs;$(ProjectDir)newstuff\libs\discord;$(ProjectDir)script;$(ProjectDir)specific;$(ProjectDir)tomb3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)newstuff\libs\discord;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d9.lib;dsound.lib;dinput8.lib;dxguid.lib;msacm32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)3dsystem;$(ProjectDir)game;$(ProjectDir)global;$(ProjectDir)newstuff;$(ProjectDir)newstuff\libs;$(ProjectDir)newstuff\libs\discord;$(ProjectDir)script;$(ProjectDir)specific;$(ProjectDir)tomb3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)newstuff\libs\discord;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d9.lib;dsound.lib;dinput8.lib;dxguid.lib;msacm32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)3dsystem;$(ProjectDir)game;$(ProjectDir)global;$(ProjectDir)newstuff;$(ProjectDir)newstuff\libs;$(ProjectDir)newstuff\libs\discord;$(ProjectDir)script;$(ProjectDir)specific;$(ProjectDir)tomb3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)newstuff\libs\discord;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d9.lib;dsound.lib;dinput8.lib;dxguid.lib;msacm32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)3dsystem;$(ProjectDir)game;$(ProjectDir)global;$(ProjectDir)newstuff;$(ProjectDir)newstuff\libs;$(ProjectDir)newstuff\libs\discord;$(ProjectDir)script;$(ProjectDir)specific;$(ProjectDir)tomb3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)newstuff\libs\discord;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3d9.lib;dsound.lib;dinput8.lib;dxguid.lib;msacm32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

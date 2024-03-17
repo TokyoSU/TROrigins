@@ -2045,8 +2045,7 @@ void lara_as_stop(ITEM_INFO* item, COLL_INFO* coll)
 		return;
 	}
 
-	if (input & IN_DUCK && lara.water_status != LARA_WADE && item->current_anim_state == AS_STOP && (lara.gun_status == LG_ARMLESS ||
-		lara.gun_type == LG_UNARMED || lara.gun_type == LG_PISTOLS || lara.gun_type == LG_MAGNUMS || lara.gun_type == LG_UZIS || lara.gun_type == LG_FLARE))
+	if (input & IN_DUCK && lara.water_status != LARA_WADE && item->current_anim_state == AS_STOP && (lara.gun_status == LG_ARMLESS || lara.gun_type == LG_UNARMED || lara.gun_type == LG_PISTOLS || lara.gun_type == LG_MAGNUMS || lara.gun_type == LG_DESERTEAGLE || lara.gun_type == LG_UZIS || lara.gun_type == LG_FLARE))
 	{
 		item->goal_anim_state = AS_DUCK;
 		return;

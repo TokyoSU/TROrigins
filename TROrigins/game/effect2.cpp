@@ -145,7 +145,7 @@ void TriggerBreath(long x, long y, long z, long xv, long yv, long zv)
 		sptr->Flags = SF_ALTDEF | SF_DEF | SF_SCALE;
 
 	sptr->Scalar = 3;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Gravity = 0;
 	sptr->MaxYvel = 0;
 	sptr->dWidth = (GetRandomControl() & 7) + 32;
@@ -332,7 +332,7 @@ void TriggerFireFlame(long x, long y, long z, long body_part, long type)
 	}
 
 	sptr->Scalar = 2;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 
 	if (!type)
 		size = (GetRandomControl() & 0x1F) + 128;
@@ -434,7 +434,7 @@ void TriggerFireSmoke(long x, long y, long z, long body_part, long type)
 		sptr->Flags = SF_ALTDEF | SF_DEF | SF_SCALE;
 
 	sptr->Scalar = 3;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Gravity = -16 - (GetRandomControl() & 0xF);
 	sptr->MaxYvel = -8 - (GetRandomControl() & 7);
 	sptr->dWidth = (GetRandomControl() & 0x3F) + 64;
@@ -482,7 +482,7 @@ void TriggerStaticFlame(long x, long y, long z, long size)
 	sptr->Yvel = 0;
 	sptr->Xvel = 0;
 	sptr->Flags = SF_ALTDEF | SF_DEF | SF_SCALE;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Scalar = 2;
 	s = (uchar)size;
 	sptr->sWidth = s;
@@ -538,7 +538,7 @@ void TriggerSideFlame(long x, long y, long z, long angle, long speed, long pilot
 	sptr->Flags = SF_ALTDEF | SF_DEF | SF_SCALE;
 	sptr->Gravity = -8 - (GetRandomControl() & 0xF);
 	sptr->MaxYvel = -8 - (GetRandomControl() & 7);
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Scalar = 3;
 	size = (GetRandomControl() & 0x1F) + 128;
 
@@ -595,7 +595,7 @@ void TriggerRocketSmoke(long x, long y, long z, long c)
 		sptr->Flags = SF_ALTDEF | SF_DEF | SF_SCALE;
 
 	sptr->Scalar = 3;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Gravity = -4 - (GetRandomControl() & 3);
 	sptr->MaxYvel = -4 - (GetRandomControl() & 3);
 	size = (GetRandomControl() & 7) + 32;
@@ -932,7 +932,7 @@ void TriggerFlareSparks(long x, long y, long z, long xv, long yv, long zv, long 
 		else
 			smokeSpark->Flags = SF_ALTDEF | SF_DEF | SF_SCALE;
 
-		smokeSpark->Def = (uchar)objects[EXPLOSION1].mesh_index;
+		smokeSpark->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 		smokeSpark->Scalar = 2;
 		smokeSpark->Gravity = -8 - (GetRandomDraw() & 3);
 		smokeSpark->MaxYvel = -4 - (GetRandomDraw() & 3);
@@ -963,7 +963,7 @@ void TriggerGunSmoke(long x, long y, long z, long xv, long yv, long zv, long ini
 	sptr->Life = (GetRandomControl() & 3) + 40;
 	sptr->sLife = sptr->Life;
 
-	if ((weapon == LG_PISTOLS || weapon == LG_MAGNUMS || weapon == LG_UZIS) && sptr->dR > 64)
+	if ((weapon == LG_PISTOLS || weapon == LG_MAGNUMS || weapon == LG_DESERTEAGLE || weapon == LG_UZIS) && sptr->dR > 64)
 	{
 		sptr->dR = 64;
 		sptr->dG = 64;
@@ -1011,7 +1011,7 @@ void TriggerGunSmoke(long x, long y, long z, long xv, long yv, long zv, long ini
 	else
 		sptr->Flags = SF_ALTDEF | SF_DEF | SF_SCALE;
 
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Scalar = 3;
 	sptr->Gravity = -2 - (GetRandomControl() & 1);
 	sptr->MaxYvel = -2 - (GetRandomControl() & 1);
@@ -1171,7 +1171,7 @@ void TriggerExplosionSparks(long x, long y, long z, long extras, long dynamic, l
 		sptr->Flags = SF_ALTDEF | SF_DEF | SF_SCALE;
 
 	sptr->Scalar = 3;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Gravity = 0;
 	sptr->MaxYvel = 0;
 	sptr->Width = (GetRandomControl() & 0xF) + 40;
@@ -1244,7 +1244,7 @@ void TriggerExplosionSmoke(long x, long y, long z, long uw)
 	sptr->Flags = SF_ALTDEF | SF_ROTATE | SF_DEF | SF_SCALE;
 	sptr->RotAng = GetRandomControl() & 0xFFF;
 	sptr->RotAdd = (GetRandomControl() & 0xF) + 16;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Scalar = 1;
 	sptr->Gravity = -3 - (GetRandomControl() & 3);
 	sptr->MaxYvel = -4 - (GetRandomControl() & 3);
@@ -1324,7 +1324,7 @@ void TriggerExplosionSmokeEnd(long x, long y, long z, long uw)
 	else
 		sptr->RotAdd = (GetRandomControl() & 0xF) + 16;
 
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Scalar = 3;
 
 	if (uw)
@@ -1427,7 +1427,7 @@ void TriggerRocketFlame(long x, long y, long z, long xv, long yv, long zv, long 
 	sptr->Gravity = 0;
 	sptr->MaxYvel = 0;
 	sptr->Scalar = 2;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Width = (GetRandomControl() & 7) + 32;
 	sptr->sWidth = sptr->Width;
 	sptr->dWidth = 2;
@@ -1487,7 +1487,7 @@ void TriggerWaterfallMist(long x, long y, long z, long ang)
 			sptr->Flags = SF_ALTDEF | SF_DEF | SF_SCALE;
 
 		sptr->Scalar = 6;
-		sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+		sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 		sptr->Gravity = 0;
 		sptr->MaxYvel = 0;
 		sptr->dWidth = (GetRandomControl() & 7) + 12;
@@ -1565,7 +1565,7 @@ void TriggerDartSmoke(long x, long y, long z, long xv, long zv, long hit)
 	else
 		sptr->Flags = SF_ALTDEF | SF_DEF | SF_SCALE;
 
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Scalar = 1;
 	rnd = (GetRandomControl() & 0x3F) + 72;
 
@@ -1685,7 +1685,7 @@ void TriggerBubble(long x, long y, long z, long size, long sizerange, short fxNu
 	sptr->Friction = 0;
 	sptr->Flags = SF_ATTACHEDPOS | SF_FX | SF_DEF | SF_SCALE;
 	sptr->FxObj = (uchar)fxNum;
-	sptr->Def = (uchar)objects[BUBBLES1].mesh_index;
+	sptr->Def = (uchar)objects[BUBBLE_SPRITES].mesh_index;
 	sptr->Scalar = 0;
 	sptr->Gravity = 0;
 	sptr->MaxYvel = 0;
@@ -1756,7 +1756,7 @@ void ControlSmokeEmitter(short item_number)
 		sptr->Flags = SF_ALTDEF | SF_OUTSIDE | SF_DEF | SF_SCALE;
 
 	sptr->Scalar = 3;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Gravity = -8 - (GetRandomControl() & 7);
 	sptr->MaxYvel = -4 - (GetRandomControl() & 7);
 	sptr->dWidth = (GetRandomControl() & 0x1F) + 128;
@@ -1893,7 +1893,7 @@ void UpdateSparks()
 	long fade, uw, rnd, x, y, z, falloff, r, g, b;
 	uchar def;
 
-	def = (uchar)objects[EXPLOSION1].mesh_index;
+	def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 
 	for (int i = 0; i < 192; i++)
 	{
@@ -2085,13 +2085,14 @@ void TriggerGunShell(short lr, long objNum, long weapon)
 	{
 		switch (weapon)
 		{
+		case LG_MAGNUMS:
 		case LG_PISTOLS:
 			pos.x = 8;
 			pos.y = 48;
 			pos.z = 40;
 			break;
 
-		case LG_MAGNUMS:
+		case LG_DESERTEAGLE:
 			pos.x = 16;
 			pos.y = 40;
 			pos.z = 56;
@@ -2109,7 +2110,7 @@ void TriggerGunShell(short lr, long objNum, long weapon)
 			pos.z = 32;
 			break;
 
-		case LG_M16:
+		case LG_MP5:
 			pos.x = 16;
 			pos.y = 2;
 			pos.z = 64;
@@ -2122,13 +2123,14 @@ void TriggerGunShell(short lr, long objNum, long weapon)
 	{
 		switch (weapon)
 		{
+		case LG_MAGNUMS:
 		case LG_PISTOLS:
 			pos.x = -12;
 			pos.y = 48;
 			pos.z = 40;
 			break;
 
-		case LG_MAGNUMS:
+		case LG_DESERTEAGLE:
 			pos.x = -16;
 			pos.y = 40;
 			pos.z = 56;
@@ -2179,7 +2181,7 @@ void TriggerGunShell(short lr, long objNum, long weapon)
 			if (fx->speed < 24)
 				fx->speed += 24;
 		}
-		else if (weapon == LG_M16)
+		else if (weapon == LG_MP5)
 		{
 			fx->flag1 = lara.left_arm.y_rot + lara_item->pos.y_rot - (GetRandomControl() & 0xFFF) + lara.torso_y_rot + 0x4800;
 			fx->pos.y_rot += lara.torso_y_rot + lara.left_arm.y_rot + lara_item->pos.y_rot;

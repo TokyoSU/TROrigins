@@ -76,7 +76,7 @@ static void Trigger51BlastFire(long x, long y, long z, long smoke, long end)
 	else
 		sptr->RotAdd = (GetRandomControl() & 0xF) + 16;
 
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Scalar = 4;
 	sptr->MaxYvel = 0;
 	sptr->Gravity = 0;
@@ -160,7 +160,7 @@ static void Trigger51RocketSmoke(long x, long y, long z, long yv, long fire)
 	else
 		sptr->Flags = SF_ALTDEF | SF_DEF | SF_SCALE;
 
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Scalar = 3;
 	sptr->MaxYvel = 0;
 	sptr->Gravity = 0;

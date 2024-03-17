@@ -487,7 +487,7 @@ static void TriggerExhaustSmoke(long x, long y, long z, short angle, long speed,
 		sptr->Flags = SF_ALTDEF | SF_DEF | SF_SCALE;
 
 	sptr->Scalar = 2;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Gravity = -4 - (GetRandomControl() & 3);
 	sptr->MaxYvel = -8 - (GetRandomControl() & 7);
 	sptr->dWidth = uchar((GetRandomControl() & 7) + (speed >> 7) + 32);

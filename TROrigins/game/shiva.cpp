@@ -87,7 +87,7 @@ static void TriggerShivaSmoke(long x, long y, long z, long yt)
 	else
 		sptr->RotAdd = (GetRandomControl() & 0xF) + 16;
 
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Scalar = 3;
 
 	if (yt)

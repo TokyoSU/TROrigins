@@ -92,6 +92,8 @@ Antarctique
 P)erou
 Aventure
 s
+Magnums
+Balles de magnums
 
 end:
 

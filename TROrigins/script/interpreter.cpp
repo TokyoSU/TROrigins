@@ -9,7 +9,7 @@ static const char* inv_item_refs[] =
 	"AUTOPISTOLS",
 	"UZIS",
 	"HARPOON",
-	"M16",
+	"MP5",
 	"ROCKET",
 	"GRENADE",
 	"PISTOLS_AMMO",

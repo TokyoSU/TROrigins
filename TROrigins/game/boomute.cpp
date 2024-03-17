@@ -73,7 +73,7 @@ static void TriggerSealmuteGas(long x, long y, long z, long xv, long yv, long zv
 	sptr->MaxYvel = 0;
 	sptr->FxObj = (uchar)FxObj;
 	sptr->Gravity = 0;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	size = (GetRandomControl() & 0x1F) + 48;
 
 	if (xv || yv || zv)

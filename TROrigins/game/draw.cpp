@@ -918,7 +918,7 @@ void DrawGunFlash(long gun_type, long clip)
 
 	switch (gun_type)
 	{
-	case LG_MAGNUMS:
+	case LG_DESERTEAGLE:
 		y = 215;
 		z = 65;
 		break;
@@ -932,7 +932,7 @@ void DrawGunFlash(long gun_type, long clip)
 	case LG_FLARE:
 		return;
 
-	case LG_M16:
+	case LG_MP5:
 		phd_TranslateRel(0, 332, 96);
 		phd_RotYXZ(0, -15470, ((GetRandomDraw() << 1) & 0x4000) + (GetRandomDraw() & 0xFFF) + 6144);
 		S_CalculateStaticLight(600);

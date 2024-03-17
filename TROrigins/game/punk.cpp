@@ -74,7 +74,7 @@ static void TriggerPunkFlame(short item_number)
 
 	sptr->NodeNumber = 2;
 	sptr->FxObj = (uchar)item_number;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Scalar = 1;
 	size = (GetRandomControl() & 0x1F) + 64;
 	sptr->sWidth = size;

@@ -26,8 +26,8 @@ short GF_Offsets[200];
 short GF_valid_demos[24];
 short GF_CDtracks[16];
 char GF_Description[256];
-char GF_Add2InvItems[30];
-char GF_SecretInvItems[30];
+char GF_Add2InvItems[ADDINV_NUMBEROF];
+char GF_SecretInvItems[ADDINV_NUMBEROF];
 
 char** GF_picfilenames;
 char** GF_fmvfilenames;
@@ -109,21 +109,23 @@ long GF_LoadScriptFile(const char* name)
 	gameflow.stats_track = 14;
 
 	icompass_option.itemText = GF_GameStrings[GT_STOPWATCH];
-	igun_option.itemText = GF_GameStrings[GT_PISTOLS];
+	ipistols_option.itemText = GF_GameStrings[GT_PISTOLS];
 	iflare_option.itemText = GF_GameStrings[GT_FLARE];
 	ishotgun_option.itemText = GF_GameStrings[GT_SHOTGUN];
-	imagnum_option.itemText = GF_GameStrings[GT_AUTOPISTOLS];
+	ideserteagle_option.itemText = GF_GameStrings[GT_DESERTEAGLE];
+	imagnum_option.itemText = GF_GameStrings[GT_MAGNUM];
 	iuzi_option.itemText = GF_GameStrings[GT_UZIS];
 	iharpoon_option.itemText = GF_GameStrings[GT_HARPOON];
-	im16_option.itemText = GF_GameStrings[GT_M16];
+	imp5_option.itemText = GF_GameStrings[GT_MP5];
 	irocket_option.itemText = GF_GameStrings[GT_ROCKETLAUNCHER];
 	igrenade_option.itemText = GF_GameStrings[GT_GRENADELAUNCHER];
 	igunammo_option.itemText = GF_GameStrings[GT_PISTOLCLIPS];
-	isgunammo_option.itemText = GF_GameStrings[GT_SHOTGUNSHELLS];
-	imagammo_option.itemText = GF_GameStrings[GT_AUTOPISTOLCLIPS];
+	ishotgunammo_option.itemText = GF_GameStrings[GT_SHOTGUNSHELLS];
+	ideserteagleammo_option.itemText = GF_GameStrings[GT_DESERTEAGLECLIPS];
+	imagnumammo_option.itemText = GF_GameStrings[GT_MAGNUMCLIPS];
 	iuziammo_option.itemText = GF_GameStrings[GT_UZICLIPS];
 	iharpoonammo_option.itemText = GF_GameStrings[GT_HARPOONBOLTS];
-	im16ammo_option.itemText = GF_GameStrings[GT_M16CLIPS];
+	imp5ammo_option.itemText = GF_GameStrings[GT_MP5CLIPS];
 	irocketammo_option.itemText = GF_GameStrings[GT_ROCKETS];
 	igrenadeammo_option.itemText = GF_GameStrings[GT_GRENADES];
 	imedi_option.itemText = GF_GameStrings[GT_SMALLMEDI];
@@ -183,324 +185,71 @@ long GF_DoLevelSequence(long level, long type)
 	return option;
 }
 
+static void GF_ModifyItemInInventory(long type, ushort* got_item, long* weapon_ammo, OBJECT_TYPES invObjNumber, OBJECT_TYPES invAmmoObjNumber, add_inv_types weaponID, add_inv_types ammoID, int ammoGiven)
+{
+	if (Inv_RequestItem(invObjNumber))
+	{
+		if (type != 0)
+		{
+			*weapon_ammo += ammoGiven * GF_SecretInvItems[ammoID];
+			for (int i = 0; i < GF_SecretInvItems[ammoID]; i++)
+				AddDisplayPickup(invAmmoObjNumber);
+		}
+		else
+		{
+			*weapon_ammo += ammoGiven * GF_Add2InvItems[ammoID];
+		}
+	}
+	else if ((type == 0 && GF_Add2InvItems[weaponID]) || (type == 1 && GF_SecretInvItems[weaponID]))
+	{
+		*got_item = TRUE;
+		Inv_AddItem(invObjNumber);
+
+		if (type)
+		{
+			*weapon_ammo += ammoGiven * GF_SecretInvItems[ammoID];
+			AddDisplayPickup(invObjNumber);
+		}
+		else
+		{
+			*weapon_ammo += ammoGiven * GF_Add2InvItems[ammoID];
+		}
+	}
+	else if (type != 0)
+	{
+		for (int i = 0; i < GF_SecretInvItems[ammoID]; i++)
+		{
+			AddDisplayPickup(invAmmoObjNumber);
+			Inv_AddItem(invAmmoObjNumber);
+		}
+	}
+	else
+	{
+		for (int i = 0; i < GF_Add2InvItems[ammoID]; i++)
+			Inv_AddItem(invAmmoObjNumber);
+	}
+}
+
 void GF_ModifyInventory(long level, long type)
 {
-	START_INFO* start;
-
-	start = &savegame.start[level];
+	START_INFO* start = &savegame.start[level];
 
 	if (!start->got_pistols && GF_Add2InvItems[ADDINV_PISTOLS])
 	{
-		start->got_pistols = 1;
-		Inv_AddItem(GUN_ITEM);
+		start->got_pistols = TRUE;
+		Inv_AddItem(PISTOLS_ITEM);
 	}
 
-	if (Inv_RequestItem(SHOTGUN_ITEM))
-	{
-		if (type)
-		{
-			lara.shotgun.ammo += 12 * GF_SecretInvItems[ADDINV_SHOTGUN_AMMO];
+	GF_ModifyItemInInventory(type, &start->got_shotgun, &lara.shotgun.ammo, SHOTGUN_ITEM, SHOTGUN_AMMO_ITEM, ADDINV_SHOTGUN, ADDINV_SHOTGUN_AMMO, SHOTGUN_AMMO);
+	GF_ModifyItemInInventory(type, &start->got_uzis, &lara.uzis.ammo, UZI_ITEM, UZI_AMMO_ITEM, ADDINV_UZIS, ADDINV_UZI_AMMO, UZIS_AMMO);
+	GF_ModifyItemInInventory(type, &start->got_magnums, &lara.magnums.ammo, MAGNUM_ITEM, MAGNUM_AMMO_ITEM, ADDINV_MAGNUMS, ADDINV_MAGNUM_AMMO, MAGNUMS_AMMO);
+	GF_ModifyItemInInventory(type, &start->got_deserteagle, &lara.deserteagle.ammo, DESERTEAGLE_ITEM, DESERTEAGLE_AMMO_ITEM, ADDINV_DESERTEAGLE, ADDINV_DESERTEAGLE_AMMO, DESERTEAGLE_AMMO);
+	GF_ModifyItemInInventory(type, &start->got_mp5, &lara.mp5.ammo, MP5_ITEM, MP5_AMMO_ITEM, ADDINV_MP5, ADDINV_MP5_AMMO, MP5_AMMO);
+	GF_ModifyItemInInventory(type, &start->got_grenade, &lara.grenade.ammo, GRENADE_GUN_ITEM, GRENADE_AMMO_ITEM, ADDINV_GRENADE, ADDINV_GRENADE_AMMO, GRENADE_AMMO);
+	GF_ModifyItemInInventory(type, &start->got_rocket, &lara.rocket.ammo, ROCKET_GUN_ITEM, ROCKET_AMMO_ITEM, ADDINV_ROCKET, ADDINV_ROCKET_AMMO, ROCKET_AMMO);
+	GF_ModifyItemInInventory(type, &start->got_harpoon, &lara.harpoon.ammo, HARPOON_ITEM, HARPOON_AMMO_ITEM, ADDINV_HARPOON, ADDINV_HARPOON_AMMO, HARPOON_AMMO); // TODO: Possibly this version of the code is wrong for harpoon (check the original code)
 
-			for (int i = 0; i < GF_SecretInvItems[ADDINV_SHOTGUN_AMMO]; i++)
-				AddDisplayPickup(SG_AMMO_ITEM);
-		}
-		else
-			lara.shotgun.ammo += 12 * GF_Add2InvItems[ADDINV_SHOTGUN_AMMO];
-	}
-	else if (!type && GF_Add2InvItems[ADDINV_SHOTGUN] || type == 1 && GF_SecretInvItems[ADDINV_SHOTGUN])
-	{
-		start->got_shotgun = 1;
-		Inv_AddItem(SHOTGUN_ITEM);
-
-		if (type)
-		{
-			lara.shotgun.ammo += 12 * GF_SecretInvItems[ADDINV_SHOTGUN_AMMO];
-			AddDisplayPickup(SHOTGUN_ITEM);
-		}
-		else
-			lara.shotgun.ammo += 12 * GF_Add2InvItems[ADDINV_SHOTGUN_AMMO];
-	}
-	else if (type)
-	{
-		for (int i = 0; i < GF_SecretInvItems[ADDINV_SHOTGUN_AMMO]; i++)
-		{
-			AddDisplayPickup(SG_AMMO_ITEM);
-			Inv_AddItem(SG_AMMO_ITEM);
-		}
-	}
-	else
-	{
-		for (int i = 0; i < GF_Add2InvItems[ADDINV_SHOTGUN_AMMO]; i++)
-			Inv_AddItem(SG_AMMO_ITEM);
-	}
-
-	if (Inv_RequestItem(MAGNUM_ITEM))
-	{
-		if (type)
-		{
-			lara.magnums.ammo += 10 * GF_SecretInvItems[ADDINV_AUTOPISTOLS_AMMO];
-
-			for (int i = 0; i < GF_SecretInvItems[ADDINV_AUTOPISTOLS_AMMO]; i++)
-				AddDisplayPickup(MAG_AMMO_ITEM);
-		}
-		else
-			lara.magnums.ammo += 10 * GF_Add2InvItems[ADDINV_AUTOPISTOLS_AMMO];
-	}
-	else if (!type && GF_Add2InvItems[ADDINV_AUTOPISTOLS] || type == 1 && GF_SecretInvItems[ADDINV_AUTOPISTOLS])
-	{
-		start->got_magnums = 1;
-		Inv_AddItem(MAGNUM_ITEM);
-
-		if (type)
-		{
-			AddDisplayPickup(MAGNUM_ITEM);
-			lara.magnums.ammo += 10 * GF_Add2InvItems[ADDINV_AUTOPISTOLS_AMMO];
-
-			for (int i = 0; i < GF_SecretInvItems[ADDINV_AUTOPISTOLS]; i++)
-				AddDisplayPickup(MAG_AMMO_ITEM);
-		}
-		else
-			lara.magnums.ammo += 10 * GF_Add2InvItems[ADDINV_AUTOPISTOLS_AMMO];
-	}
-	else if (type)
-	{
-		for (int i = 0; i < GF_SecretInvItems[ADDINV_AUTOPISTOLS_AMMO]; i++)
-		{
-			Inv_AddItem(MAG_AMMO_ITEM);
-			AddDisplayPickup(MAG_AMMO_ITEM);
-		}
-	}
-	else
-	{
-		for (int i = 0; i < GF_Add2InvItems[ADDINV_AUTOPISTOLS_AMMO]; i++)
-			Inv_AddItem(MAG_AMMO_ITEM);
-	}
-
-	if (Inv_RequestItem(UZI_ITEM))
-	{
-		if (type)
-		{
-			lara.uzis.ammo += 40 * GF_SecretInvItems[ADDINV_UZI_AMMO];
-
-			for (int i = 0; i < GF_SecretInvItems[ADDINV_UZI_AMMO]; i++)
-				AddDisplayPickup(UZI_AMMO_ITEM);
-		}
-		else
-			lara.uzis.ammo += 40 * GF_Add2InvItems[ADDINV_UZI_AMMO];
-	}
-	else if (!type && GF_Add2InvItems[ADDINV_UZIS] || type == 1 && GF_SecretInvItems[ADDINV_UZIS])
-	{
-		start->got_uzis = 1;
-		Inv_AddItem(UZI_ITEM);
-
-		if (type)
-		{
-			AddDisplayPickup(UZI_ITEM);
-			lara.uzis.ammo += 40 * GF_SecretInvItems[ADDINV_UZI_AMMO];
-
-			for (int i = 0; i < ADDINV_UZI_AMMO; i++)
-				AddDisplayPickup(UZI_AMMO_ITEM);
-		}
-		else
-			lara.uzis.ammo += 40 * GF_Add2InvItems[ADDINV_UZI_AMMO];
-	}
-	else if (type)
-	{
-		for (int i = 0; i < GF_SecretInvItems[ADDINV_UZI_AMMO]; i++)
-		{
-			Inv_AddItem(UZI_AMMO_ITEM);
-			AddDisplayPickup(UZI_AMMO_ITEM);
-		}
-	}
-	else
-	{
-		for (int i = 0; i < GF_Add2InvItems[ADDINV_UZI_AMMO]; i++)
-			Inv_AddItem(UZI_AMMO_ITEM);
-	}
-
-	if (Inv_RequestItem(HARPOON_ITEM))
-	{
-		if (type)
-		{
-			lara.harpoon.ammo += GF_SecretInvItems[ADDINV_HARPOON_AMMO] + 2 * GF_SecretInvItems[ADDINV_HARPOON_AMMO];
-
-			for (int i = 0; i < GF_SecretInvItems[ADDINV_HARPOON_AMMO]; i++)
-				AddDisplayPickup(HARPOON_AMMO_ITEM);
-		}
-		else
-			lara.harpoon.ammo += GF_Add2InvItems[ADDINV_HARPOON_AMMO] + 2 * GF_Add2InvItems[ADDINV_HARPOON_AMMO];
-	}
-	else if (!type && GF_Add2InvItems[ADDINV_HARPOON] || type == 1 && GF_SecretInvItems[ADDINV_HARPOON])
-	{
-		start->got_harpoon = 1;
-		Inv_AddItem(HARPOON_ITEM);
-
-		if (type)
-		{
-			AddDisplayPickup(HARPOON_ITEM);
-			lara.harpoon.ammo += GF_SecretInvItems[ADDINV_HARPOON_AMMO] + 2 * GF_SecretInvItems[ADDINV_HARPOON_AMMO];
-
-			for (int i = 0; i < GF_SecretInvItems[ADDINV_HARPOON_AMMO]; i++)
-				AddDisplayPickup(HARPOON_AMMO_ITEM);
-		}
-		else
-			lara.harpoon.ammo += GF_Add2InvItems[ADDINV_HARPOON_AMMO] + 2 * GF_Add2InvItems[ADDINV_HARPOON_AMMO];
-	}
-	else if (type)
-	{
-		for (int i = 0; i < GF_SecretInvItems[ADDINV_HARPOON_AMMO]; i++)
-		{
-			if (!i)
-			{
-				Inv_AddItem(HARPOON_AMMO_ITEM);
-				lara.harpoon.ammo -= 3;
-			}
-
-			lara.harpoon.ammo += 3;
-			AddDisplayPickup(HARPOON_AMMO_ITEM);
-		}
-	}
-	else
-	{
-		for (int i = 0; i < GF_Add2InvItems[ADDINV_HARPOON_AMMO]; i++)
-		{
-			if (!i)
-			{
-				Inv_AddItem(HARPOON_AMMO_ITEM);
-				lara.harpoon.ammo -= 3;
-			}
-			
-			lara.harpoon.ammo += 3;
-		}
-	}
-
-	if (Inv_RequestItem(M16_ITEM))
-	{
-		if (type)
-		{
-			lara.m16.ammo += 60 * GF_SecretInvItems[ADDINV_M16_AMMO];
-
-			for (int i = 0; i < GF_SecretInvItems[ADDINV_M16_AMMO]; i++)
-				AddDisplayPickup(M16_AMMO_ITEM);
-		}
-		else
-			lara.m16.ammo += 60 * GF_Add2InvItems[ADDINV_M16_AMMO];
-	}
-	else if (!type && GF_Add2InvItems[ADDINV_M16] || type == 1 && GF_SecretInvItems[ADDINV_M16])
-	{
-		start->got_m16 = 1;
-		Inv_AddItem(M16_ITEM);
-
-		if (type)
-		{
-			AddDisplayPickup(M16_ITEM);
-			lara.m16.ammo += 60 * GF_SecretInvItems[ADDINV_M16_AMMO];
-
-			for (int i = 0; i < GF_SecretInvItems[ADDINV_M16_AMMO]; i++)
-				AddDisplayPickup(M16_AMMO_ITEM);
-		}
-		else
-			lara.m16.ammo += 60 * GF_Add2InvItems[ADDINV_M16_AMMO];
-	}
-	else if (type)
-	{
-		for (int i = 0; i < GF_SecretInvItems[ADDINV_M16_AMMO]; i++)
-		{
-			Inv_AddItem(M16_AMMO_ITEM);
-			AddDisplayPickup(M16_AMMO_ITEM);
-		}
-	}
-	else
-	{
-		for (int i = 0; i < GF_Add2InvItems[ADDINV_M16_AMMO]; i++)
-			Inv_AddItem(M16_AMMO_ITEM);
-	}
-
-	if (Inv_RequestItem(ROCKET_GUN_ITEM))
-	{
-		if (type)
-		{
-			lara.rocket.ammo += GF_SecretInvItems[ADDINV_ROCKET_AMMO];
-
-			for (int i = 0; i < GF_SecretInvItems[ADDINV_ROCKET_AMMO]; i++)
-				AddDisplayPickup(ROCKET_AMMO_ITEM);
-		}
-		else
-			lara.rocket.ammo += GF_Add2InvItems[ADDINV_ROCKET_AMMO];
-	}
-	else if (!type && GF_Add2InvItems[ADDINV_ROCKET] || type == 1 && GF_SecretInvItems[ADDINV_ROCKET])
-	{
-		start->got_rocket = 1;
-		Inv_AddItem(ROCKET_GUN_ITEM);
-
-		if (type)
-		{
-			lara.rocket.ammo += GF_SecretInvItems[ADDINV_ROCKET_AMMO];
-			AddDisplayPickup(ROCKET_GUN_ITEM);
-
-			for (int i = 0; i < GF_SecretInvItems[ADDINV_ROCKET_AMMO]; i++)
-				AddDisplayPickup(ROCKET_AMMO_ITEM);
-		}
-		else
-			lara.rocket.ammo += GF_Add2InvItems[ADDINV_ROCKET_AMMO];
-	}
-	else if (type)
-	{
-		for (int i = 0; i < GF_SecretInvItems[ADDINV_ROCKET_AMMO]; i++)
-		{
-			Inv_AddItem(ROCKET_AMMO_ITEM);
-			AddDisplayPickup(ROCKET_AMMO_ITEM);
-		}
-	}
-	else
-	{
-		for (int i = 0; i < GF_Add2InvItems[ADDINV_ROCKET_AMMO]; i++)
-			Inv_AddItem(ROCKET_AMMO_ITEM);
-	}
-
-	if (Inv_RequestItem(GRENADE_GUN_ITEM))
-	{
-		if (type)
-		{
-			lara.grenade.ammo += 2 * GF_SecretInvItems[ADDINV_GRENADE_AMMO];
-
-			for (int i = 0; i < GF_SecretInvItems[ADDINV_GRENADE_AMMO]; i++)
-				AddDisplayPickup(GRENADE_AMMO_ITEM);
-		}
-		else
-			lara.grenade.ammo += 2 * GF_Add2InvItems[ADDINV_GRENADE_AMMO];
-	}
-	else if (!type && GF_Add2InvItems[ADDINV_GRENADE] || type == 1 && GF_SecretInvItems[ADDINV_GRENADE])
-	{
-		start->got_grenade = 1;
-		Inv_AddItem(GRENADE_GUN_ITEM);
-
-		if (type)
-		{
-			lara.grenade.ammo += 2 * GF_SecretInvItems[ADDINV_GRENADE_AMMO];
-			AddDisplayPickup(GRENADE_GUN_ITEM);
-
-			for (int i = 0; i < GF_SecretInvItems[ADDINV_GRENADE_AMMO]; i++)
-				AddDisplayPickup(GRENADE_AMMO_ITEM);
-		}
-		else
-			lara.grenade.ammo += 2 * GF_Add2InvItems[ADDINV_GRENADE_AMMO];
-	}
-	else if (type)
-	{
-		for (int i = 0; i < GF_SecretInvItems[ADDINV_GRENADE_AMMO]; i++)
-		{
-			Inv_AddItem(GRENADE_AMMO_ITEM);
-			AddDisplayPickup(GRENADE_AMMO_ITEM);
-		}
-	}
-	else
-	{
-		for (int i = 0; i < GF_Add2InvItems[ADDINV_GRENADE_AMMO]; i++)
-			Inv_AddItem(GRENADE_AMMO_ITEM);
-	}
-
-	if (type)
+	if (type != 0)
 	{
 		for (int i = 0; i < GF_SecretInvItems[ADDINV_FLARES]; i++)
 		{
@@ -580,7 +329,7 @@ void GF_ModifyInventory(long level, long type)
 			AddDisplayPickup(KEY_ITEM4);
 		}
 
-		memset(GF_SecretInvItems, 0, sizeof(char) * ADDINV_NUMBEROF);
+		ZeroMemory(GF_SecretInvItems, sizeof(GF_SecretInvItems));
 	}
 	else
 	{
@@ -626,7 +375,7 @@ void GF_ModifyInventory(long level, long type)
 		for (int i = 0; i < GF_Add2InvItems[ADDINV_SAVEGAME_CRYSTAL]; i++)
 			Inv_AddItem(SAVEGAME_CRYSTAL_ITEM);
 
-		memset(GF_Add2InvItems, 0, sizeof(char) * ADDINV_NUMBEROF);
+		ZeroMemory(GF_Add2InvItems, sizeof(GF_Add2InvItems));
 	}
 }
 
@@ -656,8 +405,8 @@ long GF_InterpretSequence(short* ptr, long type, long seq_type)
 	GF_DeathTile = DEATH_LAVA;
 	GF_WaterColor = -1;
 	GF_NumSecrets = -1;
-	memset(GF_Add2InvItems, 0, sizeof(char) * ADDINV_NUMBEROF);
-	memset(GF_SecretInvItems, 0, sizeof(char) * ADDINV_NUMBEROF);
+	ZeroMemory(GF_Add2InvItems, sizeof(GF_Add2InvItems));
+	ZeroMemory(GF_SecretInvItems, sizeof(GF_SecretInvItems));
 	GF_CDtracks[0] = 2;
 	ntracks = 0;
 	option = EXIT_TO_TITLE;

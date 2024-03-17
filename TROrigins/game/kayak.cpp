@@ -1142,7 +1142,7 @@ static void TriggerRapidsMist(long x, long y, long z)
 		sptr->Flags = SF_ALTDEF | SF_DEF | SF_SCALE;
 
 	sptr->Scalar = 4;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Gravity = 0;
 	sptr->MaxYvel = 0;
 	sptr->dWidth = (GetRandomControl() & 7) + 16;

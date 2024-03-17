@@ -146,7 +146,7 @@ void HairControl(long in_cutscene)
 
 		phd_TranslateRel_I(bone[25], bone[26], bone[27]);
 
-		if (lara.weapon_item != NO_ITEM && lara.gun_type == LG_M16 &&
+		if (lara.weapon_item != NO_ITEM && lara.gun_type == LG_MP5 &&
 			(items[lara.weapon_item].current_anim_state == 0 ||
 				items[lara.weapon_item].current_anim_state == 2 ||
 				items[lara.weapon_item].current_anim_state == 4))
@@ -233,7 +233,7 @@ void HairControl(long in_cutscene)
 
 		phd_TranslateRel(bone[25], bone[26], bone[27]);
 
-		if (lara.weapon_item != NO_ITEM && lara.gun_type == LG_M16 &&
+		if (lara.weapon_item != NO_ITEM && lara.gun_type == LG_MP5 &&
 			(items[lara.weapon_item].current_anim_state == 0 ||
 				items[lara.weapon_item].current_anim_state == 2 ||
 				items[lara.weapon_item].current_anim_state == 4))

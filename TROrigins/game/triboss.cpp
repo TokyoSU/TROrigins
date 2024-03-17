@@ -253,7 +253,7 @@ void TriggerSummonSmoke(long x, long y, long z)
 		sptr->Flags = SF_ALTDEF | SF_OUTSIDE | SF_DEF | SF_SCALE;
 
 	sptr->Scalar = 3;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Gravity = -8 - (GetRandomControl() & 7);
 	sptr->MaxYvel = -4 - (GetRandomControl() & 7);
 	sptr->dWidth = (GetRandomControl() & 0x1F) + 128;
@@ -426,17 +426,18 @@ void FindClosestShieldPoint(long x, long y, long z, ITEM_INFO* item)
 	switch (lara.gun_type)
 	{
 	case LG_PISTOLS:
+	case LG_MAGNUMS:
 	case LG_UZIS:
 		c = 144;
 		break;
 
-	case LG_MAGNUMS:
+	case LG_DESERTEAGLE:
 	case LG_HARPOON:
 		c = 200;
 		break;
 
 	case LG_SHOTGUN:
-	case LG_M16:
+	case LG_MP5:
 		c = 192;
 		break;
 

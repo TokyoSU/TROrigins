@@ -146,7 +146,7 @@ struct display_rots
 	short rot_z;
 };
 
-display_rots rots[32] =
+display_rots rots[64] =
 {
 	{PICKUP_ITEM1, 0, 0},
 	{PICKUP_ITEM2, 0, 0},
@@ -161,21 +161,22 @@ display_rots rots[32] =
 	{PUZZLE_ITEM3, 0, 0},
 	{PUZZLE_ITEM4, 0, 0},
 
-	{GUN_ITEM, 0, 0},
+	{PISTOLS_ITEM, 0, 0},
 	{SHOTGUN_ITEM, 0x5000, -0x2000},
 	{HARPOON_ITEM, -0x3000, 0},
 	{ROCKET_GUN_ITEM, 0x1000, -0x2000},
 	{GRENADE_GUN_ITEM, -0x3000, 0},
-	{M16_ITEM, -0x3000, 0},
-	{MAGNUM_ITEM, -0x2500, -0x2000},
+	{MP5_ITEM, -0x3000, 0},
+	{DESERTEAGLE_ITEM, -0x2500, -0x2000},
 	{UZI_ITEM, 0x4000, 0},
+	{MAGNUM_ITEM, 0x4000, 0},
 	{FLAREBOX_ITEM, 0, 0},
 
-	{SG_AMMO_ITEM, 0xE38, 0},
-	{MAG_AMMO_ITEM, 0x1000, 0},
+	{SHOTGUN_AMMO_ITEM, 0xE38, 0},
+	{DESERTEAGLE_AMMO_ITEM, 0x1000, 0},
 	{UZI_AMMO_ITEM, -0x2000, 0},
 	{HARPOON_AMMO_ITEM, 0xE38, 0},
-	{M16_AMMO_ITEM, 0x1000, 0},
+	{MP5_AMMO_ITEM, 0x1000, 0},
 	{ROCKET_AMMO_ITEM, 0, 0},
 	{GRENADE_AMMO_ITEM, 0, 0},
 
@@ -190,7 +191,7 @@ display_rots rots[32] =
 
 static void GetRots(short obj_num, short& x, short& z)
 {
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < 64; i++)
 	{
 		if (rots[i].obj_num == obj_num)
 		{

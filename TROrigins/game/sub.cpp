@@ -939,7 +939,7 @@ static void TriggerSubMist(long x, long y, long z, long speed, short angle)
 		sptr->Flags = SF_ALTDEF | SF_DEF | SF_SCALE;
 
 	sptr->Scalar = 3;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->MaxYvel = 0;
 	sptr->Gravity = 0;
 	sptr->dWidth = uchar((GetRandomControl() & 7) + (speed >> 1) + 16);

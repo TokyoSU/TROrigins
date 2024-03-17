@@ -111,7 +111,7 @@ static void TriggerPlasmaBallFlame(short fx_number, long type, long xv, long yv,
 		sptr->Flags = SF_ALTDEF | SF_FX | SF_DEF | SF_SCALE;
 
 	sptr->FxObj = (uchar)fx_number;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Scalar = 1;
 	sptr->MaxYvel = 0;
 	sptr->Gravity = 0;

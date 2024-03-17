@@ -102,7 +102,7 @@ void ControlGhostGasEmitter(short item_number)
 		sptr->Flags = SF_ALTDEF | SF_DEF | SF_SCALE;
 
 	sptr->Scalar = 3;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->MaxYvel = 0;
 	sptr->Gravity = 0;
 	size = (GetRandomControl() & 0x1F) + 96;

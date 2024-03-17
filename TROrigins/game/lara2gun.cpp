@@ -11,12 +11,13 @@
 #include "camera.h"
 #include "../newstuff/LaraDraw.h"
 
-static PISTOL_DEF PistolTable[4]
+static PISTOL_DEF PistolTable[5]
 {
 	{ 0, 0, 0, 0 },
 	{ PISTOLS, 4, 5, 13, 24 },
-	{ MAGNUM, 7, 8, 15, 29 },
-	{ UZI, 4, 5, 13, 24 }
+	{ DESERTEAGLE, 7, 8, 15, 29 },
+	{ UZI, 4, 5, 13, 24 },
+	{ MAGNUMS, 4, 5, 13, 24 },
 };
 
 void draw_pistol_meshes(long weapon_type)
@@ -26,8 +27,7 @@ void draw_pistol_meshes(long weapon_type)
 	obj = WeaponObject(weapon_type);
 	lara.mesh_ptrs[HAND_R] = meshes[objects[obj].mesh_index + HAND_R];
 	lara.mesh_ptrs[THIGH_R] = meshes[objects[LARA].mesh_index + THIGH_R];
-
-	if (weapon_type != LG_MAGNUMS)
+	if (weapon_type != LG_DESERTEAGLE)
 	{
 		lara.mesh_ptrs[HAND_L] = meshes[objects[obj].mesh_index + HAND_L];
 		lara.mesh_ptrs[THIGH_L] = meshes[objects[LARA].mesh_index + THIGH_L];
@@ -42,7 +42,7 @@ void undraw_pistol_mesh_right(long weapon_type)
 
 void undraw_pistol_mesh_left(long weapon_type)
 {
-	if (weapon_type != LG_MAGNUMS)
+	if (weapon_type != LG_DESERTEAGLE)
 	{
 		lara.mesh_ptrs[THIGH_L] = meshes[objects[WeaponObject(weapon_type)].mesh_index + THIGH_L];
 		lara.mesh_ptrs[HAND_L] = meshes[objects[LARA].mesh_index + HAND_L];
@@ -213,12 +213,13 @@ void AnimatePistols(long weapon_type)
 		switch (SmokeWeapon)
 		{
 		case LG_PISTOLS:
+		case LG_MAGNUMS:
 			pos.x = 4;
 			pos.y = 128;
 			pos.z = 40;
 			break;
 
-		case LG_MAGNUMS:
+		case LG_DESERTEAGLE:
 			pos.x = 16;
 			pos.y = 160;
 			pos.z = 56;
@@ -240,12 +241,13 @@ void AnimatePistols(long weapon_type)
 		switch (SmokeWeapon)
 		{
 		case LG_PISTOLS:
+		case LG_MAGNUMS:
 			pos.x = -16;
 			pos.y = 128;
 			pos.z = 40;
 			break;
 
-		case LG_MAGNUMS:
+		case LG_DESERTEAGLE:
 			pos.x = -32;
 			pos.y = 160;
 			pos.z = 56;
@@ -274,7 +276,7 @@ void AnimatePistols(long weapon_type)
 		{
 			if (input & IN_ACTION)
 			{
-				if (weapon_type != LG_MAGNUMS)
+				if (weapon_type != LG_DESERTEAGLE)
 				{
 					angles[0] = lara.right_arm.y_rot + lara_item->pos.y_rot;
 					angles[1] = lara.right_arm.x_rot;
@@ -346,7 +348,7 @@ void AnimatePistols(long weapon_type)
 
 				if (FireWeapon(weapon_type, lara.target, lara_item, angles))
 				{
-					if (weapon_type == LG_MAGNUMS)
+					if (weapon_type == LG_DESERTEAGLE)
 					{
 						SmokeCountR = 28;
 						SmokeWeapon = 2;

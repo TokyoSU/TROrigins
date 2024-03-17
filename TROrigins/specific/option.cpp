@@ -1486,12 +1486,13 @@ void do_inventory_options(INVENTORY_ITEM* item)
 	case GAMMA_OPTION:
 		return do_levelselect_option(item);
 
-	case GUN_OPTION:
+	case PISTOLS_OPTION:
 	case SHOTGUN_OPTION:
+	case DESERTEAGLE_OPTION:
 	case MAGNUM_OPTION:
 	case UZI_OPTION:
 	case HARPOON_OPTION:
-	case M16_OPTION:
+	case MP5_OPTION:
 	case ROCKET_OPTION:
 	case GRENADE_OPTION:
 	case MEDI_OPTION:
@@ -1506,12 +1507,12 @@ void do_inventory_options(INVENTORY_ITEM* item)
 	case KEY_OPTION4:
 		inputDB |= IN_SELECT;
 
-	case GUN_AMMO_OPTION:
-	case SG_AMMO_OPTION:
-	case MAG_AMMO_OPTION:
+	case PISTOLS_AMMO_OPTION:
+	case SHOTGUN_AMMO_OPTION:
+	case DESERTEAGLE_AMMO_OPTION:
 	case UZI_AMMO_OPTION:
 	case HARPOON_AMMO_OPTION:
-	case M16_AMMO_OPTION:
+	case MP5_AMMO_OPTION:
 	case ROCKET_AMMO_OPTION:
 		return;
 

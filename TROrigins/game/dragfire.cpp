@@ -63,7 +63,7 @@ static void TriggerFlamethrowerHitFlame(long x, long y, long z)
 		sptr->MaxYvel = -16 - (GetRandomControl() & 7);
 	}
 
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Scalar = 2;
 	sptr->Width = (GetRandomControl() & 0x1F) + 128;
 	sptr->sWidth = sptr->Width;
@@ -142,7 +142,7 @@ static void TriggerFlamethrowerSmoke(long x, long y, long z, long uw)
 	else
 		sptr->RotAdd = (GetRandomControl() & 0xF) + 16;
 
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Scalar = 3;
 
 	if (uw)

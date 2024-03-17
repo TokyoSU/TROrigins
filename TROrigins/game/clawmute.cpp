@@ -67,7 +67,7 @@ static void TriggerPlasmaBallFlame(short fx_number, long type, long xv, long yv,
 		sptr->Flags = SF_ALTDEF | SF_FX | SF_DEF | SF_SCALE;
 
 	sptr->FxObj = (uchar)fx_number;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Scalar = 1;
 	sptr->Width = (GetRandomControl() & 0x1F) + 64;
 	sptr->sWidth = sptr->Width;
@@ -188,7 +188,7 @@ static void TriggerPlasma(short item_number)
 	sptr->NodeNumber = 6;
 	sptr->MaxYvel = (GetRandomControl() & 7) + 16;
 	sptr->FxObj = (uchar)item_number;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Scalar = 1;
 	sptr->Width = (GetRandomControl() & 0x1F) + 64;
 	sptr->sWidth = sptr->Width;

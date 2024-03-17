@@ -612,7 +612,7 @@ void TriggerPendulumFlame(short item_number)
 	sptr->FxObj = (uchar)item_number;
 	sptr->Gravity = -16 - (GetRandomControl() & 0x1F);
 	sptr->MaxYvel = -16 - (GetRandomControl() & 7);
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Scalar = 3;
 	sptr->Width = (GetRandomControl() & 7) + 32;
 	sptr->sWidth = sptr->Width;

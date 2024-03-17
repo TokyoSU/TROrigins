@@ -57,7 +57,7 @@ static void TriggerPilotFlame(short item_number)
 	sptr->Friction = 4;
 	sptr->Gravity = -2 - (GetRandomControl() & 3);
 	sptr->MaxYvel = -4 - (GetRandomControl() & 3);
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Scalar = 0;
 	sptr->dWidth = (GetRandomControl() & 7) + 32;
 	sptr->sWidth = sptr->dWidth >> 1;
@@ -128,7 +128,7 @@ static void TriggerFlamethrowerFlame(long x, long y, long z, long xv, long yv, l
 	sptr->MaxYvel = 0;
 	sptr->FxObj = (uchar)fxnum;
 	sptr->Gravity = 0;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	size = (GetRandomControl() & 0x1F) + 64;
 
 	if (xv || yv || zv)

@@ -201,21 +201,23 @@ void CheckCheatMode()
 				}
 				else
 				{
-					Inv_AddItem(M16_ITEM);
+					Inv_AddItem(MP5_ITEM);
 					Inv_AddItem(SHOTGUN_ITEM);
 					Inv_AddItem(UZI_ITEM);
 					Inv_AddItem(MAGNUM_ITEM);
-					Inv_AddItem(GUN_ITEM);
+					Inv_AddItem(DESERTEAGLE_ITEM);
+					Inv_AddItem(PISTOLS_ITEM);
 					Inv_AddItem(ROCKET_GUN_ITEM);
 					Inv_AddItem(GRENADE_GUN_ITEM);
 					Inv_AddItem(HARPOON_ITEM);
-					lara.magnums.ammo = 1000;
+					lara.deserteagle.ammo = 1000;
 					lara.uzis.ammo = 1000;
 					lara.shotgun.ammo = 1000;
 					lara.harpoon.ammo = 1000;
+					lara.magnums.ammo = 1000;
 					lara.rocket.ammo = 1000;
 					lara.grenade.ammo = 1000;
-					lara.m16.ammo = 1000;
+					lara.mp5.ammo = 1000;
 
 					for (int i = 0; i < 50; i++)
 					{

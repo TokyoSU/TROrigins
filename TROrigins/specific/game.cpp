@@ -582,7 +582,7 @@ long S_FrontEndCheck(SAVEGAME_INFO* pData, long nBytes)
 		}
 		else
 		{
-			ReadFile(handle, name, 75, &read, 0);
+			ReadFile(handle, name, sizeof(name), &read, 0);
 			ReadFile(handle, &num, sizeof(long), &read, 0);
 			CloseHandle(handle);
 			wsprintf(ntxt, "%d", num);
@@ -617,7 +617,7 @@ long S_LoadGame(LPVOID data, long size, long slot)
 
 	if (file != INVALID_HANDLE_VALUE)
 	{
-		ReadFile(file, buffer, 75, &bytes, 0);
+		ReadFile(file, buffer, sizeof(buffer), &bytes, 0);
 		ReadFile(file, &value, sizeof(long), &bytes, 0);
 		ReadFile(file, data, size, &bytes, 0);
 		ReadFile(file, &tomb3_save, sizeof(TOMB3_SAVE), &tomb3_save_size, 0);
@@ -652,7 +652,7 @@ long S_SaveGame(LPVOID data, long size, long slot)
 	if (file != INVALID_HANDLE_VALUE)
 	{
 		wsprintf(buffer, "%s", GF_Level_Names[savegame.current_level]);
-		WriteFile(file, buffer, 75, &bytes, 0);
+		WriteFile(file, buffer, sizeof(buffer), &bytes, 0);
 		WriteFile(file, &save_counter, sizeof(long), &bytes, 0);
 		WriteFile(file, data, size, &bytes, 0);
 		WriteFile(file, &tomb3_save, sizeof(TOMB3_SAVE), &bytes, 0);

@@ -23,7 +23,7 @@
 #include "camera.h"
 #include "savegame.h"
 
-WEAPON_INFO weapons[11] =
+WEAPON_INFO weapons[NUM_WEAPONS] =
 {
 	{
 		0, 0, 0, 0,							//LG_UNARMED
@@ -39,7 +39,6 @@ WEAPON_INFO weapons[11] =
 		0,
 		0
 	},
-
 	{
 		-10920, 10920, -10920, 10920,		//LG_PISTOLS
 		-30940, 10920, -14560, 14560,
@@ -54,20 +53,33 @@ WEAPON_INFO weapons[11] =
 		0,
 		SFX_LARA_FIRE
 	},
-
+	{
+		-10920, 10920, -10010, 10010,		//LG_SHOTGUN
+		-14560, 14560, -11830, 11830,
+		-14560, 14560, -11830, 11830,
+		1820,
+		0,
+		500,
+		8192,
+		3,
+		9,
+		3,
+		10,
+		SFX_LARA_SHOTGUN
+	},
 	{
 		-10920, 10920, -10920, 10920,		//LG_MAGNUMS
-		-1820, 1820, -14560, 14560,
-		0, 0, 0, 0,
+		-30940, 10920, -14560, 14560,
+		-10920, 30940, -14560, 14560,
 		1820,
-		728,
+		1456,
 		650,
 		8192,
-		21,
-		16,
+		3,
+		9,
 		3,
 		0,
-		SFX_DESSERT_EAGLE_FIRE
+		SFX_LARA_FIRE
 	},
 
 	{
@@ -84,24 +96,22 @@ WEAPON_INFO weapons[11] =
 		0,
 		SFX_LARA_UZI_FIRE
 	},
-
 	{
-		-10920, 10920, -10010, 10010,		//LG_SHOTGUN
-		-14560, 14560, -11830, 11830,
-		-14560, 14560, -11830, 11830,
+		-10920, 10920, -10920, 10920,		//LG_DESERTEAGLE
+		-1820, 1820, -14560, 14560,
+		0, 0, 0, 0,
 		1820,
-		0,
-		500,
+		728,
+		650,
 		8192,
+		21,
+		16,
 		3,
-		9,
-		3,
-		10,
-		SFX_LARA_SHOTGUN
+		0,
+		SFX_DESSERT_EAGLE_FIRE
 	},
-
 	{
-		-10920, 10920, -10010, 10010,		//LG_M16
+		-10920, 10920, -10010, 10010,		//LG_MP5
 		-14560, 14560, -11830, 11830,
 		-14560, 14560, -11830, 11830,
 		1820,
@@ -114,7 +124,6 @@ WEAPON_INFO weapons[11] =
 		16,
 		0
 	},
-
 	{
 		-10920, 10920, -10010, 10010,		//LG_ROCKET
 		-14560, 14560, -11830, 11830,
@@ -129,7 +138,6 @@ WEAPON_INFO weapons[11] =
 		12,
 		SFX_BAZOOKA_FIRE
 	},
-
 	{
 		-10920, 10920, -10010, 10010,		//LG_GRENADE
 		-14560, 14560, -11830, 11830,
@@ -144,7 +152,6 @@ WEAPON_INFO weapons[11] =
 		10,
 		0
 	},
-
 	{
 		-10920, 10920, -11830, 11830,		//LG_HARPOON
 		-3640, 3640, -13650, 13650,
@@ -159,7 +166,6 @@ WEAPON_INFO weapons[11] =
 		10,
 		0
 	},
-
 	{
 		0, 0, 0, 0,							//LG_FLARE
 		0, 0, 0, 0,
@@ -174,7 +180,6 @@ WEAPON_INFO weapons[11] =
 		0,
 		0
 	},
-
 	{
 		-5460, 5460, -10010, 10010,			//LG_SKIDOO
 		-5460, 5460, -10010, 10010,
@@ -214,17 +219,20 @@ long WeaponObject(long weapon_type)
 {
 	switch (weapon_type)
 	{
-	case LG_MAGNUMS:
-		return MAGNUM;
+	case LG_DESERTEAGLE:
+		return DESERTEAGLE;
 
 	case LG_UZIS:
 		return UZI;
 
+	case LG_MAGNUMS:
+		return MAGNUMS;
+
 	case LG_SHOTGUN:
 		return SHOTGUN;
 
-	case LG_M16:
-		return M16;
+	case LG_MP5:
+		return MP5;
 
 	case LG_ROCKET:
 		return ROCKET_GUN;
@@ -242,7 +250,7 @@ long WeaponObject(long weapon_type)
 
 long FireWeapon(long weapon_type, ITEM_INFO* target, ITEM_INFO* source, short* angles)
 {
-	AMMO_INFO* ammo;
+	AMMO_INFO* ammo = NULL;
 	WEAPON_INFO* wep;
 	SPHERE* sphere;
 	PHD_3DPOS view;
@@ -252,40 +260,40 @@ long FireWeapon(long weapon_type, ITEM_INFO* target, ITEM_INFO* source, short* a
 	long nSpheres, best, bestdist, r, los, objLos, dx, dz;
 	short room_number, obj_num, angle;
 
-	if (weapon_type == LG_MAGNUMS)
+	switch (weapon_type)
 	{
-		ammo = &lara.magnums;
-
+	case LG_DESERTEAGLE:
+		ammo = &lara.deserteagle;
 		if (savegame.bonus_flag)
 			ammo->ammo = 10000;
-	}
-	else if (weapon_type == LG_UZIS)
-	{
+		break;
+	case LG_UZIS:
 		ammo = &lara.uzis;
-
 		if (savegame.bonus_flag)
 			ammo->ammo = 10000;
-	}
-	else if (weapon_type == LG_SHOTGUN)
-	{
+		break;
+	case LG_MAGNUMS:
+		ammo = &lara.magnums;
+		if (savegame.bonus_flag)
+			ammo->ammo = 10000;
+		break;
+	case LG_SHOTGUN:
 		ammo = &lara.shotgun;
-
 		if (savegame.bonus_flag)
 			ammo->ammo = 10000;
-	}
-	else if (weapon_type == LG_M16)
-	{
-		ammo = &lara.m16;
-
+		break;
+	case LG_MP5:
+		ammo = &lara.mp5;
 		if (savegame.bonus_flag)
 			ammo->ammo = 10000;
-	}
-	else
-	{
+		break;
+	case LG_PISTOLS:
 		ammo = &lara.pistols;
 		ammo->ammo = 10000;
+		break;
 	}
 
+	if (ammo == NULL) return 0;
 	if (ammo->ammo <= 0)
 	{
 		ammo->ammo = 0;
@@ -556,10 +564,10 @@ void LaraGetNewTarget(WEAPON_INFO* winfo)
 	short ang[2];
 	short bestyrot, item_number;
 
-	item = 0;
-	bestitem = 0;
+	item = NULL;
+	bestitem = NULL;
 	start.x = lara_item->pos.x_pos;
-	start.y = lara_item->pos.y_pos - 650;
+	start.y = lara_item->pos.y_pos - winfo->gun_height;
 	start.z = lara_item->pos.z_pos;
 	start.room_number = lara_item->room_number;
 	bestyrot = 0x7FFF;
@@ -573,7 +581,6 @@ void LaraGetNewTarget(WEAPON_INFO* winfo)
 			continue;
 
 		item = &items[item_number];
-
 		if (item->hit_points <= 0 || !objects[item->object_number].intelligent)
 			continue;
 
@@ -633,6 +640,7 @@ void InitialiseNewWeapon()
 	switch (lara.gun_type)
 	{
 	case LG_PISTOLS:
+	case LG_MAGNUMS:
 	case LG_UZIS:
 		lara.right_arm.frame_base = objects[PISTOLS].frame_base;
 		lara.left_arm.frame_base = objects[PISTOLS].frame_base;
@@ -642,9 +650,9 @@ void InitialiseNewWeapon()
 
 		break;
 
-	case LG_MAGNUMS:
+	case LG_DESERTEAGLE:
 	case LG_SHOTGUN:
-	case LG_M16:
+	case LG_MP5:
 	case LG_ROCKET:
 	case LG_GRENADE:
 	case LG_HARPOON:
@@ -718,7 +726,7 @@ void LaraGun()
 
 		if (lara.request_gun_type != lara.gun_type || input & IN_DRAW)
 		{
-			if (lara_item->current_anim_state == AS_DUCK && (lara.request_gun_type == LG_SHOTGUN || lara.request_gun_type == LG_M16 ||
+			if (lara_item->current_anim_state == AS_DUCK && (lara.request_gun_type == LG_SHOTGUN || lara.request_gun_type == LG_MP5 ||
 				lara.request_gun_type == LG_ROCKET || lara.request_gun_type == LG_GRENADE || lara.request_gun_type == LG_HARPOON))
 				return;
 
@@ -810,6 +818,7 @@ void LaraGun()
 		{
 		case LG_PISTOLS:
 		case LG_MAGNUMS:
+		case LG_DESERTEAGLE:
 		case LG_UZIS:
 
 			if (camera.type != CINEMATIC_CAMERA && camera.type != LOOK_CAMERA)
@@ -819,7 +828,7 @@ void LaraGun()
 			break;
 
 		case LG_SHOTGUN:
-		case LG_M16:
+		case LG_MP5:
 		case LG_ROCKET:
 		case LG_GRENADE:
 		case LG_HARPOON:
@@ -848,12 +857,13 @@ void LaraGun()
 		{
 		case LG_PISTOLS:
 		case LG_MAGNUMS:
+		case LG_DESERTEAGLE:
 		case LG_UZIS:
 			undraw_pistols(lara.gun_type);
 			break;
 
 		case LG_SHOTGUN:
-		case LG_M16:
+		case LG_MP5:
 		case LG_ROCKET:
 		case LG_GRENADE:
 		case LG_HARPOON:
@@ -885,6 +895,10 @@ void LaraGun()
 				ammo = &lara.magnums;
 				break;
 
+			case LG_DESERTEAGLE:
+				ammo = &lara.deserteagle;
+				break;
+
 			case LG_UZIS:
 				ammo = &lara.uzis;
 				break;
@@ -893,8 +907,8 @@ void LaraGun()
 				ammo = &lara.shotgun;
 				break;
 
-			case LG_M16:
-				ammo = &lara.m16;
+			case LG_MP5:
+				ammo = &lara.mp5;
 				break;
 
 			case LG_ROCKET:
@@ -919,7 +933,7 @@ void LaraGun()
 				ammo->ammo = 0;
 				SoundEffect(SFX_LARA_EMPTY, &lara_item->pos, SFX_DEFAULT);
 
-				if (Inv_RequestItem(GUN_ITEM))
+				if (Inv_RequestItem(PISTOLS_ITEM))
 					lara.request_gun_type = LG_PISTOLS;
 				else
 					lara.request_gun_type = LG_ARMLESS;
@@ -931,13 +945,14 @@ void LaraGun()
 		switch (lara.gun_type)
 		{
 		case LG_PISTOLS:
+		case LG_MAGNUMS:
 		case LG_UZIS:
 			PistolHandler(lara.gun_type);
 			break;
 
-		case LG_MAGNUMS:
+		case LG_DESERTEAGLE:
 		case LG_SHOTGUN:
-		case LG_M16:
+		case LG_MP5:
 		case LG_ROCKET:
 		case LG_GRENADE:
 		case LG_HARPOON:

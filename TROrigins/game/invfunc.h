@@ -52,11 +52,12 @@ void RemoveInventoryText();
 enum INV_ORDER	//for main ring
 {
 	MAP_POS,
-	GUN_POS,
-	SGN_POS,
-	MAG_POS,
-	UZI_POS,
-	M16_POS,
+	PISTOL_POS,
+	SHOTGUN_POS,
+	MAGNUM_POS,
+	UZIS_POS,
+	DESERTEAGLE_POS,
+	MP5_POS,
 	ROCKET_POS,
 	GRENADE_POS,
 	HARPOON_POS,
@@ -120,20 +121,22 @@ extern TEXTSTRING* Inv_itemText[3];
 extern short inv_main_qtys[23];
 extern short inv_keys_qtys[23];
 extern INVENTORY_ITEM icompass_option;
-extern INVENTORY_ITEM igun_option;
+extern INVENTORY_ITEM ipistols_option;
 extern INVENTORY_ITEM ishotgun_option;
+extern INVENTORY_ITEM ideserteagle_option;
 extern INVENTORY_ITEM imagnum_option;
 extern INVENTORY_ITEM iuzi_option;
-extern INVENTORY_ITEM im16_option;
+extern INVENTORY_ITEM imp5_option;
 extern INVENTORY_ITEM irocket_option;
 extern INVENTORY_ITEM igrenade_option;
 extern INVENTORY_ITEM iharpoon_option;
 extern INVENTORY_ITEM iflare_option;
 extern INVENTORY_ITEM igunammo_option;
-extern INVENTORY_ITEM isgunammo_option;
-extern INVENTORY_ITEM imagammo_option;
+extern INVENTORY_ITEM ishotgunammo_option;
+extern INVENTORY_ITEM ideserteagleammo_option;
+extern INVENTORY_ITEM imagnumammo_option;
 extern INVENTORY_ITEM iuziammo_option;
-extern INVENTORY_ITEM im16ammo_option;
+extern INVENTORY_ITEM imp5ammo_option;
 extern INVENTORY_ITEM irocketammo_option;
 extern INVENTORY_ITEM igrenadeammo_option;
 extern INVENTORY_ITEM iharpoonammo_option;

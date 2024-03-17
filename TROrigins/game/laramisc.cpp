@@ -234,8 +234,8 @@ static short cheat_hit_points;
 
 void LaraCheatGetStuff()
 {
-	if (objects[M16_ITEM].loaded)
-		Inv_AddItem(M16_ITEM);
+	if (objects[MP5_ITEM].loaded)
+		Inv_AddItem(MP5_ITEM);
 
 	if (objects[SHOTGUN_ITEM].loaded)
 		Inv_AddItem(SHOTGUN_ITEM);
@@ -246,8 +246,11 @@ void LaraCheatGetStuff()
 	if (objects[MAGNUM_ITEM].loaded)
 		Inv_AddItem(MAGNUM_ITEM);
 
-	if (objects[GUN_ITEM].loaded)
-		Inv_AddItem(GUN_ITEM);
+	if (objects[DESERTEAGLE_ITEM].loaded)
+		Inv_AddItem(DESERTEAGLE_ITEM);
+
+	if (objects[PISTOLS_ITEM].loaded)
+		Inv_AddItem(PISTOLS_ITEM);
 
 	if (objects[ROCKET_GUN_ITEM].loaded)
 		Inv_AddItem(ROCKET_GUN_ITEM);
@@ -291,13 +294,14 @@ void LaraCheatGetStuff()
 			Inv_AddItem(SAVEGAME_CRYSTAL_ITEM);
 	}
 
-	lara.magnums.ammo = 1000;
+	lara.deserteagle.ammo = 1000;
 	lara.uzis.ammo = 1000;
 	lara.shotgun.ammo = 1000 * 6;
+	lara.magnums.ammo = 1000;
 	lara.harpoon.ammo = 1000;
 	lara.rocket.ammo = 1000;
 	lara.grenade.ammo = 1000;
-	lara.m16.ammo = 1000;
+	lara.mp5.ammo = 1000;
 }
 
 void LaraCheatyBits()
@@ -394,10 +398,10 @@ void LaraInitialiseMeshes(long level_number)
 
 	if (start->gun_type != LG_UNARMED)
 	{
-		if (start->gun_type == LG_MAGNUMS)
+		if (start->gun_type == LG_DESERTEAGLE)
 		{
-			lara.mesh_ptrs[THIGH_L] = meshes[objects[MAGNUM].mesh_index + THIGH_L];
-			lara.mesh_ptrs[THIGH_R] = meshes[objects[MAGNUM].mesh_index + THIGH_R];
+			lara.mesh_ptrs[THIGH_L] = meshes[objects[DESERTEAGLE].mesh_index + THIGH_L];
+			lara.mesh_ptrs[THIGH_R] = meshes[objects[DESERTEAGLE].mesh_index + THIGH_R];
 		}
 		else if (start->gun_type == LG_UZIS)
 		{
@@ -414,8 +418,8 @@ void LaraInitialiseMeshes(long level_number)
 	if (start->gun_type == LG_FLARE)
 		lara.mesh_ptrs[HAND_L] = meshes[objects[FLARE].mesh_index + HAND_L];
 
-	if (start->gun_type == LG_M16)
-		lara.back_gun = M16;
+	if (start->gun_type == LG_MP5)
+		lara.back_gun = MP5;
 	else if (start->gun_type == LG_HARPOON)
 		lara.back_gun = HARPOON_GUN;
 	else if (start->gun_type == LG_ROCKET)
@@ -424,8 +428,8 @@ void LaraInitialiseMeshes(long level_number)
 		lara.back_gun = GRENADE_GUN;
 	else if(start->got_shotgun)
 		lara.back_gun = SHOTGUN;
-	else if (start->got_m16)
-		lara.back_gun = M16;
+	else if (start->got_mp5)
+		lara.back_gun = MP5;
 	else if (start->got_rocket)
 		lara.back_gun = ROCKET_GUN;
 	else if (start->got_grenade)
@@ -975,8 +979,8 @@ void UseItem(short object_number)
 
 	switch (object_number)
 	{
-	case GUN_ITEM:
-	case GUN_OPTION:
+	case PISTOLS_ITEM:
+	case PISTOLS_OPTION:
 		lara.request_gun_type = LG_PISTOLS;
 		break;
 
@@ -985,9 +989,9 @@ void UseItem(short object_number)
 		lara.request_gun_type = LG_SHOTGUN;
 		break;
 
-	case MAGNUM_ITEM:
-	case MAGNUM_OPTION:
-		lara.request_gun_type = LG_MAGNUMS;
+	case DESERTEAGLE_ITEM:
+	case DESERTEAGLE_OPTION:
+		lara.request_gun_type = LG_DESERTEAGLE;
 		break;
 
 	case UZI_ITEM:
@@ -995,14 +999,19 @@ void UseItem(short object_number)
 		lara.request_gun_type = LG_UZIS;
 		break;
 
+	case MAGNUM_ITEM:
+	case MAGNUM_OPTION:
+		lara.request_gun_type = LG_MAGNUMS;
+		break;
+
 	case HARPOON_ITEM:
 	case HARPOON_OPTION:
 		lara.request_gun_type = LG_HARPOON;
 		break;
 
-	case M16_ITEM:
-	case M16_OPTION:
-		lara.request_gun_type = LG_M16;
+	case MP5_ITEM:
+	case MP5_OPTION:
+		lara.request_gun_type = LG_MP5;
 		break;
 
 	case ROCKET_GUN_ITEM:
@@ -1180,21 +1189,36 @@ void InitialiseLara(long type)
 	ExposureMeter = 600;
 }
 
+static void InitialiseLaraWeapon(long weaponObjNum, long ammoObjNum, long weaponAmmo, ushort* gotWeapon, ushort* startAmmoPtr, long* laraAmmoPtr)
+{
+	if (*gotWeapon)
+	{
+		Inv_AddItem(weaponObjNum);
+		*laraAmmoPtr = *startAmmoPtr;
+		GlobalItemReplace(weaponObjNum, ammoObjNum);
+	}
+	else
+	{
+		if (weaponAmmo == 0) weaponAmmo = 1;
+		long ammo = *startAmmoPtr / weaponAmmo;
+		for (int i = 0; i < ammo; i++)
+			Inv_AddItem(ammoObjNum);
+		*laraAmmoPtr = 0;
+	}
+}
+
 void InitialiseLaraInventory(long level)
 {
-	START_INFO* start;
-	long ammo;
-
+	START_INFO* start = &savegame.start[level];
 	Inv_RemoveAllItems();
-	start = &savegame.start[level];
 
 	if (GF_RemoveWeapons)
 	{
 		start->got_pistols = 0;
-		start->got_magnums = 0;
+		start->got_deserteagle = 0;
 		start->got_uzis = 0;
 		start->got_shotgun = 0;
-		start->got_m16 = 0;
+		start->got_mp5 = 0;
 		start->got_rocket = 0;
 		start->got_grenade = 0;
 		start->got_harpoon = 0;
@@ -1206,10 +1230,10 @@ void InitialiseLaraInventory(long level)
 	if (GF_RemoveAmmo)
 	{
 		start->pistol_ammo = 0;
-		start->magnum_ammo = 0;
+		start->deserteagle_ammo = 0;
 		start->uzi_ammo = 0;
 		start->shotgun_ammo = 0;
-		start->m16_ammo = 0;
+		start->mp5_ammo = 0;
 		start->rocket_ammo = 0;
 		start->harpoon_ammo = 0;
 		start->grenade_ammo = 0;
@@ -1220,133 +1244,24 @@ void InitialiseLaraInventory(long level)
 	}
 
 	Inv_AddItem(MAP_CLOSED);
-	lara.pistols.ammo = 1000;
 
+	lara.pistols.ammo = PISTOL_AMMO;
 	if (start->got_pistols)
-		Inv_AddItem(GUN_ITEM);
+		Inv_AddItem(PISTOLS_ITEM);
 
-	if (start->got_magnums)
-	{
-		Inv_AddItem(MAGNUM_ITEM);
-		lara.magnums.ammo = start->magnum_ammo;
-		GlobalItemReplace(MAGNUM_ITEM, MAG_AMMO_ITEM);
-	}
-	else
-	{
-		ammo = start->magnum_ammo / 10;
-
-		for (int i = 0; i < ammo; i++)
-			Inv_AddItem(MAG_AMMO_ITEM);
-
-		lara.magnums.ammo = 0;
-	}
-
-	if (start->got_uzis)
-	{
-		Inv_AddItem(UZI_ITEM);
-		lara.uzis.ammo = start->uzi_ammo;
-		GlobalItemReplace(UZI_ITEM, UZI_AMMO_ITEM);
-	}
-	else
-	{
-		ammo = start->uzi_ammo / 40;
-
-		for (int i = 0; i < ammo; i++)
-			Inv_AddItem(UZI_AMMO_ITEM);
-
-		lara.uzis.ammo = 0;
-	}
-
-	if (start->got_shotgun)
-	{
-		Inv_AddItem(SHOTGUN_ITEM);
-		lara.shotgun.ammo = start->shotgun_ammo;
-		GlobalItemReplace(SHOTGUN_ITEM, SG_AMMO_ITEM);
-	}
-	else
-	{
-		ammo = start->shotgun_ammo / 12;
-
-		for (int i = 0; i < ammo; i++)
-			Inv_AddItem(SG_AMMO_ITEM);
-
-		lara.shotgun.ammo = 0;
-	}
-
-	if (start->got_rocket)
-	{
-		Inv_AddItem(ROCKET_GUN_ITEM);
-		lara.rocket.ammo = start->rocket_ammo;
-		GlobalItemReplace(ROCKET_GUN_ITEM, ROCKET_AMMO_ITEM);
-	}
-	else
-	{
-		ammo = start->rocket_ammo;
-
-		for (int i = 0; i < ammo; i++)
-			Inv_AddItem(ROCKET_AMMO_ITEM);
-
-		lara.rocket.ammo = 0;
-	}
-
-	if (start->got_grenade)
-	{
-		Inv_AddItem(GRENADE_GUN_ITEM);
-		lara.grenade.ammo = start->grenade_ammo;
-		GlobalItemReplace(GRENADE_GUN_ITEM, GRENADE_AMMO_ITEM);
-	}
-	else
-	{
-		ammo = start->grenade_ammo / 2;
-
-		for (int i = 0; i < ammo; i++)
-			Inv_AddItem(GRENADE_AMMO_ITEM);
-
-		lara.grenade.ammo = 0;
-	}
-
-	if (start->got_m16)
-	{
-		Inv_AddItem(M16_ITEM);
-		lara.m16.ammo = start->m16_ammo;
-		GlobalItemReplace(M16_ITEM, M16_AMMO_ITEM);
-	}
-	else
-	{
-		ammo = start->m16_ammo / 60;
-
-		for (int i = 0; i < ammo; i++)
-			Inv_AddItem(M16_AMMO_ITEM);
-
-		lara.m16.ammo = 0;
-	}
-
-	if (start->got_harpoon)
-	{
-		Inv_AddItem(HARPOON_ITEM);
-		lara.harpoon.ammo = start->harpoon_ammo;
-		GlobalItemReplace(HARPOON_ITEM, HARPOON_AMMO_ITEM);
-	}
-	else
-	{
-		lara.harpoon.ammo = 0;
-		ammo = start->harpoon_ammo / 3;
-
-		for (int i = 0; i < ammo; i++)
-		{
-			if (!i)
-				Inv_AddItem(HARPOON_AMMO_ITEM);
-
-			lara.harpoon.ammo += 3;
-		}
-	}
+	InitialiseLaraWeapon(SHOTGUN_ITEM, SHOTGUN_AMMO_ITEM, SHOTGUN_AMMO, &start->got_shotgun, &start->shotgun_ammo, &lara.shotgun.ammo);
+	InitialiseLaraWeapon(MAGNUM_ITEM, MAGNUM_AMMO_ITEM, MAGNUMS_AMMO, &start->got_magnums, &start->magnum_ammo, &lara.magnums.ammo);
+	InitialiseLaraWeapon(UZI_ITEM, UZI_AMMO_ITEM, UZIS_AMMO, &start->got_uzis, &start->uzi_ammo, &lara.uzis.ammo);
+	InitialiseLaraWeapon(DESERTEAGLE_ITEM, DESERTEAGLE_AMMO_ITEM, DESERTEAGLE_AMMO, &start->got_deserteagle, &start->deserteagle_ammo, &lara.deserteagle.ammo);
+	InitialiseLaraWeapon(MP5_ITEM, MP5_AMMO_ITEM, MP5_AMMO, &start->got_mp5, &start->mp5_ammo, &lara.mp5.ammo);
+	InitialiseLaraWeapon(GRENADE_GUN_ITEM, GRENADE_AMMO_ITEM, GRENADE_AMMO, &start->got_grenade, &start->grenade_ammo, &lara.grenade.ammo);
+	InitialiseLaraWeapon(ROCKET_GUN_ITEM, ROCKET_AMMO_ITEM, ROCKET_AMMO, &start->got_rocket, &start->rocket_ammo, &lara.rocket.ammo);
+	InitialiseLaraWeapon(HARPOON_ITEM, HARPOON_AMMO_ITEM, HARPOON_AMMO, &start->got_harpoon, &start->harpoon_ammo, &lara.harpoon.ammo);
 
 	for (int i = 0; i < start->num_flares; i++)
 		Inv_AddItem(FLARE_ITEM);
-
 	for (int i = 0; i < start->num_medis; i++)
 		Inv_AddItem(MEDI_ITEM);
-
 	for (int i = 0; i < start->num_big_medis; i++)
 		Inv_AddItem(BIGMEDI_ITEM);
 
@@ -1356,16 +1271,13 @@ void InitialiseLaraInventory(long level)
 			Inv_AddItem(SAVEGAME_CRYSTAL_ITEM);
 	}
 
-	if (start->num_icon1)
+	if (start->num_icon1 != 0)
 		Inv_AddItem(ICON_PICKUP1_ITEM);
-
-	if (start->num_icon2)
+	if (start->num_icon2 != 0)
 		Inv_AddItem(ICON_PICKUP2_ITEM);
-
-	if (start->num_icon3)
+	if (start->num_icon3 != 0)
 		Inv_AddItem(ICON_PICKUP3_ITEM);
-
-	if (start->num_icon4)
+	if (start->num_icon4 != 0)
 		Inv_AddItem(ICON_PICKUP4_ITEM);
 
 	lara.gun_status = LG_ARMLESS;

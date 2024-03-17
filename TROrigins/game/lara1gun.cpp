@@ -790,7 +790,6 @@ void FireHarpoon()
 		return;
 
 	item_number = CreateItem();
-
 	if (item_number == NO_ITEM)
 		return;
 
@@ -828,10 +827,6 @@ void FireHarpoon()
 	item->speed = short((256 * phd_cos(item->pos.x_rot)) >> W2V_SHIFT);
 	item->hit_points = 256;
 	AddActiveItem(item_number);
-
-	if (!savegame.bonus_flag)
-		lara.harpoon.ammo--;
-
 	savegame.ammo_used++;
 }
 
@@ -1076,12 +1071,12 @@ void FireM16(long running)
 		angles[1] += lara.torso_x_rot;
 	}
 
-	if (FireWeapon(LG_M16, lara.target, lara_item, angles))
+	if (FireWeapon(LG_MP5, lara.target, lara_item, angles))
 	{
 		SmokeCountL = 24;
-		SmokeWeapon = LG_M16;
-		TriggerGunShell(1, GUNSHELL, LG_M16);
-		lara.right_arm.flash_gun = weapons[LG_M16].flash_time;
+		SmokeWeapon = LG_MP5;
+		TriggerGunShell(1, GUNSHELL, LG_MP5);
+		lara.right_arm.flash_gun = weapons[LG_MP5].flash_time;
 	}
 }
 
@@ -1089,7 +1084,7 @@ void AnimateShotgun(long weapon_type)
 {
 	ITEM_INFO* item;
 	PHD_VECTOR pos;
-	static long m16_firing, harpoon_fired;
+	static long m16_firing, harpoon_fired, harpoon_shoot_count;
 	long running;
 
 	if (SmokeCountL)
@@ -1114,7 +1109,7 @@ void AnimateShotgun(long weapon_type)
 			pos.z = 32;
 			break;
 
-		case LG_M16:
+		case LG_MP5:
 			pos.x = 0;
 			pos.y = 228;
 			pos.z = 96;
@@ -1126,17 +1121,16 @@ void AnimateShotgun(long weapon_type)
 	}
 
 	item = &items[lara.weapon_item];
-	running = weapon_type == LG_M16 && lara_item->speed;
+	running = weapon_type == LG_MP5 && lara_item->speed;
 
 	switch (item->current_anim_state)
 	{
 	case 0:
-		m16_firing = 0;
-
+		m16_firing = FALSE;
 		if (harpoon_fired)
 		{
 			item->goal_anim_state = 5;
-			harpoon_fired = 0;
+			harpoon_fired = FALSE;
 		}
 		else if (lara.water_status == LARA_UNDERWATER || running)
 			item->goal_anim_state = 6;
@@ -1157,31 +1151,41 @@ void AnimateShotgun(long weapon_type)
 			{
 				if (input & IN_ACTION && (!lara.target || lara.left_arm.lock))
 				{
-					if (weapon_type == LG_HARPOON)
+					switch (weapon_type)
 					{
+					case LG_HARPOON:
 						FireHarpoon();
-
-						if (!(lara.harpoon.ammo & 3))
+						harpoon_shoot_count++;
+						if (harpoon_shoot_count == 3)
+						{
+							if (savegame.bonus_flag == 0)
+								lara.harpoon.ammo--;
 							harpoon_fired = 1;
-					}
-					else if (weapon_type == LG_ROCKET)
+							harpoon_shoot_count = 0;
+						}
+						break;
+					case LG_ROCKET:
 						FireRocket();
-					else if (weapon_type == LG_GRENADE)
+						break;
+					case LG_GRENADE:
 						FireGrenade();
-					else if (weapon_type == LG_M16)
-					{
-						FireM16(0);
+						break;
+					case LG_MP5:
+						FireM16(FALSE);
 						SoundEffect(SFX_EXPLOSION1, &lara_item->pos, 0x5000000 | SFX_SETPITCH);
 						SoundEffect(SFX_HECKLER_KOCH_FIRE, &lara_item->pos, SFX_DEFAULT);
-						m16_firing = 1;
-					}
-					else
+						m16_firing = TRUE;
+						break;
+					case LG_SHOTGUN:
 						FireShotgun();
-
+						break;
+					}
 					item->goal_anim_state = 2;
 				}
 				else if (lara.left_arm.lock)
+				{
 					item->goal_anim_state = 0;
+				}
 			}
 
 			if (item->goal_anim_state != 2 && m16_firing)
@@ -1204,12 +1208,11 @@ void AnimateShotgun(long weapon_type)
 		break;
 
 	case 6:
-		m16_firing = 0;
-
+		m16_firing = FALSE;
 		if (harpoon_fired)
 		{
 			item->goal_anim_state = 5;
-			harpoon_fired = 0;
+			harpoon_fired = FALSE;
 		}
 		else if (lara.water_status != LARA_UNDERWATER && !running)
 			item->goal_anim_state = 0;
@@ -1233,12 +1236,17 @@ void AnimateShotgun(long weapon_type)
 					if (weapon_type == LG_HARPOON)
 					{
 						FireHarpoon();
-
-						if (!(lara.harpoon.ammo & 3))
+						harpoon_shoot_count++;
+						if (harpoon_shoot_count == 3)
+						{
+							if (savegame.bonus_flag == 0)
+								lara.harpoon.ammo--;
 							harpoon_fired = 1;
+							harpoon_shoot_count = 0;
+						}
 					}
 					else
-						FireM16(1);
+						FireM16(TRUE);
 
 					item->goal_anim_state = 8;
 				}
@@ -1247,7 +1255,7 @@ void AnimateShotgun(long weapon_type)
 			}
 		}
 
-		if (weapon_type == LG_M16 && item->goal_anim_state == 8)
+		if (weapon_type == LG_MP5 && item->goal_anim_state == 8)
 		{
 			SoundEffect(SFX_EXPLOSION1, &lara_item->pos, 0x4000000 | SFX_SETPITCH);
 			SoundEffect(SFX_HECKLER_KOCH_FIRE, &lara_item->pos, 0);
@@ -1299,8 +1307,8 @@ void RifleHandler(long weapon_type)
 	lara.torso_x_rot += FuckYou;
 	lara.left_arm.x_rot += FuckYou;
 
-	if (weapon_type == LG_MAGNUMS)
-		AnimatePistols(LG_MAGNUMS);
+	if (weapon_type == LG_DESERTEAGLE)
+		AnimatePistols(LG_DESERTEAGLE);
 	else
 		AnimateShotgun(weapon_type);
 
@@ -1310,14 +1318,14 @@ void RifleHandler(long weapon_type)
 		g = (GetRandomControl() & 0x1F) + 128;
 		b = GetRandomControl() & 0x3F;
 
-		if (weapon_type == LG_SHOTGUN || weapon_type == LG_M16)
+		if (weapon_type == LG_SHOTGUN || weapon_type == LG_MP5)
 		{
 			pos.x = lara_item->pos.x_pos + (1024 * phd_sin(lara_item->pos.y_rot) >> W2V_SHIFT) + (GetRandomControl() & 0xFF) - 128;
 			pos.y = lara_item->pos.y_pos + ((GetRandomControl() & 0x7F) - 575);
 			pos.z = lara_item->pos.z_pos + (1024 * phd_cos(lara_item->pos.y_rot) >> W2V_SHIFT) + (GetRandomControl() & 0xFF) - 128;
 			TriggerDynamic(pos.x, pos.y, pos.z, weapon_type == LG_SHOTGUN ? 12 : 11, r, g, b);
 		}
-		else if (weapon_type == LG_MAGNUMS)
+		else if (weapon_type == LG_DESERTEAGLE)
 		{
 			pos.x = (GetRandomControl() & 0xFF) - 128;
 			pos.y = (GetRandomControl() & 0x7F) - 63;

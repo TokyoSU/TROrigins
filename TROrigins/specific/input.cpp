@@ -256,18 +256,18 @@ long S_UpdateInput()
 		F7_debounce = 0;
 #endif
 
-	if (key_pressed(DIK_1) && Inv_RequestItem(GUN_OPTION))
+	if (key_pressed(DIK_1) && Inv_RequestItem(PISTOLS_OPTION))
 		lara.request_gun_type = LG_PISTOLS;
 	else if (key_pressed(DIK_2) && Inv_RequestItem(SHOTGUN_OPTION))
 		lara.request_gun_type = LG_SHOTGUN;
-	else if (key_pressed(DIK_3) && Inv_RequestItem(MAGNUM_OPTION))
-		lara.request_gun_type = LG_MAGNUMS;
+	else if (key_pressed(DIK_3) && Inv_RequestItem(DESERTEAGLE_OPTION))
+		lara.request_gun_type = LG_DESERTEAGLE;
 	else if (key_pressed(DIK_4) && Inv_RequestItem(UZI_OPTION))
 		lara.request_gun_type = LG_UZIS;
 	else if (key_pressed(DIK_5) && Inv_RequestItem(HARPOON_OPTION))
 		lara.request_gun_type = LG_HARPOON;
-	else if (key_pressed(DIK_6) && Inv_RequestItem(M16_OPTION))
-		lara.request_gun_type = LG_M16;
+	else if (key_pressed(DIK_6) && Inv_RequestItem(MP5_OPTION))
+		lara.request_gun_type = LG_MP5;
 	else if (key_pressed(DIK_7) && Inv_RequestItem(ROCKET_OPTION))
 		lara.request_gun_type = LG_ROCKET;
 	else if (key_pressed(DIK_8) && Inv_RequestItem(GRENADE_OPTION))

@@ -202,7 +202,7 @@ void CreateBubble(PHD_3DPOS* pos, short room_number, long size, long sizerange)
 			fx->pos.y_pos = pos->y_pos;
 			fx->pos.z_pos = pos->z_pos;
 			fx->speed = (GetRandomControl() & 0xFF) + 64;
-			fx->object_number = BUBBLES1;
+			fx->object_number = BUBBLE_SPRITES;
 			fx->flag1 = (GetRandomControl() & 0x1F) + 32;
 			fx->flag2 = 0;
 			fx->frame_number = 0;
@@ -486,23 +486,17 @@ void SetChangeFX(ITEM_INFO* item)
 
 void ControlDingDong(short item_number)
 {
-	ITEM_INFO* item;
-
-	item = &items[item_number];
-
+	ITEM_INFO* item = &items[item_number];
 	if ((item->flags & IFL_CODEBITS) == IFL_CODEBITS)
 	{
 		SoundEffect(SFX_DOORBELL, &item->pos, SFX_DEFAULT);
-		item->flags -= 0x3E00;
+		item->flags &= ~IFL_CODEBITS;
 	}
 }
 
 void ControlLaraAlarm(short item_number)
 {
-	ITEM_INFO* item;
-
-	item = &items[item_number];
-
+	ITEM_INFO* item = &items[item_number];
 	if ((item->flags & IFL_CODEBITS) == IFL_CODEBITS)
 		SoundEffect(SFX_BURGLAR_ALARM, &item->pos, SFX_DEFAULT);
 }

@@ -359,20 +359,24 @@ void DrawAmmoInfo()
 
 		switch (lara.gun_type)
 		{
-		case LG_MAGNUMS:
-			wsprintf(txt, "%5d", lara.magnums.ammo);
+		case LG_DESERTEAGLE:
+			wsprintf(txt, "%5d", lara.deserteagle.ammo);
 			break;
 
 		case LG_UZIS:
 			wsprintf(txt, "%5d", lara.uzis.ammo);
 			break;
 
+		case LG_MAGNUMS:
+			wsprintf(txt, "%5d", lara.magnums.ammo);
+			break;
+
 		case LG_SHOTGUN:
 			wsprintf(txt, "%5d", lara.shotgun.ammo / 6);
 			break;
 
-		case LG_M16:
-			wsprintf(txt, "%5d", lara.m16.ammo);
+		case LG_MP5:
+			wsprintf(txt, "%5d", lara.mp5.ammo);
 			break;
 
 		case LG_ROCKET:
@@ -400,7 +404,9 @@ void DrawAmmoInfo()
 		T_BottomAlign(ammotext, 1);
 	}
 	else
+	{
 		ammotext = T_Print(AMMO_XPOS_PC, AMMO_YPOS_PC, 0, txt);
+	}
 
 	T_RightAlign(ammotext, 1);
 }

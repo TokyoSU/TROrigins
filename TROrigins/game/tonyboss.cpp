@@ -81,7 +81,7 @@ static void TriggerTonyFlame(short item_number, long node)
 	sptr->MaxYvel = -16 - (GetRandomControl() & 7);
 	sptr->FxObj = (uchar)item_number;
 	sptr->NodeNumber = (uchar)node;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Scalar = 1;
 	sptr->Width = (GetRandomControl() & 0x1F) + 64;
 	sptr->sWidth = sptr->Width;
@@ -235,7 +235,7 @@ static void TriggerFireBallFlame(short fxNum, long type, long xv, long yv, long 
 		sptr->Flags = SF_ALTDEF | SF_FX | SF_DEF | SF_SCALE;
 
 	sptr->FxObj = (uchar)fxNum;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Scalar = 1;
 	sptr->Width = (GetRandomControl() & 0x1F) + 64;
 	sptr->sWidth = sptr->Width;

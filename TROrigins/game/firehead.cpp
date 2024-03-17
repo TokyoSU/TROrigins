@@ -55,7 +55,7 @@ static void TriggerFireHeadFlame(long x, long y, long z, long angle, long speed)
 
 	sptr->Gravity = -8 - (GetRandomControl() & 0xF);
 	sptr->MaxYvel = -8 - (GetRandomControl() & 7);
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Scalar = 3;
 	sptr->dWidth = uchar((speed >> 4) + (GetRandomControl() & 0xF));
 	sptr->Width = sptr->dWidth >> 2;
@@ -204,7 +204,7 @@ void ControlFireHead(short item_number)
 	AnimateItem(item);
 }
 
-void ControlRotateyThing(short item_number)
+void ControlTinnosLightShaft(short item_number)
 {
 	ITEM_INFO* item;
 

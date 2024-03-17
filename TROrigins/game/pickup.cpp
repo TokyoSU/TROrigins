@@ -64,8 +64,7 @@ void PickUpCollision(short item_num, ITEM_INFO* l, COLL_INFO* coll)
 					AddDisplayPickup(item->object_number);
 					Inv_AddItem(item->object_number);
 
-					if ((item->object_number == SECRET_ITEM1 || item->object_number == SECRET_ITEM2 || item->object_number == SECRET_ITEM3)
-						&& ((savegame.secrets >> 1) & 1) + ((savegame.secrets >> 2) & 1) + (savegame.secrets & 1) >= 3)
+					if ((item->object_number == SECRET_ITEM1 || item->object_number == SECRET_ITEM2 || item->object_number == SECRET_ITEM3) && ((savegame.secrets >> 1) & 1) + ((savegame.secrets >> 2) & 1) + (savegame.secrets & 1) >= 3)
 						GF_ModifyInventory(CurrentLevel, 1);
 
 					item->status = ITEM_INVISIBLE;

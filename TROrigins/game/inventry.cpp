@@ -722,11 +722,11 @@ long Display_Inventory(long mode)
 				inputDB = 0;
 
 				if (item->object_number == MAP_OPTION)
-					SoundEffect(SFX_MENU_STOPWATCH, 0, SFX_ALWAYS);
-				else if (item->object_number >= GUN_OPTION && item->object_number <= GRENADE_OPTION)
-					SoundEffect(SFX_MENU_GUNS, 0, SFX_ALWAYS);
+					SoundEffect(SFX_MENU_STOPWATCH, NULL, SFX_ALWAYS);
+				else if ((item->object_number >= PISTOLS_OPTION && item->object_number <= GRENADE_OPTION) || item->object_number == MAGNUM_OPTION)
+					SoundEffect(SFX_MENU_GUNS, NULL, SFX_ALWAYS);
 				else
-					SoundEffect(SFX_MENU_CHOOSE, 0, SFX_ALWAYS);
+					SoundEffect(SFX_MENU_CHOOSE, NULL, SFX_ALWAYS);
 			}
 
 			if (inputDB & IN_FORWARD && mode != INV_TITLE_MODE && mode != INV_LEVELSELECT_MODE && mode != INV_KEYS_MODE)
@@ -1026,12 +1026,13 @@ long Display_Inventory(long mode)
 		Inventory_ExtraData[1] = 0;
 		return 1;
 
-	case GUN_OPTION:
+	case PISTOLS_OPTION:
 	case SHOTGUN_OPTION:
+	case DESERTEAGLE_OPTION:
 	case MAGNUM_OPTION:
 	case UZI_OPTION:
 	case HARPOON_OPTION:
-	case M16_OPTION:
+	case MP5_OPTION:
 	case ROCKET_OPTION:
 	case GRENADE_OPTION:
 	case MEDI_OPTION:

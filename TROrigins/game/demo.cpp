@@ -98,7 +98,7 @@ long StartDemo(long level)
 	s = &savegame.start[level];
 	memcpy(&start, s, sizeof(START_INFO));
 	s->available = 1;
-	s->pistol_ammo = 1000;
+	s->pistol_ammo = PISTOL_AMMO;
 	s->gun_status = LG_ARMLESS;
 	s->gun_type = LG_PISTOLS;
 	title_loaded = 0;

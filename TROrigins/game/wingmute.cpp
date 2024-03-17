@@ -52,7 +52,7 @@ static void TriggerWingMuteParticles(short item_number)
 	sptr->FxObj = (uchar)item_number;
 	sptr->NodeNumber = 1;
 	sptr->Scalar = 3;
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 	sptr->Width = (GetRandomControl() & 3) + 3;
 	sptr->sWidth = sptr->Width;
 	sptr->dWidth = sptr->Width >> 1;

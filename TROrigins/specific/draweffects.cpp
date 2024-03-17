@@ -167,11 +167,9 @@ static void ProjectPHDVBuf(FVECTOR* pos, PHD_VBUF* v, ulong c, bool cFlag)
 		v->color = RGB_MAKE(c, c, c);
 }
 
-static void ClipCheckPoint(PHD_VBUF* v, long x, long y, long z, long xv, long yv)
+static void ClipCheckPoint(PHD_VBUF* v, long x, long y, long z, long xv, long yv, bool divideByPersp)
 {
-	char clipFlag;
-
-	clipFlag = 0;
+	char clipFlag = 0;
 
 	if (z < phd_znear)
 		clipFlag = -128;
@@ -194,14 +192,15 @@ static void ClipCheckPoint(PHD_VBUF* v, long x, long y, long z, long xv, long yv
 	v->xv = (float)xv;
 	v->yv = (float)yv;
 	v->zv = (float)z;
-	v->ooz = f_persp / (float)z * f_oneopersp;
+	if (divideByPersp)
+		v->ooz = f_persp / v->zv * f_oneopersp;
+	else
+		v->ooz = v->zv * f_oneopersp;
 }
 
-static void ClipCheckPoint(PHD_VBUF* v, long x, long y, long z)
+static void ClipCheckPoint(PHD_VBUF* v, long x, long y, long z, bool divideByPersp)
 {
-	char clipFlag;
-
-	clipFlag = 0;
+	char clipFlag = 0;
 
 	if (x < phd_winxmin)
 		clipFlag++;
@@ -217,17 +216,20 @@ static void ClipCheckPoint(PHD_VBUF* v, long x, long y, long z)
 	v->xs = (float)x;
 	v->ys = (float)y;
 	v->zv = (float)z;
-	v->ooz = f_persp / (float)z * f_oneopersp;
+	if (divideByPersp)
+		v->ooz = f_persp / v->zv * f_oneopersp;
+	else
+		v->ooz = v->zv * f_oneopersp;
 }
 
 static void setXYZ3(PHD_VBUF* v,
 	long x1, long y1, long z1, long xv1, long yv1, long c1,
 	long x2, long y2, long z2, long xv2, long yv2, long c2,
-	long x3, long y3, long z3, long xv3, long yv3, long c3)
+	long x3, long y3, long z3, long xv3, long yv3, long c3, bool divideByPersp = true)
 {
-	ClipCheckPoint(&v[0], x1, y1, z1, xv1, yv1);
-	ClipCheckPoint(&v[1], x2, y2, z2, xv2, yv2);
-	ClipCheckPoint(&v[2], x3, y3, z3, xv3, yv3);
+	ClipCheckPoint(&v[0], x1, y1, z1, xv1, yv1, divideByPersp);
+	ClipCheckPoint(&v[1], x2, y2, z2, xv2, yv2, divideByPersp);
+	ClipCheckPoint(&v[2], x3, y3, z3, xv3, yv3, divideByPersp);
 	v[0].color = c1;
 	v[1].color = c2;
 	v[2].color = c3;
@@ -236,12 +238,12 @@ static void setXYZ3(PHD_VBUF* v,
 static void setXYZ3(PHD_VBUF* v,
 	long x1, long y1, long z1, long c1,
 	long x2, long y2, long z2, long c2,
-	long x3, long y3, long z3, long c3)
+	long x3, long y3, long z3, long c3, bool divideByPersp = true)
 
 {
-	ClipCheckPoint(&v[0], x1, y1, z1);
-	ClipCheckPoint(&v[1], x2, y2, z2);
-	ClipCheckPoint(&v[2], x3, y3, z3);
+	ClipCheckPoint(&v[0], x1, y1, z1, divideByPersp);
+	ClipCheckPoint(&v[1], x2, y2, z2, divideByPersp);
+	ClipCheckPoint(&v[2], x3, y3, z3, divideByPersp);
 	v[0].color = c1;
 	v[1].color = c2;
 	v[2].color = c3;
@@ -251,14 +253,14 @@ static void setXYZ4(PHD_VBUF* v,
 	long x1, long y1, long z1, long xv1, long yv1, long c1,
 	long x2, long y2, long z2, long xv2, long yv2, long c2,
 	long x3, long y3, long z3, long xv3, long yv3, long c3,
-	long x4, long y4, long z4, long xv4, long yv4, long c4)
+	long x4, long y4, long z4, long xv4, long yv4, long c4, bool divideByPersp = true)
 {
 	long r, g, b;
 
-	ClipCheckPoint(&v[0], x1, y1, z1, xv1, yv1);
-	ClipCheckPoint(&v[1], x2, y2, z2, xv2, yv2);
-	ClipCheckPoint(&v[2], x3, y3, z3, xv3, yv3);
-	ClipCheckPoint(&v[3], x4, y4, z4, xv4, yv4);
+	ClipCheckPoint(&v[0], x1, y1, z1, xv1, yv1, divideByPersp);
+	ClipCheckPoint(&v[1], x2, y2, z2, xv2, yv2, divideByPersp);
+	ClipCheckPoint(&v[2], x3, y3, z3, xv3, yv3, divideByPersp);
+	ClipCheckPoint(&v[3], x4, y4, z4, xv4, yv4, divideByPersp);
 
 	r = RGB_GETBLUE(c1);
 	g = RGB_GETGREEN(c1);
@@ -285,14 +287,14 @@ static void setXYZ4(PHD_VBUF* v,
 	long x1, long y1, long z1, long c1,
 	long x2, long y2, long z2, long c2,
 	long x3, long y3, long z3, long c3,
-	long x4, long y4, long z4, long c4)
+	long x4, long y4, long z4, long c4, bool divideByPersp = true)
 {
 	long r, g, b;
 
-	ClipCheckPoint(&v[0], x1, y1, z1);
-	ClipCheckPoint(&v[1], x2, y2, z2);
-	ClipCheckPoint(&v[2], x3, y3, z3);
-	ClipCheckPoint(&v[3], x4, y4, z4);
+	ClipCheckPoint(&v[0], x1, y1, z1, divideByPersp);
+	ClipCheckPoint(&v[1], x2, y2, z2, divideByPersp);
+	ClipCheckPoint(&v[2], x3, y3, z3, divideByPersp);
+	ClipCheckPoint(&v[3], x4, y4, z4, divideByPersp);
 
 	r = RGB_GETBLUE(c1);
 	g = RGB_GETGREEN(c1);
@@ -1010,8 +1012,7 @@ void DoSnow()
 	for (int i = 0, num_alive = 0; i < MAX_WEATHER; i++)
 	{
 		snow = &snowflakes[i];
-
-		if (!snow->x && num_alive < MAX_WEATHER_ALIVE)
+		if (!snow->on && num_alive < MAX_WEATHER_ALIVE)
 		{
 			num_alive++;
 			rad = GetRandomDraw() & 0xFFF;
@@ -1022,11 +1023,12 @@ void DoSnow()
 
 			if (IsRoomOutside(snow->x, snow->y, snow->z) < 0)
 			{
-				snow->x = 0;
+				snow->on = 0;
 				continue;
 			}
 
 			snow->stopped = 0;
+			snow->on = 1;
 			snow->xv = (GetRandomDraw() & 7) - 4;
 			snow->yv = (GetRandomDraw() % 24 + 8) << 3;
 			snow->zv = (GetRandomDraw() & 7) - 4;
@@ -1046,7 +1048,7 @@ void DoSnow()
 
 			if (r == -3)
 			{
-				snow->x = 0;
+				snow->on = 0;
 				continue;
 			}
 
@@ -1067,7 +1069,7 @@ void DoSnow()
 
 		if (!snow->life)
 		{
-			snow->x = 0;
+			snow->on = 0;
 			continue;
 		}
 
@@ -1085,18 +1087,23 @@ void DoSnow()
 			snow->zv--;
 
 		snow->life -= 2;
-
 		if ((snow->yv & 7) != 7)
 			snow->yv++;
 	}
 
-	sprite = &phdspriteinfo[objects[EXPLOSION1].mesh_index + 17];
+	sprite = &phdspriteinfo[objects[DEFAULT_SPRITES].mesh_index + 17];
 	u1 = (sprite->offset << 8) & 0xFF00;
 	v1 = sprite->offset & 0xFF00;
 	u2 = ushort(u1 + sprite->width - App.nUVAdd);
 	v2 = ushort(v1 + sprite->height - App.nUVAdd);
 	u1 += (ushort)App.nUVAdd;
 	v1 += (ushort)App.nUVAdd;
+	v[0].u = u2;
+	v[0].v = v1;
+	v[1].u = u2;
+	v[1].v = v2;
+	v[2].u = u1;
+	v[2].v = v2;
 
 	phd_PushMatrix();
 	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
@@ -1104,8 +1111,7 @@ void DoSnow()
 	for (int i = 0; i < MAX_WEATHER; i++)
 	{
 		snow = &snowflakes[i];
-
-		if (!snow->x)
+		if (!snow->on)
 			continue;
 
 		tx = snow->x - lara_item->pos.x_pos;
@@ -1117,94 +1123,28 @@ void DoSnow()
 		zv = f_persp / (float)pos.z;
 		pos.x = long(float(pos.x * zv + f_centerx));
 		pos.y = long(float(pos.y * zv + f_centery));
-
 		x = pos.x;
 		y = pos.y;
 		z = pos.z;
 
-		if ((z >> W2V_SHIFT) < 128)
+		// NOTE: this cause the snowflake to disappear if you look at the floor...
+		/*if ((z >> W2V_SHIFT) < 128)
 		{
 			if (snow->life > 16)
 				snow->life = 16;
-
 			continue;
-		}
+		}*/
 
 		if (x < 0 || x > w || y < 0 || y > h)
 			continue;
 
 		size = phd_persp * (snow->yv >> 3) / (z >> 16);
-
 		if (size < 4)
 			size = 4;
 		else if (size > 16)
 			size = 16;
-
 		size = (size * 0x2AAB) >> 15;	//this scales it down to about a third of the size
 		size = GetFixedScale(size);
-
-		v[0].xs = float(x + size);
-		v[0].ys = float(y - (size << 1));
-		v[0].zv = (float)z;
-		v[0].ooz = f_oneopersp * zv;
-		v[0].u = u2;
-		v[0].v = v1;
-		clipFlag = 0;
-
-		if (v[0].xs < phd_winxmin)
-			clipFlag++;
-		else if (v[0].xs > phd_winxmin + phd_winxmax)
-			clipFlag += 2;
-
-		if (v[0].ys < phd_winymin)
-			clipFlag += 4;
-		else if (v[0].ys > phd_winymin + phd_winymax)
-			clipFlag += 8;
-
-		v[0].clip = clipFlag;
-
-		v[1].xs = float(x + size);
-		v[1].ys = float(y + size);
-		v[1].zv = (float)z;
-		v[1].ooz = f_oneopersp * zv;
-		v[1].u = u2;
-		v[1].v = v2;
-		clipFlag = 0;
-
-		if (v[1].xs < phd_winxmin)
-			clipFlag++;
-		else if (v[1].xs > phd_winxmin + phd_winxmax)
-			clipFlag += 2;
-
-		if (v[1].ys < phd_winymin)
-			clipFlag += 4;
-		else if (v[1].ys > phd_winymin + phd_winymax)
-			clipFlag += 8;
-
-		v[1].clip = clipFlag;
-
-		v[2].xs = float(x - (size << 1));
-		v[2].ys = float(y + size);
-		v[2].zv = (float)z;
-		v[2].ooz = f_oneopersp * zv;
-		v[2].u = u1;
-		v[2].v = v2;
-		clipFlag = 0;
-
-		if (v[2].xs < phd_winxmin)
-			clipFlag++;
-		else if (v[2].xs > phd_winxmin + phd_winxmax)
-			clipFlag += 2;
-
-		if (v[2].ys < phd_winymin)
-			clipFlag += 4;
-		else if (v[2].ys > phd_winymin + phd_winymax)
-			clipFlag += 8;
-
-		v[2].clip = clipFlag;
-
-		tex.drawtype = 2;
-		tex.tpage = sprite->tpage;
 
 		if ((snow->yv & 7) < 7)
 			c = snow->yv & 7;
@@ -1212,12 +1152,12 @@ void DoSnow()
 			c = 15;
 		else
 			c = snow->life;
-
 		c <<= 3;
 		c = RGB_MAKE(c, c, c);
-		v[0].color = c;
-		v[1].color = c;
-		v[2].color = c;
+
+		setXYZ3(v, x + size, y - (size << 1), z, c, x + size, y + size, z, c, x - (size << 1), y + size, z, c, true);
+		tex.drawtype = 2;
+		tex.tpage = sprite->tpage;
 		HWI_InsertGT3_Poly(&v[0], &v[1], &v[2], &tex, &v[0].u, &v[1].u, &v[2].u, MID_SORT, 0);
 	}
 
@@ -1374,7 +1314,7 @@ void DrawExplosionRings()
 
 		col1 = vtx->rgb;
 		col3 = vtx2->rgb;
-		sprite = &phdspriteinfo[objects[EXPLOSION1].mesh_index + 4 + ((wibble >> 4) & 3)];
+		sprite = &phdspriteinfo[objects[DEFAULT_SPRITES].mesh_index + 4 + ((wibble >> 4) & 3)];
 		u1 = (sprite->offset << 8) & 0xFF00;
 		v1 = sprite->offset & 0xFF00;
 		u2 = ushort(u1 + sprite->width - App.nUVAdd);
@@ -1610,7 +1550,7 @@ void DrawSummonRings()
 		vtx++;
 		vtx2++;
 
-		sprite = &phdspriteinfo[objects[EXPLOSION1].mesh_index + 4 + ((wibble >> 4) & 3)];
+		sprite = &phdspriteinfo[objects[DEFAULT_SPRITES].mesh_index + 4 + ((wibble >> 4) & 3)];
 		u1 = (sprite->offset << 8) & 0xFF00;
 		v1 = sprite->offset & 0xFF00;
 		u2 = ushort(u1 + sprite->width - App.nUVAdd);
@@ -1859,7 +1799,7 @@ void DrawKnockBackRings()
 		vtx++;
 		vtx2++;
 
-		sprite = &phdspriteinfo[objects[EXPLOSION1].mesh_index + 4 + ((wibble >> 4) & 3)];
+		sprite = &phdspriteinfo[objects[DEFAULT_SPRITES].mesh_index + 4 + ((wibble >> 4) & 3)];
 		u1 = (sprite->offset << 8) & 0xFF00;
 		v1 = sprite->offset & 0xFF00;
 		u2 = ushort(u1 + sprite->width - App.nUVAdd);
@@ -2779,7 +2719,7 @@ void DrawTonyBossShield(ITEM_INFO* item)
 		s0++;
 		s1++;
 
-		sprite = &phdspriteinfo[objects[EXPLOSION1].mesh_index + 18 + ((i + (wibble >> 3)) & 7)];
+		sprite = &phdspriteinfo[objects[DEFAULT_SPRITES].mesh_index + 18 + ((i + (wibble >> 3)) & 7)];
 		u1 = (sprite->offset << 8) & 0xFF00;
 		v1 = sprite->offset & 0xFF00;
 		u2 = ushort(u1 + sprite->width - App.nUVAdd);
@@ -2971,7 +2911,7 @@ void DrawTribeBossShield(ITEM_INFO* item)
 		s0++;
 		s1++;
 
-		sprite = &phdspriteinfo[objects[EXPLOSION1].mesh_index + 18 + ((i + (wibble >> 3)) & 7)];
+		sprite = &phdspriteinfo[objects[DEFAULT_SPRITES].mesh_index + 18 + ((i + (wibble >> 3)) & 7)];
 		u1 = (sprite->offset << 8) & 0xFF00;
 		v1 = sprite->offset & 0xFF00;
 		u2 = ushort(u1 + sprite->width - App.nUVAdd);
@@ -3162,7 +3102,7 @@ void DrawLondonBossShield(ITEM_INFO* item)
 		s0++;
 		s1++;
 
-		sprite = &phdspriteinfo[objects[EXPLOSION1].mesh_index + 18 + ((i + (wibble >> 3)) & 7)];
+		sprite = &phdspriteinfo[objects[DEFAULT_SPRITES].mesh_index + 18 + ((i + (wibble >> 3)) & 7)];
 		u1 = (sprite->offset << 8) & 0xFF00;
 		v1 = sprite->offset & 0xFF00;
 		u2 = ushort(u1 + sprite->width - App.nUVAdd);
@@ -3353,7 +3293,7 @@ void DrawWillBossShield(ITEM_INFO* item)
 		s0++;
 		s1++;
 
-		sprite = &phdspriteinfo[objects[EXPLOSION1].mesh_index + 18 + ((i + (wibble >> 3)) & 7)];
+		sprite = &phdspriteinfo[objects[DEFAULT_SPRITES].mesh_index + 18 + ((i + (wibble >> 3)) & 7)];
 		u1 = (sprite->offset << 8) & 0xFF00;
 		v1 = sprite->offset & 0xFF00;
 		u2 = ushort(u1 + sprite->width - App.nUVAdd);
@@ -3659,7 +3599,7 @@ void S_DrawBat()
 				continue;
 
 			setXYZ3(v, x1, y1, z1, 0x60A0F8, x2, y2, z2, 0x60A0F8, x3, y3, z3, 0x60A0F8);
-			sprite = &phdspriteinfo[objects[EXPLOSION1].mesh_index + 12];
+			sprite = &phdspriteinfo[objects[DEFAULT_SPRITES].mesh_index + 12];
 			u1 = (sprite->offset << 8) & 0xFF00;
 			v1 = sprite->offset & 0xFF00;
 			u2 = ushort(u1 + sprite->width - App.nUVAdd);
@@ -4104,9 +4044,9 @@ void S_DrawSplashes()
 		for (int j = 0; j < 3; j++)
 		{
 			if (j == 2 || !j && splash->flags & 4 || j == 1 && splash->flags & 8)
-				nSprite = ((wibble >> 4) & 3) + objects[EXPLOSION1].mesh_index + 4;
+				nSprite = ((wibble >> 4) & 3) + objects[DEFAULT_SPRITES].mesh_index + 4;
 			else
-				nSprite = objects[EXPLOSION1].mesh_index + 8;
+				nSprite = objects[DEFAULT_SPRITES].mesh_index + 8;
 
 			links = SplashLinks;
 			linkNum = j << 6;
@@ -4184,7 +4124,7 @@ void S_DrawSplashes()
 
 		p = (long*)&scratchpad[0];
 		n = ripple->size << 2;
-		nSprite = objects[EXPLOSION1].mesh_index + 9;
+		nSprite = objects[DEFAULT_SPRITES].mesh_index + 9;
 
 		mCalcPoint(ripple->x - n, ripple->y, ripple->z - n, pos);
 		ProjectPCoord(pos[0], pos[1], pos[2], p, w >> 1, h >> 1, phd_persp);
@@ -4243,7 +4183,7 @@ void S_DrawSplashes()
 		{
 			if (ripple->flags & 0x20)
 			{
-				nSprite = objects[EXPLOSION1].mesh_index;
+				nSprite = objects[DEFAULT_SPRITES].mesh_index;
 				c1 = ripple->life;
 
 				if (gameflow.language == 2)
@@ -4545,9 +4485,9 @@ void S_DrawFish(ITEM_INFO* item)
 		return;
 
 	if (item->object_number == PIRAHNAS)
-		sprite = &phdspriteinfo[objects[EXPLOSION1].mesh_index + 10];
+		sprite = &phdspriteinfo[objects[DEFAULT_SPRITES].mesh_index + 10];
 	else
-		sprite = &phdspriteinfo[objects[EXPLOSION1].mesh_index + 11];
+		sprite = &phdspriteinfo[objects[DEFAULT_SPRITES].mesh_index + 11];
 
 	pFish = &fish[24 * item->hit_points + 8];
 
@@ -4893,7 +4833,7 @@ void S_DrawFootPrints()
 	short c, room_number;
 
 	bBlueEffect = 0;
-	sprite = &phdspriteinfo[objects[EXPLOSION1].mesh_index + 17];
+	sprite = &phdspriteinfo[objects[DEFAULT_SPRITES].mesh_index + 17];
 	u1 = (sprite->offset << 8) & 0xFF00;
 	v1 = sprite->offset & 0xFF00;
 	u2 = ushort(u1 + sprite->width - App.nUVAdd);
@@ -5065,7 +5005,7 @@ void DoUwEffect()
 			p->yv++;
 	}
 
-	sprite = &phdspriteinfo[objects[EXPLOSION1].mesh_index + 17];
+	sprite = &phdspriteinfo[objects[DEFAULT_SPRITES].mesh_index + 17];
 	u1 = (sprite->offset << 8) & 0xFF00;
 	v1 = sprite->offset & 0xFF00;
 	u2 = ushort(u1 + sprite->width - App.nUVAdd);

@@ -819,7 +819,7 @@ static void TriggerBoatMist(long x, long y, long z, long speed, short angle, lon
 	else
 		sptr->Flags = SF_ALTDEF | SF_DEF | SF_SCALE;
 
-	sptr->Def = (uchar)objects[EXPLOSION1].mesh_index;
+	sptr->Def = (uchar)objects[DEFAULT_SPRITES].mesh_index;
 
 	if (snow)
 	{

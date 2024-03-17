@@ -3,7 +3,7 @@
 
 void InitialiseFireHead(short item_number);
 void ControlFireHead(short item_number);
-void ControlRotateyThing(short item_number);
+void ControlTinnosLightShaft(short item_number);
 
 enum FIREHEAD_STATES
 {

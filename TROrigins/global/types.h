@@ -98,13 +98,23 @@ typedef unsigned long ulong;
 #define MAX_ITEMS		1024	//was 256
 #define NLAYOUTKEYS		15
 #define MAX_WEATHER		256
-#define MAX_WEATHER_ALIVE	16	//was 8
+#define MAX_WEATHER_ALIVE	32	//was 8
 
 #define MALLOC_SIZE	15000000	//15 MB (was around 3.6 MB)
 
 #define FRAMES_PER_SECOND	30
 #define TICKS_PER_FRAME		2
 #define TICKS_PER_SECOND	(FRAMES_PER_SECOND * TICKS_PER_FRAME)
+
+#define PISTOL_AMMO 1000
+#define SHOTGUN_AMMO 12
+#define DESERTEAGLE_AMMO 10
+#define UZIS_AMMO 40
+#define MAGNUMS_AMMO 30
+#define MP5_AMMO 60
+#define GRENADE_AMMO 2
+#define ROCKET_AMMO 1
+#define HARPOON_AMMO 3
 
 /*enums*/
 enum texture_flags
@@ -411,10 +421,11 @@ enum lara_gun_types
 {
 	LG_UNARMED,
 	LG_PISTOLS,
+	LG_SHOTGUN,
 	LG_MAGNUMS,
 	LG_UZIS,
-	LG_SHOTGUN,
-	LG_M16,
+	LG_DESERTEAGLE,
+	LG_MP5,
 	LG_ROCKET,
 	LG_GRENADE,
 	LG_HARPOON,
@@ -811,13 +822,14 @@ struct LARA_INFO
 	LARA_ARM left_arm;
 	LARA_ARM right_arm;
 	AMMO_INFO pistols;
+	AMMO_INFO shotgun;
 	AMMO_INFO magnums;
 	AMMO_INFO uzis;
-	AMMO_INFO shotgun;
-	AMMO_INFO harpoon;
-	AMMO_INFO rocket;
+	AMMO_INFO deserteagle;
+	AMMO_INFO mp5;
 	AMMO_INFO grenade;
-	AMMO_INFO m16;
+	AMMO_INFO rocket;
+	AMMO_INFO harpoon;
 	CREATURE_INFO* creature;
 };
 
@@ -1074,10 +1086,11 @@ struct GAMEFLOW_INFO
 struct START_INFO
 {
 	ushort pistol_ammo;
+	ushort shotgun_ammo;
 	ushort magnum_ammo;
 	ushort uzi_ammo;
-	ushort shotgun_ammo;
-	ushort m16_ammo;
+	ushort deserteagle_ammo;
+	ushort mp5_ammo;
 	ushort rocket_ammo;
 	ushort harpoon_ammo;
 	ushort grenade_ammo;
@@ -1088,15 +1101,17 @@ struct START_INFO
 	uchar num_sgcrystals;
 	char gun_status;
 	char gun_type;
-	ushort available : 1;
-	ushort got_pistols : 1;
-	ushort got_magnums : 1;
-	ushort got_uzis : 1;
-	ushort got_shotgun : 1;
-	ushort got_m16 : 1;
-	ushort got_rocket : 1;
-	ushort got_grenade : 1;
-	ushort got_harpoon : 1;
+	char pad;
+	ushort available;
+	ushort got_pistols;
+	ushort got_shotgun;
+	ushort got_deserteagle;
+	ushort got_magnums;
+	ushort got_uzis;
+	ushort got_mp5;
+	ushort got_grenade;
+	ushort got_rocket;
+	ushort got_harpoon;
 	ushort secrets;
 	uchar num_icon1;
 	uchar num_icon2;
@@ -1158,7 +1173,7 @@ struct SAVEGAME_INFO
 	ulong AfterSPacific : 3;
 	ulong AfterLondon : 3;
 	ulong AfterNevada : 3;
-	char buffer[12416];
+	char buffer[0x10000];
 };
 
 struct OBJECT_INFO
@@ -2002,14 +2017,16 @@ struct RAINDROP
 struct SNOWFLAKE
 {
 	long x;
-	long old_roomflags : 1;
-	long stopped : 1;
-	long y : 30;
+	long y;
 	long z;
+	long old_roomflags;
+	long stopped;
+	uchar on;
 	char xv;
 	uchar yv;
 	char zv;
 	uchar life;
+	uchar pad;
 };
 
 struct RES_TXT

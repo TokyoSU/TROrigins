@@ -1687,7 +1687,7 @@ static void ObjectObjects()
 	obj->draw_routine = DrawDummyItem;
 
 	obj = &objects[EXTRAFX3];
-	obj->control = ControlRotateyThing;
+	obj->control = ControlTinnosLightShaft;
 	obj->save_position = 1;
 	obj->save_flags = 1;
 
@@ -1858,7 +1858,7 @@ static void ObjectObjects()
 	obj->draw_routine = DrawDummyItem;
 	obj->save_flags = 1;
 
-	obj = &objects[STROBE_LIGHT];
+	obj = &objects[ALARM_LIGHT];
 	obj->control = ControlStrobeLight;
 	obj->save_flags = 1;
 
@@ -2011,7 +2011,7 @@ static void ObjectObjects()
 	obj->save_position = 1;
 	obj->save_flags = 1;
 
-	obj = &objects[GUN_ITEM];
+	obj = &objects[PISTOLS_ITEM];
 	obj->collision = PickUpCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
@@ -2036,12 +2036,12 @@ static void ObjectObjects()
 	obj->save_position = 1;
 	obj->save_flags = 1;
 
-	obj = &objects[M16_ITEM];
+	obj = &objects[MP5_ITEM];
 	obj->collision = PickUpCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
 
-	obj = &objects[MAGNUM_ITEM];
+	obj = &objects[DESERTEAGLE_ITEM];
 	obj->collision = PickUpCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
@@ -2051,22 +2051,27 @@ static void ObjectObjects()
 	obj->save_position = 1;
 	obj->save_flags = 1;
 
+	obj = &objects[MAGNUM_ITEM];
+	obj->collision = PickUpCollision;
+	obj->save_position = 1;
+	obj->save_flags = 1;
+
 	obj = &objects[FLAREBOX_ITEM];
 	obj->collision = PickUpCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
 
-	obj = &objects[GUN_AMMO_ITEM];
+	obj = &objects[PISTOLS_AMMO_ITEM];
 	obj->collision = PickUpCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
 
-	obj = &objects[SG_AMMO_ITEM];
+	obj = &objects[SHOTGUN_AMMO_ITEM];
 	obj->collision = PickUpCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
 
-	obj = &objects[MAG_AMMO_ITEM];
+	obj = &objects[DESERTEAGLE_AMMO_ITEM];
 	obj->collision = PickUpCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
@@ -2076,12 +2081,17 @@ static void ObjectObjects()
 	obj->save_position = 1;
 	obj->save_flags = 1;
 
+	obj = &objects[MAGNUM_AMMO_ITEM];
+	obj->collision = PickUpCollision;
+	obj->save_position = 1;
+	obj->save_flags = 1;
+
 	obj = &objects[HARPOON_AMMO_ITEM];
 	obj->collision = PickUpCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
 
-	obj = &objects[M16_AMMO_ITEM];
+	obj = &objects[MP5_AMMO_ITEM];
 	obj->collision = PickUpCollision;
 	obj->save_position = 1;
 	obj->save_flags = 1;
@@ -2228,7 +2238,7 @@ static void ObjectObjects()
 		obj->save_flags = 1;
 	}
 
-	obj = &objects[BUBBLES1];
+	obj = &objects[BUBBLE_SPRITES];
 	obj->control = ControlBubble1;
 	obj->draw_routine = DrawDummyItem;
 

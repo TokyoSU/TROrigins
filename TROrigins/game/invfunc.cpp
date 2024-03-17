@@ -106,21 +106,23 @@ short inv_keys_qtys[23] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0
 
 /*Main ring items*/
 INVENTORY_ITEM icompass_option = { 0, MAP_OPTION, 1, 0, 0, 0, 1, 1, 0, 4352, 0, -1536, 0, 0, 0, 0, -170, 0, 320, 0, 0xFFFFFFFF, 0xFFFFFFFF, MAP_POS, 0, 0, 0, 0 };
-INVENTORY_ITEM igun_option = { 0, GUN_OPTION, 12, 0, 0, 11, 1, 1, 0, 3200, 0, 2848, 0, 0, -32768, 0, 38, 0, 352, 0, 0xFFFFFFFF, 0xFFFFFFFF, GUN_POS, 0, 0, 0, 0 };
-INVENTORY_ITEM ishotgun_option = { 0, SHOTGUN_OPTION, 13, 0, 0, 12, 1, 1, 0, 3200, 0, 5120, 0, 0, 30720, 0, 0, 0, 228, 0, 0xFFFFFFFF, 0xFFFFFFFF, SGN_POS, 0, 0, 0, 0 };
-INVENTORY_ITEM imagnum_option = { 0, MAGNUM_OPTION, 12, 0, 0, 11, 1, 1, 0, 3200, 0, 3360, 0, 0, -32768, 0, 0, 0, 362, 0, 0xFFFFFFFF, 0xFFFFFFFF, MAG_POS, 0, 0, 0, 0 };
-INVENTORY_ITEM iuzi_option = { 0, UZI_OPTION, 13, 0, 0, 12, 1, 1, 0, 3200, 0, 2336, 0, 0, -32768, 0, 56, 0, 322, 0, 0xFFFFFFFF, 0xFFFFFFFF, UZI_POS, 0, 0, 0, 0 };
-INVENTORY_ITEM im16_option = { 0, M16_OPTION, 12, 0, 0, 11, 1, 1, 0, 3200, 0, -224, 0, 0, -18432, 0, 84, 0, 296, 0, 0xFFFFFFFF, 0xFFFFFFFF, M16_POS, 0, 0, 0, 0 };
+INVENTORY_ITEM ipistols_option = { 0, PISTOLS_OPTION, 12, 0, 0, 11, 1, 1, 0, 3200, 0, 2848, 0, 0, -32768, 0, 38, 0, 352, 0, 0xFFFFFFFF, 0xFFFFFFFF, PISTOL_POS, 0, 0, 0, 0 };
+INVENTORY_ITEM ishotgun_option = { 0, SHOTGUN_OPTION, 13, 0, 0, 12, 1, 1, 0, 3200, 0, 5120, 0, 0, 30720, 0, 0, 0, 228, 0, 0xFFFFFFFF, 0xFFFFFFFF, SHOTGUN_POS, 0, 0, 0, 0 };
+INVENTORY_ITEM ideserteagle_option = { 0, DESERTEAGLE_OPTION, 12, 0, 0, 11, 1, 1, 0, 3200, 0, 3360, 0, 0, -32768, 0, 0, 0, 362, 0, 0xFFFFFFFF, 0xFFFFFFFF, DESERTEAGLE_POS, 0, 0, 0, 0 };
+INVENTORY_ITEM imagnum_option = { 0, MAGNUM_OPTION, 12, 0, 0, 11, 1, 1, 0, 3200, 0, 2848, 0, 0, -32768, 0, 38, 0, 352, 0, 0xFFFFFFFF, 0xFFFFFFFF, MAGNUM_POS, 0, 0, 0, 0 };
+INVENTORY_ITEM iuzi_option = { 0, UZI_OPTION, 13, 0, 0, 12, 1, 1, 0, 3200, 0, 2336, 0, 0, -32768, 0, 56, 0, 322, 0, 0xFFFFFFFF, 0xFFFFFFFF, UZIS_POS, 0, 0, 0, 0 };
+INVENTORY_ITEM imp5_option = { 0, MP5_OPTION, 12, 0, 0, 11, 1, 1, 0, 3200, 0, -224, 0, 0, -18432, 0, 84, 0, 296, 0, 0xFFFFFFFF, 0xFFFFFFFF, MP5_POS, 0, 0, 0, 0 };
 INVENTORY_ITEM irocket_option = { 0, ROCKET_OPTION, 12, 0, 0, 11, 1, 1, 0, 3200, 0, -224, 0, 0, 14336, 0, 56, 0, 296, 0, 0xFFFFFFFF, 0xFFFFFFFF, ROCKET_POS, 0, 0, 0, 0 };
 INVENTORY_ITEM igrenade_option = { 0, GRENADE_OPTION, 12, 0, 0, 11, 1, 1, 0, 3200, 0, -224, 0, 0, 14336, 0, 56, 0, 296, 0, 0xFFFFFFFF, 0xFFFFFFFF, GRENADE_POS, 0, 0, 0, 0 };
 INVENTORY_ITEM iharpoon_option = { 0, HARPOON_OPTION, 12, 0, 0, 11, 1, 1, 0, 3200, 0, -736, 0, 0, -19456, 0, 58, 0, 296, 0, 0xFFFFFFFF, 0xFFFFFFFF, HARPOON_POS, 0, 0, 0, 0 };
 INVENTORY_ITEM iflare_option = { 0, FLAREBOX_OPTION, 31, 0, 0, 30, 1, 1, 0, 3200, 0, 0, 0, 0, -8192, 0, 0, 0, 296, 0, 0xFFFFFFFF, 0xFFFFFFFF, FLR_POS, 0, 0, 0, 0 };
 
-INVENTORY_ITEM igunammo_option = { 0, GUN_AMMO_OPTION, 1, 0, 0, 0, 1, 1, 0, 3200, 0, -3808, 0, 0, 0, 0, 0, 0, 296, 0, 0xFFFFFFFF, 0xFFFFFFFF, GUN_POS, 0, 0, 0, 0 };
-INVENTORY_ITEM isgunammo_option = { 0, SG_AMMO_OPTION, 1, 0, 0, 0, 1, 1, 0, 3200, 0, -3808, 0, 0, 0, 0, 0, 0, 296, 0, 0xFFFFFFFF, 0xFFFFFFFF, SGN_POS, 0, 0, 0, 0 };
-INVENTORY_ITEM imagammo_option = { 0, MAG_AMMO_OPTION, 1, 0, 0, 0, 1, 1, 0, 3200, 0, -3808, 0, 0, 0, 0, 0, 0, 296, 0, 0xFFFFFFFF, 0xFFFFFFFF, MAG_POS, 0, 0, 0, 0 };
-INVENTORY_ITEM iuziammo_option = { 0, UZI_AMMO_OPTION, 1, 0, 0, 0, 1, 1, 0, 3200, 0, -3808, 0, 0, 0, 0, 0, 0, 296, 0, 0xFFFFFFFF, 0xFFFFFFFF, UZI_POS, 0, 0, 0, 0 };
-INVENTORY_ITEM im16ammo_option = { 0, M16_AMMO_OPTION, 1, 0, 0, 0, 1, 1, 0, 3200, 0, -3808, 0, 0, 0, 0, 0, 0, 296, 0, 0xFFFFFFFF, 0xFFFFFFFF, M16_POS, 0, 0, 0, 0 };
+INVENTORY_ITEM igunammo_option = { 0, PISTOLS_AMMO_OPTION, 1, 0, 0, 0, 1, 1, 0, 3200, 0, -3808, 0, 0, 0, 0, 0, 0, 296, 0, 0xFFFFFFFF, 0xFFFFFFFF, PISTOL_POS, 0, 0, 0, 0 };
+INVENTORY_ITEM ishotgunammo_option = { 0, SHOTGUN_AMMO_OPTION, 1, 0, 0, 0, 1, 1, 0, 3200, 0, -3808, 0, 0, 0, 0, 0, 0, 296, 0, 0xFFFFFFFF, 0xFFFFFFFF, SHOTGUN_POS, 0, 0, 0, 0 };
+INVENTORY_ITEM imagnumammo_option = { 0, MAGNUM_AMMO_OPTION, 1, 0, 0, 0, 1, 1, 0, 3200, 0, -3808, 0, 0, 0, 0, 0, 0, 296, 0, 0xFFFFFFFF, 0xFFFFFFFF, MAGNUM_POS, 0, 0, 0, 0 };
+INVENTORY_ITEM iuziammo_option = { 0, UZI_AMMO_OPTION, 1, 0, 0, 0, 1, 1, 0, 3200, 0, -3808, 0, 0, 0, 0, 0, 0, 296, 0, 0xFFFFFFFF, 0xFFFFFFFF, UZIS_POS, 0, 0, 0, 0 };
+INVENTORY_ITEM ideserteagleammo_option = { 0, DESERTEAGLE_AMMO_OPTION, 1, 0, 0, 0, 1, 1, 0, 3200, 0, -3808, 0, 0, 0, 0, 0, 0, 296, 0, 0xFFFFFFFF, 0xFFFFFFFF, DESERTEAGLE_POS, 0, 0, 0, 0 };
+INVENTORY_ITEM imp5ammo_option = { 0, MP5_AMMO_OPTION, 1, 0, 0, 0, 1, 1, 0, 3200, 0, -3808, 0, 0, 0, 0, 0, 0, 296, 0, 0xFFFFFFFF, 0xFFFFFFFF, MP5_POS, 0, 0, 0, 0 };
 INVENTORY_ITEM irocketammo_option = { 0, ROCKET_AMMO_OPTION, 1, 0, 0, 0, 1, 1, 0, 3200, 0, -3808, 0, 0, 0, 0, 0, 0, 296, 0, 0xFFFFFFFF, 0xFFFFFFFF, ROCKET_POS, 0, 0, 0, 0 };
 INVENTORY_ITEM igrenadeammo_option = { 0, GRENADE_AMMO_OPTION, 1, 0, 0, 0, 1, 1, 0, 3200, 0, -3808, 0, 0, 0, 0, 0, 0, 296, 0, 0xFFFFFFFF, 0xFFFFFFFF, GRENADE_POS, 0, 0, 0, 0 };
 INVENTORY_ITEM iharpoonammo_option = { 0, HARPOON_AMMO_OPTION, 1, 0, 0, 0, 1, 1, 0, 3200, 0, -3808, 0, 0, 0, 0, 0, 0, 296, 0, 0xFFFFFFFF, 0xFFFFFFFF, HARPOON_POS, 0, 0, 0, 0 };
@@ -167,18 +169,19 @@ INVENTORY_ITEM* inv_main_list[23] =
 {
 	&icompass_option,
 	&iflare_option,
-	&igun_option,
+	&ipistols_option,
 	&ishotgun_option,
+	&ideserteagle_option,
 	&imagnum_option,
 	&iuzi_option,
-	&im16_option,
+	&imp5_option,
 	&irocket_option,
 	&igrenade_option,
 	&iharpoon_option,
 	&ibigmedi_option,
 	&imedi_option,
 	&sgcrystal_option,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+	0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
 INVENTORY_ITEM* inv_keys_list[23] =
@@ -1671,12 +1674,12 @@ void RingNotActive(INVENTORY_ITEM* inv_item)
 		wsprintf(txt, "%5d", lara.shotgun.ammo / 6);
 		break;
 
-	case MAGNUM_OPTION:
+	case DESERTEAGLE_OPTION:
 
 		if (Inv_itemText[1] || savegame.bonus_flag)
 			return;
 
-		wsprintf(txt, "%5d", lara.magnums.ammo);
+		wsprintf(txt, "%5d", lara.deserteagle.ammo);
 		break;
 
 	case UZI_OPTION:
@@ -1687,6 +1690,14 @@ void RingNotActive(INVENTORY_ITEM* inv_item)
 		wsprintf(txt, "%5d", lara.uzis.ammo);
 		break;
 
+	case MAGNUM_OPTION:
+
+		if (Inv_itemText[1] || savegame.bonus_flag)
+			return;
+
+		wsprintf(txt, "%5d", lara.magnums.ammo);
+		break;
+
 	case HARPOON_OPTION:
 
 		if (Inv_itemText[1] || savegame.bonus_flag)
@@ -1695,12 +1706,12 @@ void RingNotActive(INVENTORY_ITEM* inv_item)
 		wsprintf(txt, "%5d", lara.harpoon.ammo);
 		break;
 
-	case M16_OPTION:
+	case MP5_OPTION:
 
 		if (Inv_itemText[1] || savegame.bonus_flag)
 			return;
 
-		wsprintf(txt, "%5d", lara.m16.ammo);
+		wsprintf(txt, "%5d", lara.mp5.ammo);
 		break;
 
 	case ROCKET_OPTION:
@@ -1719,7 +1730,7 @@ void RingNotActive(INVENTORY_ITEM* inv_item)
 		wsprintf(txt, "%5d", lara.grenade.ammo);
 		break;
 
-	case SG_AMMO_OPTION:
+	case SHOTGUN_AMMO_OPTION:
 
 		if (Inv_itemText[1])
 			return;
@@ -1727,9 +1738,9 @@ void RingNotActive(INVENTORY_ITEM* inv_item)
 		wsprintf(txt, "%5d", qty * 2);
 		break;
 
-	case MAG_AMMO_OPTION:
+	case DESERTEAGLE_AMMO_OPTION:
 	case UZI_AMMO_OPTION:
-	case M16_AMMO_OPTION:
+	case MP5_AMMO_OPTION:
 
 		if (Inv_itemText[1] || savegame.bonus_flag)
 			return;
@@ -1801,29 +1812,33 @@ long Inv_GetItemOption(long item_number)
 {
 	switch (item_number)
 	{
-	case GUN_ITEM:
-	case GUN_OPTION:
-		return GUN_OPTION;
+	case PISTOLS_ITEM:
+	case PISTOLS_OPTION:
+		return PISTOLS_OPTION;
 		
 	case SHOTGUN_ITEM:
 	case SHOTGUN_OPTION:
 		return SHOTGUN_OPTION;
 		
-	case MAGNUM_ITEM:
-	case MAGNUM_OPTION:
-		return MAGNUM_OPTION;
+	case DESERTEAGLE_ITEM:
+	case DESERTEAGLE_OPTION:
+		return DESERTEAGLE_OPTION;
 		
 	case UZI_ITEM:
 	case UZI_OPTION:
 		return UZI_OPTION;
 		
+	case MAGNUM_ITEM:
+	case MAGNUM_OPTION:
+		return MAGNUM_OPTION;
+
 	case HARPOON_ITEM:
 	case HARPOON_OPTION:
 		return HARPOON_OPTION;
 		
-	case M16_ITEM:
-	case M16_OPTION:
-		return M16_OPTION;
+	case MP5_ITEM:
+	case MP5_OPTION:
+		return MP5_OPTION;
 		
 	case ROCKET_GUN_ITEM:
 	case ROCKET_OPTION:
@@ -1833,25 +1848,29 @@ long Inv_GetItemOption(long item_number)
 	case GRENADE_OPTION:
 		return GRENADE_OPTION;
 		
-	case SG_AMMO_ITEM:
-	case SG_AMMO_OPTION:
-		return SG_AMMO_OPTION;
+	case SHOTGUN_AMMO_ITEM:
+	case SHOTGUN_AMMO_OPTION:
+		return SHOTGUN_AMMO_OPTION;
 		
-	case MAG_AMMO_ITEM:
-	case MAG_AMMO_OPTION:
-		return MAG_AMMO_OPTION;
+	case DESERTEAGLE_AMMO_ITEM:
+	case DESERTEAGLE_AMMO_OPTION:
+		return DESERTEAGLE_AMMO_OPTION;
 		
 	case UZI_AMMO_ITEM:
 	case UZI_AMMO_OPTION:
 		return UZI_AMMO_OPTION;
 		
+	case MAGNUM_AMMO_ITEM:
+	case MAGNUM_AMMO_OPTION:
+		return MAGNUM_AMMO_OPTION;
+
 	case HARPOON_AMMO_ITEM:
 	case HARPOON_AMMO_OPTION:
 		return HARPOON_AMMO_OPTION;
 		
-	case M16_AMMO_ITEM:
-	case M16_AMMO_OPTION:
-		return M16_AMMO_OPTION;
+	case MP5_AMMO_ITEM:
+	case MP5_AMMO_OPTION:
+		return MP5_AMMO_OPTION;
 		
 	case ROCKET_AMMO_ITEM:
 	case ROCKET_AMMO_OPTION:
@@ -2095,10 +2114,43 @@ void Inv_RemoveAllItems()
 	inv_keys_current = 0;
 }
 
+static long Inv_AddItemIntern(OBJECT_TYPES weaponID, OBJECT_TYPES ammoID, INVENTORY_ITEM* insertedItem, long* laraAmmoPtr, long givenAmmo, bool isBackItem, short animObjNum, lara_gun_types lastGunType)
+{
+	long n = Inv_RequestItem(ammoID);
+	if (n)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			Inv_RemoveItem(ammoID);
+			*laraAmmoPtr += givenAmmo;
+		}
+	}
+
+	*laraAmmoPtr += givenAmmo;
+	Inv_InsertItem(insertedItem);
+
+	if (isBackItem)
+	{
+		if (lara.last_gun_type == LG_UNARMED)
+			lara.last_gun_type = lastGunType;
+		if (lara.back_gun == 0)
+			lara.back_gun = animObjNum;
+	}
+	else if (lara.last_gun_type == LG_UNARMED)
+	{
+		lara.last_gun_type = lastGunType;
+		lara.mesh_ptrs[THIGH_L] = meshes[objects[animObjNum].mesh_index + THIGH_L];
+		lara.mesh_ptrs[THIGH_R] = meshes[objects[animObjNum].mesh_index + THIGH_R];
+	}
+	
+	GlobalItemReplace(weaponID, ammoID);
+	return 0;
+}
+
 long Inv_AddItem(long item_number)
 {
 	INVENTORY_ITEM* item;
-	long obj_num, add, nMain, nKeys, n;
+	long obj_num, add, nMain, nKeys;
 
 	obj_num = Inv_GetItemOption(item_number);
 	add = 0;
@@ -2106,7 +2158,6 @@ long Inv_AddItem(long item_number)
 	for (nMain = 0; nMain < inv_main_objects; nMain++)
 	{
 		item = inv_main_list[nMain];
-
 		if (item->object_number == obj_num)
 		{
 			add = 1;
@@ -2117,7 +2168,6 @@ long Inv_AddItem(long item_number)
 	for (nKeys = 0; nKeys < inv_keys_objects; nKeys++)
 	{
 		item = inv_keys_list[nKeys];
-
 		if (item->object_number == obj_num)
 		{
 			add = 2;
@@ -2150,9 +2200,9 @@ long Inv_AddItem(long item_number)
 		Inv_InsertItem(&icompass_option);
 		return 1;
 
-	case GUN_ITEM:
-	case GUN_OPTION:
-		Inv_InsertItem(&igun_option);
+	case PISTOLS_ITEM:
+	case PISTOLS_OPTION:
+		Inv_InsertItem(&ipistols_option);
 
 		if (lara.last_gun_type == LG_UNARMED)
 		{
@@ -2165,151 +2215,61 @@ long Inv_AddItem(long item_number)
 
 	case SHOTGUN_ITEM:
 	case SHOTGUN_OPTION:
-		n = Inv_RequestItem(SG_AMMO_ITEM);
-
-		if (n)
-		{
-			for (int i = 0; i < n; i++)
-			{
-				Inv_RemoveItem(SG_AMMO_ITEM);
-				lara.shotgun.ammo += 12;
-			}
-		}
-
-		lara.shotgun.ammo += 12;
-		Inv_InsertItem(&ishotgun_option);
-
-		if (lara.last_gun_type == LG_UNARMED)
-			lara.last_gun_type = LG_SHOTGUN;
-
-		if (!lara.back_gun)
-			lara.back_gun = 3;
-
-		GlobalItemReplace(SHOTGUN_ITEM, SG_AMMO_ITEM);
+		Inv_AddItemIntern(SHOTGUN_ITEM, SHOTGUN_AMMO_ITEM, &ishotgun_option, &lara.shotgun.ammo, SHOTGUN_AMMO, true, SHOTGUN, LG_SHOTGUN);
 		return 0;
 
-	case MAGNUM_ITEM:
-	case MAGNUM_OPTION:
-		n = Inv_RequestItem(MAG_AMMO_ITEM);
-
-		if (n)
-		{
-			for (int i = 0; i < n; i++)
-			{
-				Inv_RemoveItem(MAG_AMMO_ITEM);
-				lara.magnums.ammo += 10;
-			}
-		}
-
-		lara.magnums.ammo += 10;
-		Inv_InsertItem(&imagnum_option);
-		GlobalItemReplace(MAGNUM_ITEM, MAG_AMMO_ITEM);
+	case DESERTEAGLE_ITEM:
+	case DESERTEAGLE_OPTION:
+		Inv_AddItemIntern(DESERTEAGLE_ITEM, DESERTEAGLE_AMMO_ITEM, &ideserteagle_option, &lara.deserteagle.ammo, DESERTEAGLE_AMMO, false, DESERTEAGLE, LG_DESERTEAGLE);
 		return 0;
 
 	case UZI_ITEM:
 	case UZI_OPTION:
-		n = Inv_RequestItem(UZI_AMMO_ITEM);
+		Inv_AddItemIntern(UZI_ITEM, UZI_AMMO_ITEM, &iuzi_option, &lara.uzis.ammo, UZIS_AMMO, false, UZI, LG_UZIS);
+		return 0;
 
-		if (n)
-		{
-			for (int i = 0; i < n; i++)
-			{
-				Inv_RemoveItem(UZI_AMMO_ITEM);
-				lara.uzis.ammo += 40;
-			}
-		}
-
-		lara.uzis.ammo += 40;
-		Inv_InsertItem(&iuzi_option);
-		GlobalItemReplace(UZI_ITEM, UZI_AMMO_ITEM);
+	case MAGNUM_ITEM:
+	case MAGNUM_OPTION:
+		Inv_AddItemIntern(MAGNUM_ITEM, MAGNUM_AMMO_ITEM, &imagnum_option, &lara.magnums.ammo, MAGNUMS_AMMO, false, MAGNUMS, LG_MAGNUMS);
 		return 0;
 
 	case HARPOON_ITEM:
 	case HARPOON_OPTION:
-		n = Inv_RequestItem(HARPOON_AMMO_ITEM);
-
-		if (n)
-		{
-			for (int i = 0; i < n; i++)
-				Inv_RemoveItem(HARPOON_AMMO_ITEM);
-		}
-
-		lara.harpoon.ammo += 3;
-		Inv_InsertItem(&iharpoon_option);
-		GlobalItemReplace(HARPOON_ITEM, HARPOON_AMMO_ITEM);
+		Inv_AddItemIntern(HARPOON_ITEM, HARPOON_AMMO_ITEM, &iharpoon_option, &lara.harpoon.ammo, HARPOON_AMMO, true, HARPOON_GUN, LG_HARPOON);
 		return 0;
 
-	case M16_ITEM:
-	case M16_OPTION:
-		n = Inv_RequestItem(M16_AMMO_ITEM);
-
-		if (n)
-		{
-			for (int i = 0; i < n; i++)
-			{
-				Inv_RemoveItem(M16_AMMO_ITEM);
-				lara.m16.ammo += 60;
-			}
-		}
-
-		lara.m16.ammo += 60;
-		Inv_InsertItem(&im16_option);
-		GlobalItemReplace(M16_ITEM, M16_AMMO_ITEM);
+	case MP5_ITEM:
+	case MP5_OPTION:
+		Inv_AddItemIntern(MP5_ITEM, MP5_AMMO_ITEM, &imp5_option, &lara.mp5.ammo, MP5_AMMO, true, MP5, LG_MP5);
 		return 0;
 
 	case ROCKET_GUN_ITEM:
 	case ROCKET_OPTION:
-		n = Inv_RequestItem(ROCKET_AMMO_ITEM);
-
-		if (n)
-		{
-			for (int i = 0; i < n; i++)
-			{
-				Inv_RemoveItem(ROCKET_AMMO_ITEM);
-				lara.rocket.ammo++;
-			}
-		}
-
-		lara.rocket.ammo++;
-		Inv_InsertItem(&irocket_option);
-		GlobalItemReplace(ROCKET_GUN_ITEM, ROCKET_AMMO_ITEM);
+		Inv_AddItemIntern(ROCKET_GUN_ITEM, ROCKET_AMMO_ITEM, &irocket_option, &lara.rocket.ammo, ROCKET_AMMO, true, ROCKET_GUN, LG_ROCKET);
 		return 0;
 
 	case GRENADE_GUN_ITEM:
 	case GRENADE_OPTION:
-		n = Inv_RequestItem(GRENADE_AMMO_ITEM);
-
-		if (n)
-		{
-			for (int i = 0; i < n; i++)
-			{
-				Inv_RemoveItem(GRENADE_AMMO_ITEM);
-				lara.grenade.ammo += 2;
-			}
-		}
-
-		lara.grenade.ammo += 2;
-		Inv_InsertItem(&igrenade_option);
-		GlobalItemReplace(GRENADE_GUN_ITEM, GRENADE_AMMO_ITEM);
+		Inv_AddItemIntern(GRENADE_GUN_ITEM, GRENADE_AMMO_ITEM, &igrenade_option, &lara.grenade.ammo, GRENADE_AMMO, true, GRENADE_GUN, LG_GRENADE);
 		return 0;
 
-	case SG_AMMO_ITEM:
-	case SG_AMMO_OPTION:
+	case SHOTGUN_AMMO_ITEM:
+	case SHOTGUN_AMMO_OPTION:
 
 		if (Inv_RequestItem(SHOTGUN_ITEM))
-			lara.shotgun.ammo += 12;
+			lara.shotgun.ammo += SHOTGUN_AMMO;
 		else
-			Inv_InsertItem(&isgunammo_option);
+			Inv_InsertItem(&ishotgunammo_option);
 
 		return 0;
 
-	case MAG_AMMO_ITEM:
-	case MAG_AMMO_OPTION:
+	case DESERTEAGLE_AMMO_ITEM:
+	case DESERTEAGLE_AMMO_OPTION:
 
-		if (Inv_RequestItem(MAGNUM_ITEM))
-			lara.magnums.ammo += 10;
+		if (Inv_RequestItem(DESERTEAGLE_ITEM))
+			lara.deserteagle.ammo += DESERTEAGLE_AMMO;
 		else
-			Inv_InsertItem(&imagammo_option);
+			Inv_InsertItem(&ideserteagleammo_option);
 
 		return 0;
 
@@ -2317,28 +2277,39 @@ long Inv_AddItem(long item_number)
 	case UZI_AMMO_OPTION:
 
 		if (Inv_RequestItem(UZI_ITEM))
-			lara.uzis.ammo += 40;
+			lara.uzis.ammo += UZIS_AMMO;
 		else
 			Inv_InsertItem(&iuziammo_option);
 
 		return 0;
 
+	case MAGNUM_AMMO_ITEM:
+	case MAGNUM_AMMO_OPTION:
+
+		if (Inv_RequestItem(MAGNUM_ITEM))
+			lara.magnums.ammo += MAGNUMS_AMMO;
+		else
+			Inv_InsertItem(&imagnumammo_option);
+
+		return 0;
+
 	case HARPOON_AMMO_ITEM:
 	case HARPOON_AMMO_OPTION:
-		lara.harpoon.ammo += 3;
 
-		if (!Inv_RequestItem(HARPOON_ITEM) && !Inv_RequestItem(HARPOON_AMMO_ITEM))
+		if (Inv_RequestItem(HARPOON_ITEM))
+			lara.harpoon.ammo += HARPOON_AMMO;
+		else
 			Inv_InsertItem(&iharpoonammo_option);
 
 		return 0;
 
-	case M16_AMMO_ITEM:
-	case M16_AMMO_OPTION:
+	case MP5_AMMO_ITEM:
+	case MP5_AMMO_OPTION:
 
-		if (Inv_RequestItem(M16_ITEM))
-			lara.m16.ammo += 60;
+		if (Inv_RequestItem(MP5_ITEM))
+			lara.mp5.ammo += MP5_AMMO;
 		else
-			Inv_InsertItem(&im16ammo_option);
+			Inv_InsertItem(&imp5ammo_option);
 
 		return 0;
 
@@ -2346,7 +2317,7 @@ long Inv_AddItem(long item_number)
 	case ROCKET_AMMO_OPTION:
 
 		if (Inv_RequestItem(ROCKET_GUN_ITEM))
-			lara.rocket.ammo++;
+			lara.rocket.ammo += ROCKET_AMMO;
 		else
 			Inv_InsertItem(&irocketammo_option);
 
@@ -2356,7 +2327,7 @@ long Inv_AddItem(long item_number)
 	case GRENADE_AMMO_OPTION:
 
 		if (Inv_RequestItem(GRENADE_GUN_ITEM))
-			lara.grenade.ammo += 2;
+			lara.grenade.ammo += GRENADE_AMMO;
 		else
 			Inv_InsertItem(&igrenadeammo_option);
 

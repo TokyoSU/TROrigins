@@ -97,10 +97,10 @@ typedef unsigned long ulong;
 #define MAX_STATICS		256		//was 50
 #define MAX_ITEMS		1024	//was 256
 #define NLAYOUTKEYS		15
-#define MAX_WEATHER		256
-#define MAX_WEATHER_ALIVE	32	//was 8
+#define MAX_WEATHER	256
+#define MAX_WEATHER_ALIVE 16 // was 8
 
-#define MALLOC_SIZE	15000000	//15 MB (was around 3.6 MB)
+#define MALLOC_SIZE	15000000	// 15 MB (was around 3.6 MB)
 
 #define FRAMES_PER_SECOND	30
 #define TICKS_PER_FRAME		2
@@ -2019,14 +2019,14 @@ struct SNOWFLAKE
 	long x;
 	long y;
 	long z;
-	long old_roomflags;
 	long stopped;
-	uchar on;
+	short room_number;
+	short life;
 	char xv;
-	uchar yv;
+	char yv;
 	char zv;
-	uchar life;
-	uchar pad;
+	uchar on;
+	uchar size;
 };
 
 struct RES_TXT

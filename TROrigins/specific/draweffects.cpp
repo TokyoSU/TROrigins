@@ -28,6 +28,7 @@
 #include "gameflow.h"
 #include "../newstuff/LaraDraw.h"
 #include "tomb3.h"
+#include "camera.h"
 
 static BITE_INFO NodeOffsets[16] =
 {
@@ -98,7 +99,7 @@ uchar CurrentStartWake;
 
 static char scratchpad[0x2000];
 
-static void ProjectPHDVBuf(FVECTOR* pos, PHD_VBUF* v, ulong c, bool cFlag)
+void ProjectPHDVBuf(FVECTOR* pos, PHD_VBUF* v, ulong c, bool cFlag)
 {
 	float zv, zT;
 	float m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23;
@@ -222,10 +223,10 @@ static void ClipCheckPoint(PHD_VBUF* v, long x, long y, long z, bool divideByPer
 		v->ooz = v->zv * f_oneopersp;
 }
 
-static void setXYZ3(PHD_VBUF* v,
+void setXYZ3(PHD_VBUF* v,
 	long x1, long y1, long z1, long xv1, long yv1, long c1,
 	long x2, long y2, long z2, long xv2, long yv2, long c2,
-	long x3, long y3, long z3, long xv3, long yv3, long c3, bool divideByPersp = true)
+	long x3, long y3, long z3, long xv3, long yv3, long c3, bool divideByPersp)
 {
 	ClipCheckPoint(&v[0], x1, y1, z1, xv1, yv1, divideByPersp);
 	ClipCheckPoint(&v[1], x2, y2, z2, xv2, yv2, divideByPersp);
@@ -235,10 +236,10 @@ static void setXYZ3(PHD_VBUF* v,
 	v[2].color = c3;
 }
 
-static void setXYZ3(PHD_VBUF* v,
+void setXYZ3(PHD_VBUF* v,
 	long x1, long y1, long z1, long c1,
 	long x2, long y2, long z2, long c2,
-	long x3, long y3, long z3, long c3, bool divideByPersp = true)
+	long x3, long y3, long z3, long c3, bool divideByPersp)
 
 {
 	ClipCheckPoint(&v[0], x1, y1, z1, divideByPersp);
@@ -249,11 +250,11 @@ static void setXYZ3(PHD_VBUF* v,
 	v[2].color = c3;
 }
 
-static void setXYZ4(PHD_VBUF* v,
+void setXYZ4(PHD_VBUF* v,
 	long x1, long y1, long z1, long xv1, long yv1, long c1,
 	long x2, long y2, long z2, long xv2, long yv2, long c2,
 	long x3, long y3, long z3, long xv3, long yv3, long c3,
-	long x4, long y4, long z4, long xv4, long yv4, long c4, bool divideByPersp = true)
+	long x4, long y4, long z4, long xv4, long yv4, long c4, bool divideByPersp)
 {
 	long r, g, b;
 
@@ -283,11 +284,11 @@ static void setXYZ4(PHD_VBUF* v,
 	v[3].color = RGB_MAKE(r, g, b);
 }
 
-static void setXYZ4(PHD_VBUF* v,
+void setXYZ4(PHD_VBUF* v,
 	long x1, long y1, long z1, long c1,
 	long x2, long y2, long z2, long c2,
 	long x3, long y3, long z3, long c3,
-	long x4, long y4, long z4, long c4, bool divideByPersp = true)
+	long x4, long y4, long z4, long c4, bool divideByPersp)
 {
 	long r, g, b;
 
@@ -998,7 +999,6 @@ void DoSnow()
 	ulong c;
 	long w, h, rad, angle, ox, oy, oz, r, tx, ty, tz, x, y, z, size;
 	ushort u1, v1, u2, v2;
-	char clipFlag;
 
 #if (DIRECT3D_VERSION >= 0x900)
 	dm = &App.lpDeviceInfo->D3DInfo[App.lpDXConfig->nD3D].DisplayMode[App.lpDXConfig->nVMode];
@@ -1007,7 +1007,6 @@ void DoSnow()
 #endif
 	w = dm->w;
 	h = dm->h;
-	bBlueEffect = 0;
 
 	for (int i = 0, num_alive = 0; i < MAX_WEATHER; i++)
 	{
@@ -1017,9 +1016,9 @@ void DoSnow()
 			num_alive++;
 			rad = GetRandomDraw() & 0xFFF;
 			angle = GetRandomDraw() & 0x1FFE;
-			snow->x = lara_item->pos.x_pos + (rad * rcossin_tbl[angle] >> 12);
-			snow->y = lara_item->pos.y_pos - 1024 - (GetRandomDraw() & 0x7FF);
-			snow->z = lara_item->pos.z_pos + (rad * rcossin_tbl[angle + 1] >> 12);
+			snow->x = camera.pos.x + ((rad * rcossin_tbl[angle]) >> 12);
+			snow->y = camera.pos.y - 1024 - (GetRandomDraw() & 0x7FF);
+			snow->z = camera.pos.z + ((rad * rcossin_tbl[angle + 1]) >> 12);
 
 			if (IsRoomOutside(snow->x, snow->y, snow->z) < 0)
 			{
@@ -1030,9 +1029,9 @@ void DoSnow()
 			snow->stopped = 0;
 			snow->on = 1;
 			snow->xv = (GetRandomDraw() & 7) - 4;
-			snow->yv = (GetRandomDraw() % 24 + 8) << 3;
+			snow->yv = ((GetRandomDraw() & 0xF) + 8) << 3;
 			snow->zv = (GetRandomDraw() & 7) - 4;
-			snow->life = 96 - (snow->yv << 1);
+			snow->life = 112 - (snow->yv >> 2);
 		}
 
 		ox = snow->x;
@@ -1042,26 +1041,23 @@ void DoSnow()
 		if (!snow->stopped)
 		{
 			snow->x += snow->xv;
-			snow->y += (snow->yv & 0xF8) >> 2;
+			snow->y += (snow->yv >> 1) & 0xFC;
 			snow->z += snow->zv;
-			r = IsRoomOutside(snow->x, snow->y, snow->z);
 
+			r = IsRoomOutside(snow->x, snow->y, snow->z);
 			if (r == -3)
 			{
 				snow->on = 0;
 				continue;
 			}
-
-			if (r == -2 || room[IsRoomOutsideNo].flags & ROOM_UNDERWATER)
+			else if (r == -2 || room[IsRoomOutsideNo].flags & ROOM_UNDERWATER)
 			{
 				snow->stopped = 1;
 				snow->x = ox;
 				snow->y = oy;
 				snow->z = oz;
-
 				if (snow->life > 16)
 					snow->life = 16;
-
 				if (snow->yv > 16)
 					snow->yv -= 16;
 			}
@@ -1076,20 +1072,23 @@ void DoSnow()
 		if ((abs(CamPos.x - snow->x) > 6000 || abs(CamPos.z - snow->z) > 6000) && snow->life > 16)
 			snow->life = 16;
 
-		if (snow->xv < SmokeWindX << 1)
+		if (snow->xv < (SmokeWindX << 1))
 			snow->xv++;
-		else if (snow->xv > SmokeWindX << 1)
+		else if (snow->xv > (SmokeWindX << 1))
 			snow->xv--;
 
-		if (snow->zv < SmokeWindZ << 1)
+		if (snow->zv < (SmokeWindZ << 1))
 			snow->zv++;
-		else if (snow->zv > SmokeWindZ << 1)
+		else if (snow->zv > (SmokeWindZ << 1))
 			snow->zv--;
 
 		snow->life -= 2;
-		if ((snow->yv & 7) != 7)
+		if ((snow->yv & 7) < 7)
 			snow->yv++;
 	}
+
+	bool oldBlueEffect = bBlueEffect;
+	bBlueEffect = false;
 
 	sprite = &phdspriteinfo[objects[DEFAULT_SPRITES].mesh_index + 17];
 	u1 = (sprite->offset << 8) & 0xFF00;
@@ -1106,7 +1105,7 @@ void DoSnow()
 	v[2].v = v2;
 
 	phd_PushMatrix();
-	phd_TranslateAbs(lara_item->pos.x_pos, lara_item->pos.y_pos, lara_item->pos.z_pos);
+	phd_TranslateAbs(camera.pos.x, camera.pos.y, camera.pos.z);
 
 	for (int i = 0; i < MAX_WEATHER; i++)
 	{
@@ -1114,36 +1113,30 @@ void DoSnow()
 		if (!snow->on)
 			continue;
 
-		tx = snow->x - lara_item->pos.x_pos;
-		ty = snow->y - lara_item->pos.y_pos;
-		tz = snow->z - lara_item->pos.z_pos;
+		tx = snow->x - camera.pos.x;
+		ty = snow->y - camera.pos.y;
+		tz = snow->z - camera.pos.z;
 		pos.x = tx * phd_mxptr[M00] + ty * phd_mxptr[M01] + tz * phd_mxptr[M02] + phd_mxptr[M03];
 		pos.y = tx * phd_mxptr[M10] + ty * phd_mxptr[M11] + tz * phd_mxptr[M12] + phd_mxptr[M13];
 		pos.z = tx * phd_mxptr[M20] + ty * phd_mxptr[M21] + tz * phd_mxptr[M22] + phd_mxptr[M23];
 		zv = f_persp / (float)pos.z;
+		if (pos.z < phd_znear)
+			continue;
+
 		pos.x = long(float(pos.x * zv + f_centerx));
 		pos.y = long(float(pos.y * zv + f_centery));
 		x = pos.x;
 		y = pos.y;
 		z = pos.z;
-
-		// NOTE: this cause the snowflake to disappear if you look at the floor...
-		/*if ((z >> W2V_SHIFT) < 128)
-		{
-			if (snow->life > 16)
-				snow->life = 16;
-			continue;
-		}*/
-
 		if (x < 0 || x > w || y < 0 || y > h)
 			continue;
 
-		size = phd_persp * (snow->yv >> 3) / (z >> 16);
+		size = (phd_persp * (snow->yv >> 3)) / (z >> 16);
 		if (size < 4)
 			size = 4;
 		else if (size > 16)
 			size = 16;
-		size = (size * 0x2AAB) >> 15;	//this scales it down to about a third of the size
+		size = (size * 0x2AAB) >> 15; // this scales it down to about a third of the size
 		size = GetFixedScale(size);
 
 		if ((snow->yv & 7) < 7)
@@ -1162,6 +1155,8 @@ void DoSnow()
 	}
 
 	phd_PopMatrix();
+
+	bBlueEffect = oldBlueEffect;
 }
 
 void DrawExplosionRings()

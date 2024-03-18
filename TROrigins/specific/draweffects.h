@@ -1,6 +1,26 @@
 #pragma once
 #include "../global/types.h"
 
+void ProjectPHDVBuf(FVECTOR* pos, PHD_VBUF* v, ulong c, bool cFlag);
+void setXYZ3(PHD_VBUF* v,
+	long x1, long y1, long z1, long xv1, long yv1, long c1,
+	long x2, long y2, long z2, long xv2, long yv2, long c2,
+	long x3, long y3, long z3, long xv3, long yv3, long c3, bool divideByPersp = true);
+void setXYZ3(PHD_VBUF* v,
+	long x1, long y1, long z1, long c1,
+	long x2, long y2, long z2, long c2,
+	long x3, long y3, long z3, long c3, bool divideByPersp = true);
+void setXYZ4(PHD_VBUF* v,
+	long x1, long y1, long z1, long xv1, long yv1, long c1,
+	long x2, long y2, long z2, long xv2, long yv2, long c2,
+	long x3, long y3, long z3, long xv3, long yv3, long c3,
+	long x4, long y4, long z4, long xv4, long yv4, long c4, bool divideByPersp = true);
+void setXYZ4(PHD_VBUF* v,
+	long x1, long y1, long z1, long c1,
+	long x2, long y2, long z2, long c2,
+	long x3, long y3, long z3, long c3,
+	long x4, long y4, long z4, long c4, bool divideByPersp = true);
+
 void LaraElectricDeath(long lr, ITEM_INFO* item);
 bool ClipLine(long& x1, long& y1, long& x2, long& y2, long w, long h);
 void S_DrawWakeFX(ITEM_INFO* item);

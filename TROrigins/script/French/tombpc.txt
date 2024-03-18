@@ -57,7 +57,6 @@ end:
 Level: La Jungle
 track: 34
 Load_pic: pix\india.bmp
-Rain:
 game: data\jungle.TR2
 Key4: Cl)e d'Indra
 track: 64

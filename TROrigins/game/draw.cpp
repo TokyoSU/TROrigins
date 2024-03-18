@@ -22,6 +22,7 @@
 #include "camera.h"
 #include "../newstuff/LaraDraw.h"
 #include "tomb3.h"
+#include "tr3/snow_effect.h"
 
 static uchar EnemyWeapon[16] = { 0, 1, 129, 0, 1, 1,  1 };
 static long bound_list[128];
@@ -1038,9 +1039,10 @@ static void SwapLaraWithCamera(bool lr)
 
 void DrawRooms(short current_room)
 {
-	ROOM_INFO* r;
-	OBJECT_INFO* obj;
-	short* rot;
+	ROOM_INFO* r = NULL;
+	ITEM_INFO* item = NULL;
+	OBJECT_INFO* obj = NULL;
+	short* rot = NULL;
 	bool fx;
 
 	fx = 0;
@@ -1120,7 +1122,6 @@ void DrawRooms(short current_room)
 			S_SetupAboveWater(camera_underwater);
 
 		mid_sort = room[lara_item->room_number].bound_active >> 8;
-
 		if (mid_sort)
 			mid_sort--;
 
@@ -1154,7 +1155,6 @@ void DrawRooms(short current_room)
 			fx = 0;
 		else
 			fx = GF_Snow != 0;
-
 		if (fx)
 			DoSnow();
 
@@ -1162,7 +1162,6 @@ void DrawRooms(short current_room)
 			fx = CurrentLevel == LV_JUNGLE || CurrentLevel == LV_ROOFTOPS;
 		else
 			fx = GF_Rain != 0;
-
 		if (fx)
 			DoRain();
 
@@ -1172,7 +1171,6 @@ void DrawRooms(short current_room)
 			fx = 0;
 		else
 			fx = GF_WaterParts != 0;
-
 		if (fx)
 			DoUwEffect();
 

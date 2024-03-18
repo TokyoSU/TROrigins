@@ -2278,12 +2278,10 @@ long IsRoomOutside(long x, long y, long z)
 	short rn;
 
 	offset = (ushort)OutsideRoomOffsets[27 * (x >> 12) + (z >> 12)];
-
 	if (offset == -1)
 		return -2;
 
 	p = (uchar*)&OutsideRoomTable[offset];
-
 	while (*p != NO_ROOM)
 	{
 		rn = *p;
@@ -2300,7 +2298,6 @@ long IsRoomOutside(long x, long y, long z)
 				return -2;
 
 			c = GetCeiling(floor, x, y, z);
-
 			if (y < c)
 				return -2;
 

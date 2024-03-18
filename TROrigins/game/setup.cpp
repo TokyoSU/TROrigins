@@ -93,6 +93,7 @@
 #include "footprnt.h"
 #include "../newstuff/map.h"
 #include "tomb3.h"
+#include "tr3/snow_effect.h"
 
 short IsRoomOutsideNo;
 char* OutsideRoomTable;
@@ -1673,6 +1674,12 @@ static void ObjectObjects()
 	obj->save_hitpoints = 1;
 	obj->save_flags = 1;
 	obj->save_anim = 1;
+
+	obj = &objects[SNOW_EMITTER];
+	//obj->initialise = InitializeMiniSnowEffect;
+	obj->control = ControlMiniSnowEffect;
+	obj->draw_routine = DrawMiniSnowEffect;
+	obj->save_flags = TRUE;
 
 	obj = &objects[TONYFIREBALL];
 	obj->control = ControlTonyFireBall;

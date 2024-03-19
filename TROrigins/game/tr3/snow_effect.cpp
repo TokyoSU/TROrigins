@@ -16,7 +16,8 @@
 #include "camera.h"
 #include "draw.h"
 
-// item->ocb = snowflakes spawning range.
+/// item->ocb = snowflakes spawning range in block.
+
 constexpr auto MAX_MINI_WEATHER = 128;
 
 static int GetFreeSnowflake(SNOWFLAKE* flake)
@@ -28,6 +29,11 @@ static int GetFreeSnowflake(SNOWFLAKE* flake)
 			return i;
 	}
 	return -1;
+}
+
+static inline SNOWFLAKE* GetSnowflakeList(ITEM_INFO* item)
+{
+	return static_cast<SNOWFLAKE*>(item->data);
 }
 
 static void UpdateSnowRoom(SNOWFLAKE* snow, long height)
@@ -58,11 +64,11 @@ static bool IsSnowBlocked(SNOWFLAKE* snow)
 }
 static bool CreateNewSnowflake(ITEM_INFO* item)
 {
-	auto* snowData = static_cast<SNOWFLAKE*>(item->data);
-	int snowID = GetFreeSnowflake(snowData);
+	auto* snowflakeList = GetSnowflakeList(item);
+	int snowID = GetFreeSnowflake(snowflakeList);
 	if (snowID == -1)
 		return false;
-	auto* snow = &snowData[snowID];
+	auto* snow = &snowflakeList[snowID];
 	auto rad = GetRandomDraw() & (item->ocb != 0 ? item->ocb : 0xFFF);
 	auto angle = GetRandomDraw() & 0x1FFE;
 	snow->x = item->pos.x_pos + ((rad * rcossin_tbl[angle]) >> 12);
@@ -86,16 +92,19 @@ void InitialiseMiniSnowEffect(short item_number)
 {
 	auto* item = &items[item_number];
 	item->data = (SNOWFLAKE*)game_malloc(sizeof(SNOWFLAKE) * MAX_MINI_WEATHER);
+	auto* snowflakeList = GetSnowflakeList(item);
+	for (int i = 0; i < MAX_MINI_WEATHER; i++) // WARM room_number to avoid crash !
+		snowflakeList[i].room_number = item->room_number;
 }
 
 void ControlMiniSnowEffect(short item_number)
 {
 	auto* item = &items[item_number];
-	auto* snowData = static_cast<SNOWFLAKE*>(item->data);
+	auto* snowflakeList = GetSnowflakeList(item);
 	for (int i = 0; i < MAX_MINI_WEATHER; i++)
 	{
 		CreateNewSnowflake(item);
-		auto* snow = &snowData[i];
+		auto* snow = &snowflakeList[i];
 		auto ox = snow->x;
 		auto oy = snow->y;
 		auto oz = snow->z;
@@ -123,7 +132,8 @@ void ControlMiniSnowEffect(short item_number)
 			continue;
 		}
 
-		if (room[snow->room_number].flags & ROOM_NOT_INSIDE)
+		// Does room is outside and not underwater ?
+		if ((room[snow->room_number].flags & ROOM_NOT_INSIDE) && !(room[snow->room_number].flags & ROOM_UNDERWATER))
 		{
 			if (snow->xv < SmokeWindX << 1)
 				snow->xv++;
@@ -140,7 +150,7 @@ void ControlMiniSnowEffect(short item_number)
 			snow->life = 0;
 		if (snow->stopped)
 		{
-			snow->life = 1;
+			snow->life = 1; // Don't let the snow die until color is full black (or transparent if alphablend enabled)
 			snow->color -= 3;
 			if (snow->color <= 0)
 				snow->color = 0;
@@ -165,7 +175,9 @@ void DrawMiniSnowEffect(ITEM_INFO* item)
 #else
 	auto* dm = &App.lpDeviceInfo->DDInfo[App.lpDXConfig->nDD].D3DInfo[App.lpDXConfig->nD3D].DisplayMode[App.lpDXConfig->nVMode];
 #endif
-	auto* snowData = static_cast<SNOWFLAKE*>(item->data);
+	auto* snowflakeList = GetSnowflakeList(item);
+
+	// Get the snowflake mesh (sprite)
 	auto* sprite = &phdspriteinfo[objects[DEFAULT_SPRITES].mesh_index + ST_SNOWFLAKE];
 	auto u1 = (sprite->offset << 8) & 0xFF00;
 	auto v1 = sprite->offset & 0xFF00;
@@ -178,10 +190,10 @@ void DrawMiniSnowEffect(ITEM_INFO* item)
 	phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 	for (int i = 0; i < MAX_MINI_WEATHER; i++)
 	{
-		auto* snow = &snowData[i];
+		auto* snow = &snowflakeList[i];
 		if (!snow->on)
 			continue;
-		// If the snow is no more near the camera just don't draw it.
+		// If the snow is no more in the view distance of the camera, just don't draw it.
 		if (abs(CamPos.x - snow->x) > phd_viewdist || abs(CamPos.z - snow->z) > phd_viewdist)
 			continue;
 		auto tx = snow->x - item->pos.x_pos;

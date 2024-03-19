@@ -11,20 +11,25 @@
 #include "camera.h"
 #include "../newstuff/LaraDraw.h"
 
-static PISTOL_DEF PistolTable[5]
+static PISTOL_DEF PistolTable[NUM_WEAPONS]
 {
-	{ 0, 0, 0, 0 },
-	{ PISTOLS, 4, 5, 13, 24 },
-	{ DESERTEAGLE, 7, 8, 15, 29 },
-	{ UZI, 4, 5, 13, 24 },
-	{ MAGNUMS, 4, 5, 13, 24 },
+	{ 0, 0, 0, 0 }, // UNARMED
+	{ PISTOLS, 4, 5, 13, 24 }, // PISTOLS
+	{ 0, 0, 0, 0, 0 }, // SHOTGUN
+	{ MAGNUMS, 4, 5, 13, 24 }, // MAGNUMS
+	{ UZI, 4, 5, 13, 24 }, // UZI
+	{ DESERTEAGLE, 7, 8, 15, 29 }, // DESERTEAGLE
+	{ 0, 0, 0, 0, 0 }, // MP5
+	{ 0, 0, 0, 0, 0 }, // ROCKET
+	{ 0, 0, 0, 0, 0 }, // GRENADE
+	{ 0, 0, 0, 0, 0 }, // HARPOON
+	{ 0, 0, 0, 0, 0 }, // FLARE
+	{ 0, 0, 0, 0, 0 }  // SKIDOO
 };
 
 void draw_pistol_meshes(long weapon_type)
 {
-	long obj;
-
-	obj = WeaponObject(weapon_type);
+	long obj = WeaponObject(weapon_type);
 	lara.mesh_ptrs[HAND_R] = meshes[objects[obj].mesh_index + HAND_R];
 	lara.mesh_ptrs[THIGH_R] = meshes[objects[LARA].mesh_index + THIGH_R];
 	if (weapon_type != LG_DESERTEAGLE)
@@ -76,7 +81,7 @@ void set_arm_info(LARA_ARM* arm, int frame)
 	anim_base = objects[p->ObjectNum].anim_index;
 
 	if (frame < p->Draw1Anim)
-		arm->anim_number = anim_base;
+		arm->anim_number = anim_base + 0;
 	else if (frame < p->Draw2Anim)
 		arm->anim_number = anim_base + 1;
 	else if (frame < p->RecoilAnim)

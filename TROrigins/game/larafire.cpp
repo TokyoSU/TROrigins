@@ -75,7 +75,7 @@ WEAPON_INFO weapons[NUM_WEAPONS] =
 		1456,
 		650,
 		8192,
-		3,
+		2,
 		9,
 		3,
 		0,

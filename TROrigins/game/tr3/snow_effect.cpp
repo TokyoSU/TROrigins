@@ -162,7 +162,7 @@ void DrawMiniSnowEffect(ITEM_INFO* item)
 		if (!snow->on)
 			continue;
 		// If the snow is no more near the camera just don't draw it.
-		if (abs(CamPos.x - snow->x) > 10240 || abs(CamPos.z - snow->z) > 10240)
+		if (abs(CamPos.x - snow->x) > phd_viewdist || abs(CamPos.z - snow->z) > phd_viewdist)
 			continue;
 		auto tx = snow->x - item->pos.x_pos;
 		auto ty = snow->y - item->pos.y_pos;
@@ -191,7 +191,7 @@ void DrawMiniSnowEffect(ITEM_INFO* item)
 			pos.x - size, pos.y + size, pos.z, c, // down-left
 			true
 		);
-		tex.drawtype = 2;
+		tex.drawtype = 1;
 		tex.tpage = sprite->tpage;
 		tex.u1 = u1;
 		tex.v1 = v1;
@@ -201,7 +201,7 @@ void DrawMiniSnowEffect(ITEM_INFO* item)
 		tex.v3 = v2;
 		tex.u4 = u1;
 		tex.v4 = v2;
-		HWI_InsertGT4_Poly(&v[0], &v[1], &v[2], &v[3], &tex, MID_SORT, 0);
+		HWI_InsertGT4_Sorted(&v[0], &v[1], &v[2], &v[3], &tex, MID_SORT, 0);
 	}
 	phd_PopMatrix();
 

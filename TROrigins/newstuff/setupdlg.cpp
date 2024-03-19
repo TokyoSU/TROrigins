@@ -108,7 +108,7 @@ static void InitD3DDrivers(HWND hwnd, long nDrivers)
 
 	selected = nHWDriver;
 	SendMessage(d3d, CB_SETCURSEL, selected, 0);
-	
+
 	EnableWindow(zbuffer, 1);
 	EnableWindow(dither, 1);
 	EnableWindow(filter, 1);
@@ -383,7 +383,7 @@ static INT_PTR CALLBACK SetupDlgProc(HWND dlg, UINT message, WPARAM wParam, LPAR
 	if (message == WM_INITDIALOG)
 	{
 		InitDialogBox(dlg);
-		
+
 		if (!OpenRegistry(SUB_KEY))
 		{
 			SendMessage(GetDlgItem(dlg, IDC_FULLSCREEN), BM_SETCHECK, 0, 0);
@@ -410,7 +410,7 @@ static INT_PTR CALLBACK SetupDlgProc(HWND dlg, UINT message, WPARAM wParam, LPAR
 			REG_ReadLong((char*)"VM", ul, 0);
 			SendMessage(GetDlgItem(dlg, IDC_RESOLUTION), CB_SETCURSEL, ul, 0);
 		}
-		
+
 		return 1;
 	}
 

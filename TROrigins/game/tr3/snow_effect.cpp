@@ -16,13 +16,13 @@
 #include "camera.h"
 
 #define MAX_MINI_WEATHER 512
-static SNOWFLAKE snowflake_from_item[MAX_MINI_WEATHER];
+static SNOWFLAKE snowflakes_2[MAX_MINI_WEATHER];
 
 static int GetFreeSnowflake()
 {
 	for (int i = 0; i < MAX_MINI_WEATHER; i++)
 	{
-		auto* snow = &snowflake_from_item[i];
+		auto* snow = &snowflakes_2[i];
 		if (!snow->on)
 			return i;
 	}
@@ -54,22 +54,22 @@ static bool CreateNewSnowflake(ITEM_INFO* item)
 	int snowID = GetFreeSnowflake();
 	if (snowID == -1)
 		return false;
-	auto* snow = &snowflake_from_item[snowID];
-	auto rad = GetRandomControl() & 0xFFF;
-	auto angle = GetRandomControl() & 0x1FFE;
+	auto* snow = &snowflakes_2[snowID];
+	auto rad = GetRandomDraw() & 0xFFF;
+	auto angle = GetRandomDraw() & 0x1FFE;
 	snow->x = item->pos.x_pos + ((rad * rcossin_tbl[angle]) >> 12);
-	snow->y = item->pos.y_pos;
+	snow->y = item->pos.y_pos - (GetRandomDraw() & 0xFF);
 	snow->z = item->pos.z_pos + ((rad * rcossin_tbl[angle + 1]) >> 12);
 	snow->room_number = item->room_number;
 	if (IsSnowBlocked(snow)) // NOTE: it will update the room_number !
 		return false;
 	snow->stopped = FALSE;
 	snow->on = TRUE;
-	snow->size = (GetRandomControl() & 10) + 4; // NOTE: will clamp to 4 when drawing if the value is less than 4
-	snow->xv = (GetRandomControl() & 7) - 4;
-	snow->yv = ((GetRandomControl() % 8) + 4) << 2;
-	snow->zv = (GetRandomControl() & 7) - 4;
-	snow->life = UCHAR_MAX;
+	snow->size = (GetRandomDraw() & 12); // NOTE: will clamp to 4 when drawing if the value is less than 4
+	snow->xv = (GetRandomDraw() & 7) - 4;
+	snow->yv = (GetRandomDraw() % 24 + 8) << 3;
+	snow->zv = (GetRandomDraw() & 7) - 4;
+	snow->life = 1024 - (snow->yv << 1);
 	return true;
 }
 
@@ -79,7 +79,7 @@ void ControlMiniSnowEffect(short item_number)
 	for (int i = 0; i < MAX_MINI_WEATHER; i++)
 	{
 		CreateNewSnowflake(item);
-		auto* snow = &snowflake_from_item[i];
+		auto* snow = &snowflakes_2[i];
 		auto ox = snow->x;
 		auto oy = snow->y;
 		auto oz = snow->z;
@@ -87,7 +87,7 @@ void ControlMiniSnowEffect(short item_number)
 		if (!snow->stopped)
 		{
 			snow->x += snow->xv;
-			snow->y += snow->yv >> 2;
+			snow->y += (snow->yv & 0xFF) >> 4;
 			snow->z += snow->zv;
 			if (IsSnowBlocked(snow))
 			{
@@ -100,20 +100,11 @@ void ControlMiniSnowEffect(short item_number)
 			}
 		}
 
-		if (!snow->life)
+		if (snow->life <= 0)
 		{
 			snow->on = FALSE;
 			continue;
 		}
-
-		/*if (snow->xv < SmokeWindX)
-			snow->xv++;
-		else if (snow->xv > SmokeWindX)
-			snow->xv--;
-		if (snow->zv < SmokeWindZ)
-			snow->zv++;
-		else if (snow->zv > SmokeWindZ)
-			snow->zv--;*/
 
 		if (snow->stopped)
 		{
@@ -121,7 +112,7 @@ void ControlMiniSnowEffect(short item_number)
 			if (snow->life <= 0)
 				snow->life = 0;
 		}
-		
+
 		if ((snow->yv & 7) < 7)
 			snow->yv++;
 	}
@@ -158,7 +149,7 @@ void DrawMiniSnowEffect(ITEM_INFO* item)
 
 	for (int i = 0; i < MAX_MINI_WEATHER; i++)
 	{
-		auto* snow = &snowflake_from_item[i];
+		auto* snow = &snowflakes_2[i];
 		if (!snow->on)
 			continue;
 		auto tx = snow->x - item->pos.x_pos;
@@ -172,16 +163,24 @@ void DrawMiniSnowEffect(ITEM_INFO* item)
 		pos.y = long(float(pos.y * zv + f_centery));
 		if (pos.x < 0 || pos.x > dm->w || pos.y < 0 || pos.y > dm->h)
 			continue;
-		long size = (snow->size << 3) / (pos.z >> W2V_SHIFT);
-		if (size < 8)
-			size = 8;
+		long size = phd_persp * (snow->yv >> 3) / (pos.z >> 16);
+		if (size < 4)
+			size = 4;
 		else if (size > 16)
 			size = 16;
 		size = (size * 0x2AAB) >> 15; // this scales it down to about a third of the size
 		size = GetFixedScale(size);
 
-		auto snowColor = RGB_MAKE(snow->life, snow->life, snow->life);
-		setXYZ3(v, pos.x + size, pos.y - (size << 1), pos.z, snowColor, pos.x + size, pos.y + size, pos.z, snowColor, pos.x - (size << 1), pos.y + size, pos.z, snowColor, true);
+		long c;
+		if ((snow->yv & 7) < 7)
+			c = snow->yv & 7;
+		else if (snow->life > 18)
+			c = 15;
+		else
+			c = snow->life;
+		c <<= 3;
+		c = RGB_MAKE(c, c, c);
+		setXYZ3(v, pos.x + size, pos.y - (size << 1), pos.z, c, pos.x + size, pos.y + size, pos.z, c, pos.x - (size << 1), pos.y + size, pos.z, c, true);
 		tex.drawtype = 2;
 		tex.tpage = sprite->tpage;
 		HWI_InsertGT3_Poly(&v[0], &v[1], &v[2], &tex, &v[0].u, &v[1].u, &v[2].u, MID_SORT, 0);

@@ -609,7 +609,6 @@ void do_quickysorty(long left, long right, long* list)
 			l++;
 			r--;
 		}
-
 	} while (l <= r);
 
 	if (r > left)

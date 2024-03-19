@@ -823,7 +823,7 @@ void DoRain()
 			rad = GetRandomDraw() & 0xFFF;
 			angle = GetRandomDraw() & 0x1FFE;
 			rptr->x = lara_item->pos.x_pos + (rad * rcossin_tbl[angle] >> 12);
-			rptr->y = lara_item->pos.y_pos -1024 - (GetRandomDraw() & 0x7FF);
+			rptr->y = lara_item->pos.y_pos - 1024 - (GetRandomDraw() & 0x7FF);
 			rptr->z = lara_item->pos.z_pos + (rad * rcossin_tbl[angle + 1] >> 12);
 
 			if (IsRoomOutside(rptr->x, rptr->y, rptr->z) < 0)
@@ -969,7 +969,7 @@ void DoRain()
 					v[i].ooz = f_persp / (float)z * f_oneopersp;
 					v[i].clip = 0;
 				}
-				
+
 				memset(&tex, 0, sizeof(tex));
 				tex.drawtype = 2;
 				HWI_InsertGT4_Sorted(&v[0], &v[1], &v[2], &v[3], &tex, MID_SORT, 1);
@@ -1229,7 +1229,7 @@ void DrawExplosionRings()
 					//Tony
 					r = (GetRandomDraw() & 0x1F) + 224;
 					g = (r >> 2) + (GetRandomDraw() & 0x3F);
-					b = GetRandomDraw() & 0x3F;			
+					b = GetRandomDraw() & 0x3F;
 				}
 				else if (ring->on == 3)
 				{
@@ -1847,7 +1847,7 @@ void DrawKnockBackRings()
 			if (col1 | col2 | col3 | col4)
 			{
 				setXYZ4(v, x1, y1, z1, xv1, yv1, col1, x2, y2, z2, xv2, yv2, col2, x4, y4, z4, xv4, yv4, col4, x3, y3, z4, xv3, yv3, col3);
-					
+
 				if (tomb3.sophia_rings == SRINGS_PSX || tomb3.sophia_rings == SRINGS_IMPROVED_PC)
 				{
 					tex.u1 = u1;
@@ -3432,7 +3432,7 @@ void S_DrawLaserBeam(GAME_VECTOR* src, GAME_VECTOR* dest, uchar cr, uchar cg, uc
 			c[1] = cg == 0xFF ? s + 32 : s >> cg;
 			c[2] = cb == 0xFF ? s + 32 : s >> cb;
 		}
-		
+
 		c += 3;
 	}
 
@@ -3899,7 +3899,6 @@ void S_DrawSparks()
 						drawType = DT_POLY_WGT;
 				}
 
-
 				for (g = 0; g < r; g++)
 					HWI_InsertAlphaSprite_Sorted(x1, y1, z, c, x2, y1, z, c, x2, y2, z, c, x1, y2, z, c, sptr->Def, drawType, 0);
 			}
@@ -3969,7 +3968,7 @@ void S_DrawSparks()
 
 				c = RGB_MAKE(r, g, b);
 			}
-			
+
 			if (sptr->TransType == 3)
 			{
 				drawType = DT_POLY_COLSUB;
@@ -5066,7 +5065,7 @@ void DoUwEffect()
 			c = 15;
 		else
 			c = p->life;
-		
+
 		c <<= 3;
 		c = RGB_MAKE(c, c, c);
 		setXYZ3(v, x1, y1, z, c, x2, y2, z, c, x3, y3, z, c);

@@ -54,7 +54,7 @@ static void TriggerSealmuteGas(long x, long y, long z, long xv, long yv, long zv
 	sptr->Yvel = (short)yv;
 	sptr->Zvel = short((GetRandomControl() & 0xF) + zv - 16);
 	sptr->Friction = 0;
-	
+
 	if (GetRandomControl() & 1)
 	{
 		if (FxObj < 0)
@@ -263,7 +263,7 @@ void SealmuteControl(short item_number)
 					continue;
 
 				enemy = &items[baddie_slots[lp].item_num];
-				
+
 				if ((enemy->object_number == LARA || enemy->object_number == FLAMETHROWER_BLOKE) && enemy->hit_points > 0)
 				{
 					dx = enemy->pos.x_pos - item->pos.x_pos;

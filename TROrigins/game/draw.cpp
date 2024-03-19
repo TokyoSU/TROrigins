@@ -82,7 +82,7 @@ void phd_PushMatrix_I()
 void phd_RotY_I(short angle)
 {
 	long* mx;
-	
+
 	phd_RotY(angle);
 	mx = phd_mxptr;
 	phd_mxptr = IMptr;
@@ -385,7 +385,6 @@ void SetRoomBounds(short* door, long rn, ROOM_INFO* actualRoom)
 		x = v->x;
 		y = v->y;
 		z = v->z;
-
 
 		if (z <= 0)
 			tooNear++;
@@ -1436,5 +1435,4 @@ void DrawAnimatingItem(ITEM_INFO* item)
 
 void DrawDummyItem(ITEM_INFO* item)
 {
-
 }

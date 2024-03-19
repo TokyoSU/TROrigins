@@ -170,7 +170,6 @@ void GetCarriedItems()
 			}
 
 			pickup_number = pickup->next_item;
-
 		} while (pickup_number != NO_ITEM);
 	}
 }
@@ -292,7 +291,7 @@ long InitialiseLevel(long level, long type)
 			IsAtmospherePlaying = 1;
 		}
 	}
-	
+
 	if (CurrentLevel == LV_GYM && savegame.QuadbikeKeyFlag)
 	{
 		Inv_AddItem(KEY_ITEM1);
@@ -420,7 +419,6 @@ void BuildOutsideTable()
 					{
 						*oTable++ = *pTable++;
 						z--;
-
 					} while (z);
 
 					*oTable++ = 255;
@@ -442,10 +440,10 @@ static void BaddyObjects()
 	obj->draw_routine = DrawDummyItem;
 	obj->shadow_size = 160;
 	obj->hit_points = 1000;
-	obj->save_position = 1;
-	obj->save_hitpoints = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_hitpoints = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[LARA_EXTRA];
 	obj->control = ControlLaraExtra;
@@ -460,12 +458,12 @@ static void BaddyObjects()
 		obj->shadow_size = 128;
 		obj->hit_points = 8;
 		obj->radius = 102;
-		obj->intelligent = 1;
-		obj->non_lot = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->non_lot = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index] |= 8;
 		bones[obj->bone_index + 24] |= 8;
 	}
@@ -485,18 +483,17 @@ static void BaddyObjects()
 		obj->hit_points = 8;
 		obj->radius = 102;
 		obj->pivot_length = 0;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index] |= 0x10;
 		bones[obj->bone_index + 28] |= 4;
 		bones[obj->bone_index + 28] |= 8;
 	}
 
 	obj = &objects[ROBOT_SENTRY_GUN];
-
 	if (obj->loaded)
 	{
 		obj->initialise = InitialiseAutogun;
@@ -506,12 +503,12 @@ static void BaddyObjects()
 		obj->hit_points = 100;
 		obj->radius = 102;
 		obj->bite_offset = AUTOGUN_LEFT_BITE;
-		obj->intelligent = 1;
-		obj->non_lot = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->non_lot = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index] |= 8;
 		bones[obj->bone_index + 4] |= 4;
 	}
@@ -526,12 +523,12 @@ static void BaddyObjects()
 		obj->hit_points = 20;
 		obj->radius = 341;
 		obj->pivot_length = 50;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
-		obj->water_creature = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
+		obj->water_creature = TRUE;
 	}
 
 	obj = &objects[WHALE];
@@ -544,12 +541,12 @@ static void BaddyObjects()
 		obj->hit_points = DONT_TARGET;
 		obj->pivot_length = 200;
 		obj->radius = 341;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
-		obj->water_creature = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
+		obj->water_creature = TRUE;
 	}
 
 	obj = &objects[TREX];
@@ -562,11 +559,11 @@ static void BaddyObjects()
 		obj->shadow_size = 128;
 		obj->pivot_length = 1800;
 		obj->radius = 512;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index + 36] |= 8;
 		bones[obj->bone_index + 44] |= 8;
 		bones[obj->bone_index + 80] |= 8;
@@ -583,11 +580,11 @@ static void BaddyObjects()
 		obj->hit_points = 90;
 		obj->pivot_length = 600;
 		obj->radius = 341;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index + 80] |= 8;
 		bones[obj->bone_index + 84] |= 8;
 		bones[obj->bone_index + 92] |= 8;
@@ -605,11 +602,11 @@ static void BaddyObjects()
 		obj->hit_points = 16;
 		obj->pivot_length = 300;
 		obj->radius = 341;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index + 8] |= 8;
 		bones[obj->bone_index + 8] |= 4;
 	}
@@ -625,11 +622,11 @@ static void BaddyObjects()
 		obj->hit_points = 16;
 		obj->pivot_length = 300;
 		obj->radius = 341;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index + 8] |= 8;
 		bones[obj->bone_index + 8] |= 4;
 	}
@@ -644,11 +641,11 @@ static void BaddyObjects()
 		obj->hit_points = 4;
 		obj->pivot_length = 50;
 		obj->radius = 102;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index + 12] |= 8;
 	}
 
@@ -663,12 +660,12 @@ static void BaddyObjects()
 		obj->hit_points = 10;
 		obj->pivot_length = 50;
 		obj->radius = 102;
-		obj->intelligent = 1;
-		obj->non_lot = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->non_lot = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index + 4] |= 8;
 		bones[obj->bone_index + 8] |= 8;
 	}
@@ -685,11 +682,11 @@ static void BaddyObjects()
 		obj->hit_points = 200;
 		obj->pivot_length = 50;
 		obj->radius = 102;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index + 16] |= 8;
 		bones[obj->bone_index + 28] |= 0xC;
 	}
@@ -706,11 +703,11 @@ static void BaddyObjects()
 		obj->hit_points = 200;
 		obj->pivot_length = 50;
 		obj->radius = 102;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index + 24] |= 8;
 		bones[obj->bone_index + 24] |= 4;
 		bones[obj->bone_index + 52] |= 8;
@@ -728,11 +725,11 @@ static void BaddyObjects()
 		obj->hit_points = 300;
 		obj->pivot_length = 50;
 		obj->radius = 102;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index + 24] |= 8;
 		bones[obj->bone_index + 24] |= 4;
 		bones[obj->bone_index + 52] |= 8;
@@ -750,11 +747,11 @@ static void BaddyObjects()
 		obj->hit_points = 200;
 		obj->pivot_length = 50;
 		obj->radius = 102;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 	}
 
 	obj = &objects[TIGER];
@@ -767,11 +764,11 @@ static void BaddyObjects()
 		obj->hit_points = 24;
 		obj->pivot_length = 200;
 		obj->radius = 341;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index + 84] |= 8;
 	}
 
@@ -790,11 +787,11 @@ static void BaddyObjects()
 		obj->hit_points = 100;
 		obj->radius = 341;
 		obj->pivot_length = 0;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index + 24] |= 8;
 		bones[obj->bone_index + 24] |= 4;
 		bones[obj->bone_index + 100] |= 8;
@@ -813,11 +810,11 @@ static void BaddyObjects()
 		obj->radius = 102;
 		obj->pivot_length = 0;
 		obj->bite_offset = WHITE_SOLDIER_BITE;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index] |= 8;
 		bones[obj->bone_index] |= 4;
 		bones[obj->bone_index + 28] |= 8;
@@ -833,11 +830,11 @@ static void BaddyObjects()
 		obj->hit_points = 130;
 		obj->radius = 256;
 		obj->pivot_length = 0;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index] |= 0x10;
 		bones[obj->bone_index] |= 4;
 		bones[obj->bone_index + 28] |= 8;
@@ -853,11 +850,11 @@ static void BaddyObjects()
 		obj->hit_points = 90;
 		obj->radius = 128;
 		obj->pivot_length = 0;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index] |= 0x10;
 		bones[obj->bone_index] |= 4;
 		bones[obj->bone_index + 28] |= 8;
@@ -873,11 +870,11 @@ static void BaddyObjects()
 		obj->hit_points = 50;
 		obj->radius = 204;
 		obj->pivot_length = 0;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index + 32] |= 0x10;
 		bones[obj->bone_index + 32] |= 4;
 		bones[obj->bone_index + 36] |= 8;
@@ -895,11 +892,11 @@ static void BaddyObjects()
 		obj->radius = 102;
 		obj->pivot_length = 0;
 		obj->bite_offset = SWAT_GUN_BITE;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index] |= 8;
 		bones[obj->bone_index] |= 4;
 		bones[obj->bone_index + 28] |= 8;
@@ -917,11 +914,11 @@ static void BaddyObjects()
 		obj->radius = 102;
 		obj->pivot_length = 0;
 		obj->bite_offset = ARMYSMG_GUN_BITE;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index] |= 8;
 		bones[obj->bone_index] |= 4;
 		bones[obj->bone_index + 28] |= 8;
@@ -937,11 +934,11 @@ static void BaddyObjects()
 		obj->hit_points = 36;
 		obj->radius = 204;
 		obj->pivot_length = 0;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index + 4] |= 0x10;
 		bones[obj->bone_index + 36] |= 0x10;
 	}
@@ -957,11 +954,11 @@ static void BaddyObjects()
 		obj->hit_points = 25;
 		obj->radius = 102;
 		obj->pivot_length = 0;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index + 24] |= 8;
 		bones[obj->bone_index + 24] |= 4;
 		bones[obj->bone_index + 52] |= 8;
@@ -978,11 +975,11 @@ static void BaddyObjects()
 		obj->hit_points = 15;
 		obj->radius = 102;
 		obj->pivot_length = 0;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index + 24] |= 8;
 		bones[obj->bone_index + 24] |= 4;
 		bones[obj->bone_index + 52] |= 8;
@@ -999,11 +996,11 @@ static void BaddyObjects()
 		obj->hit_points = 20;
 		obj->radius = 102;
 		obj->pivot_length = 0;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index + 24] |= 8;
 		bones[obj->bone_index + 24] |= 4;
 		bones[obj->bone_index + 52] |= 8;
@@ -1019,11 +1016,11 @@ static void BaddyObjects()
 		obj->hit_points = 36;
 		obj->radius = 102;
 		obj->pivot_length = 0;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index] |= 8;
 		bones[obj->bone_index] |= 4;
 		bones[obj->bone_index + 28] |= 8;
@@ -1039,11 +1036,11 @@ static void BaddyObjects()
 		obj->hit_points = 28;
 		obj->radius = 102;
 		obj->pivot_length = 0;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index + 52] |= 8;
 		bones[obj->bone_index + 24] |= 8;
 	}
@@ -1057,11 +1054,11 @@ static void BaddyObjects()
 		obj->shadow_size = 128;
 		obj->hit_points = 28;
 		obj->radius = 102;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index + 24] |= 8;
 		bones[obj->bone_index + 24] |= 4;
 		bones[obj->bone_index + 52] |= 8;
@@ -1079,11 +1076,11 @@ static void BaddyObjects()
 		obj->hit_points = 24;
 		obj->radius = 204;
 		obj->pivot_length = 0;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 	}
 
 	obj = &objects[VULTURE];
@@ -1097,11 +1094,11 @@ static void BaddyObjects()
 		obj->hit_points = 18;
 		obj->radius = 204;
 		obj->pivot_length = 0;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 	}
 
 	obj = &objects[CROW];
@@ -1115,11 +1112,11 @@ static void BaddyObjects()
 		obj->hit_points = 8;
 		obj->radius = 204;
 		obj->pivot_length = 0;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 	}
 
 	obj = &objects[OILRED];
@@ -1133,11 +1130,11 @@ static void BaddyObjects()
 		obj->radius = 102;
 		obj->pivot_length = 0;
 		obj->bite_offset = OILRED_BITE;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index + 24] |= 8;
 		bones[obj->bone_index + 24] |= 4;
 		bones[obj->bone_index + 52] |= 8;
@@ -1154,11 +1151,11 @@ static void BaddyObjects()
 		obj->radius = 102;
 		obj->pivot_length = 0;
 		obj->bite_offset = OILRED_BITE;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index + 24] |= 8;
 		bones[obj->bone_index + 24] |= 4;
 		bones[obj->bone_index + 52] |= 8;
@@ -1174,12 +1171,12 @@ static void BaddyObjects()
 		obj->shadow_size = 128;
 		obj->hit_points = DONT_TARGET;
 		obj->radius = 512;
-		obj->intelligent = 1;
-		obj->non_lot = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->non_lot = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 	}
 
 	obj = &objects[MP2];
@@ -1193,11 +1190,11 @@ static void BaddyObjects()
 		obj->radius = 102;
 		obj->pivot_length = 0;
 		obj->bite_offset = OILRED_BITE;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index + 24] |= 8;
 		bones[obj->bone_index + 24] |= 4;
 		bones[obj->bone_index + 52] |= 8;
@@ -1215,11 +1212,11 @@ static void BaddyObjects()
 		obj->radius = 102;
 		obj->pivot_length = 0;
 		obj->bite_offset = SWAT_GUN_BITE;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index] |= 8;
 		bones[obj->bone_index] |= 4;
 		bones[obj->bone_index + 28] |= 8;
@@ -1236,11 +1233,11 @@ static void BaddyObjects()
 		obj->hit_points = 20;
 		obj->radius = 102;
 		obj->pivot_length = 0;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 		bones[obj->bone_index + 24] |= 8;
 		bones[obj->bone_index + 24] |= 4;
 		bones[obj->bone_index + 52] |= 8;
@@ -1256,12 +1253,12 @@ static void BaddyObjects()
 		obj->hit_points = 42;
 		obj->radius = 341;
 		obj->pivot_length = 200;
-		obj->intelligent = 1;
-		obj->save_position = 1;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
-		obj->water_creature = 1;
+		obj->intelligent = TRUE;
+		obj->save_position = TRUE;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
+		obj->water_creature = TRUE;
 		bones[obj->bone_index + 28] |= 8;
 	}
 
@@ -1274,7 +1271,7 @@ static void BaddyObjects()
 		obj->hit_points = 20;
 		obj->shadow_size = 64;
 		obj->radius = 102;
-		obj->intelligent = 1;
+		obj->intelligent = TRUE;
 	}
 
 	obj = &objects[ARMY_WINSTON];
@@ -1286,7 +1283,7 @@ static void BaddyObjects()
 		obj->hit_points = 20;
 		obj->shadow_size = 64;
 		obj->radius = 102;
-		obj->intelligent = 1;
+		obj->intelligent = TRUE;
 	}
 
 	obj = &objects[TARGETS];
@@ -1298,7 +1295,7 @@ static void BaddyObjects()
 		obj->hit_points = 8;
 		obj->shadow_size = 128;
 		obj->radius = 102;
-		obj->intelligent = 1;
+		obj->intelligent = TRUE;
 	}
 
 	obj = &objects[AI_GUARD];
@@ -1391,167 +1388,167 @@ static void TrapObjects()
 	obj->control = KillAllCurrentItems;
 	obj->draw_routine = DrawDummyItem;
 	obj->hit_points = 0;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[MINI_COPTER];
 	obj->control = MiniCopterControl;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[MOVING_BAR];
 	obj->control = GeneralControl;
 	obj->collision = ObjectCollision;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
-	obj->water_creature = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
+	obj->water_creature = TRUE;
 
 	obj = &objects[DEATH_SLIDE];
 	obj->initialise = InitialiseRollingBall;
 	obj->control = ControlDeathSlide;
 	obj->collision = DeathSlideCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[SPIKE_WALL];
 	obj->control = ControlSpikeWall;
 	obj->collision = ObjectCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[CEILING_SPIKES];
 	obj->control = ControlCeilingSpikes;
 	obj->collision = TrapCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[HOOK];
 	obj->control = HookControl;
 	obj->collision = CreatureCollision;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
-	
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
+
 	obj = &objects[SAW];
 	obj->control = PropellerControl;
 	obj->collision = ObjectCollision;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[FAN];
 	obj->control = PropellerControl;
 	obj->collision = TrapCollision;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
-	obj->water_creature = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
+	obj->water_creature = TRUE;
 
 	obj = &objects[SMALL_FAN];
 	obj->control = PropellerControl;
 	obj->collision = TrapCollision;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[SPINNING_BLADE];
 	obj->initialise = InitialiseKillerStatue;
 	obj->control = SpinningBlade;
 	obj->collision = ObjectCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[ICICLES];
 	obj->control = IcicleControl;
 	obj->collision = TrapCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[BLADE];
 	obj->initialise = InitialiseBlade;
 	obj->control = BladeControl;
 	obj->collision = TrapCollision;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[SPRING_BOARD];
 	obj->control = SpringBoardControl;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[FALLING_BLOCK];
 	obj->control = FallingBlock;
 	obj->floor = FallingBlockFloor;
 	obj->ceiling = FallingBlockCeiling;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[FALLING_BLOCK2];
 	obj->control = FallingBlock;
 	obj->floor = FallingBlockFloor;
 	obj->ceiling = FallingBlockCeiling;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[FALLING_PLANK];
 	obj->control = FallingBlock;
 	obj->floor = FallingBlockFloor;
 	obj->ceiling = FallingBlockCeiling;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[PENDULUM];
 	obj->control = Pendulum;
 	obj->collision = ObjectCollision;
 	obj->shadow_size = 128;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[SWING_BOX];
 	obj->control = Pendulum;
 	obj->collision = ObjectCollision;
 	obj->shadow_size = 128;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[TEETH_TRAP];
 	obj->control = TeethTrap;
 	obj->collision = TrapCollision;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[AVALANCHE];
 	obj->initialise = InitialiseRollingBall;
 	obj->control = RollingBallControl;
 	obj->collision = RollingBallCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[OILDRUMS];
 	obj->initialise = InitialiseRollingBall;
 	obj->control = RollingBallControl;
 	obj->collision = RollingBallCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[ROLLING_BALL];
 	obj->initialise = InitialiseRollingBall;
 	obj->control = RollingBallControl;
 	obj->collision = RollingBallCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[BIG_ROLLING_BALL];
 	obj->initialise = InitialiseRollingBall;
 	obj->control = RollingBallControl;
 	obj->collision = RollingBallCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[SPIKES];
 	obj->control = SpikeControl;
@@ -1560,9 +1557,9 @@ static void TrapObjects()
 	obj = &objects[FALLING_CEILING1];
 	obj->control = FallingCeiling;
 	obj->collision = TrapCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	for (int i = MOVABLE_BLOCK; i <= MOVABLE_BLOCK4; i++)
 	{
@@ -1571,62 +1568,62 @@ static void TrapObjects()
 		obj->control = MovableBlock;
 		obj->collision = MovableBlockCollision;
 		obj->draw_routine = DrawMovableBlock;
-		obj->save_position = 1;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->save_position = TRUE;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 	}
 
 	obj = &objects[DART_EMITTER];
 	obj->control = DartEmitterControl;
 	obj->draw_routine = DrawDummyItem;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[HOMING_DART_EMITTER];
 	obj->control = DartEmitterControl;
 	obj->draw_routine = DrawDummyItem;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[RAPTOR_EMITTER];
 	obj->initialise = InitialiseRaptorEmitter;
 	obj->control = RaptorEmitterControl;
 	obj->draw_routine = DrawDummyItem;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[FLYING_MUTANT_EMITTER];
 	obj->control = FlyEmitterControl;
 	obj->draw_routine = DrawDummyItem;
 	obj->hit_points = 150;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[BOO_MUTANT];
 	obj->control = BoomuteControl;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[SPECIAL_FX1];
 	obj->control = ControlArea51Rocket;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[SPECIAL_FX2];
 	obj->control = ControlArea51Rocket;
 	obj->draw_routine = DrawDummyItem;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[SPECIAL_FX3];
 	obj->initialise = InitialiseArea51Struts;
 	obj->control = ControlArea51Struts;
-	obj->save_anim = 1;
+	obj->save_anim = TRUE;
 
 	obj = &objects[AREA51_LASER];
 	obj->initialise = InitialiseArea51Laser;
 	obj->control = ControlArea51Laser;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[DARTS];
 	obj->control = DartsControl;
@@ -1637,22 +1634,22 @@ static void TrapObjects()
 	obj = &objects[FLAME_EMITTER];
 	obj->control = FlameEmitterControl;
 	obj->draw_routine = DrawDummyItem;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[FLAME_EMITTER2];
 	obj->control = FlameEmitter2Control;
 	obj->draw_routine = DrawDummyItem;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[FLAME_EMITTER3];
 	obj->control = FlameEmitter3Control;
 	obj->draw_routine = DrawDummyItem;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[SIDE_FLAME_EMITTER];
 	obj->control = SideFlameEmitterControl;
 	obj->draw_routine = DrawDummyItem;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[FLAME];
 	obj->control = FlameControl;
@@ -1671,15 +1668,13 @@ static void ObjectObjects()
 	obj->initialise = InitialiseFireHead;
 	obj->control = ControlFireHead;
 	obj->collision = ObjectCollision;
-	obj->save_hitpoints = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_hitpoints = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[SNOW_EMITTER];
-	//obj->initialise = InitializeMiniSnowEffect;
 	obj->control = ControlMiniSnowEffect;
 	obj->draw_routine = DrawMiniSnowEffect;
-	obj->save_flags = TRUE;
 
 	obj = &objects[TONYFIREBALL];
 	obj->control = ControlTonyFireBall;
@@ -1695,8 +1690,8 @@ static void ObjectObjects()
 
 	obj = &objects[EXTRAFX3];
 	obj->control = ControlTinnosLightShaft;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[EXTRAFX4];
 	obj->control = ControlLaserBolts;
@@ -1709,10 +1704,10 @@ static void ObjectObjects()
 	obj = &objects[EXTRAFX6];
 	obj->control = ControlFusebox;
 	obj->collision = ObjectCollision;
-	obj->save_position = 1;
-	obj->save_hitpoints = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_hitpoints = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[ROCKET];
 	obj->control = ControlRocket;
@@ -1733,58 +1728,58 @@ static void ObjectObjects()
 	obj->initialise = KayakInitialise;
 	obj->collision = KayakCollision;
 	obj->draw_routine = KayakDraw;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[BOAT];
 	obj->initialise = InitialiseBoat;
 	obj->control = BoatControl;
 	obj->collision = BoatCollision;
 	obj->draw_routine = DrawBoat;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 	bones[obj->bone_index + 4] |= 0x10;
 
 	obj = &objects[QUADBIKE];
 	obj->initialise = InitialiseQuadBike;
 	obj->collision = QuadBikeCollision;
 	obj->draw_routine = QuadBikeDraw;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[MINECART];
 	obj->initialise = MineCartInitialise;
 	obj->collision = MineCartCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[BIGGUN];
 	obj->initialise = BigGunInitialise;
 	obj->collision = BigGunCollision;
 	obj->draw_routine = BigGunDraw;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[UPV];
 	obj->initialise = SubInitialise;
 	obj->control = SubEffects;
 	obj->collision = SubCollision;
 	obj->draw_routine = SubDraw;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[TRAIN];
 	obj->control = TrainControl;
 	obj->collision = TrainCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[FLARE_ITEM];
 	obj->control = FlareControl;
@@ -1792,102 +1787,102 @@ static void ObjectObjects()
 	obj->draw_routine = DrawFlareInAir;
 	obj->pivot_length = 256;
 	obj->hit_points = 256;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[SMASH_WINDOW];
 	obj->initialise = InitialiseWindow;
 	obj->control = WindowControl;
 	obj->collision = ObjectCollision;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[SMASH_OBJECT1];
 	obj->initialise = InitialiseWindow;
 	obj->control = WindowControl;
 	obj->collision = ObjectCollision;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[SMASH_OBJECT2];
 	obj->initialise = InitialiseWindow;
 	obj->control = WindowControl;
 	obj->collision = ObjectCollision;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[SMASH_OBJECT3];
 	obj->initialise = InitialiseWindow;
 	obj->control = WindowControl;
 	obj->collision = ObjectCollision;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[CARCASS];
 	obj->control = CarcassControl;
 	obj->collision = ObjectCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[LIFT];
 	obj->initialise = InitialiseLift;
 	obj->control = LiftControl;
 	obj->floor = LiftFloor;
 	obj->ceiling = LiftCeiling;
-	obj->save_position = 1;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[TROPICAL_FISH];
 	obj->control = ControlFish;
 	obj->draw_routine = S_DrawFish;
 	obj->hit_points = -1;
-	obj->save_position = 1;
-	obj->save_hitpoints = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_hitpoints = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[PIRAHNAS];
 	obj->control = ControlFish;
 	obj->draw_routine = S_DrawFish;
 	obj->hit_points = -1;
-	obj->save_position = 1;
-	obj->save_hitpoints = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_hitpoints = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[BAT_EMITTER];
 	obj->control = BatEmitterControl;
 	obj->draw_routine = DrawDummyItem;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[LIGHTNING_EMITTER2];
 	obj->control = ControlElectricFence;
 	obj->draw_routine = DrawDummyItem;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[ALARM_LIGHT];
 	obj->control = ControlStrobeLight;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[PULSE_LIGHT];
 	obj->control = ControlPulseLight;
 	obj->draw_routine = DrawDummyItem;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[ON_OFF_LIGHT];
 	obj->control = ControlOnOffLight;
 	obj->draw_routine = DrawDummyItem;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[ELECTRICAL_LIGHT];
 	obj->control = ControlElectricalLight;
 	obj->draw_routine = DrawDummyItem;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[EXTRA_LIGHT1];
 	obj->control = ControlBeaconLight;
 	obj->draw_routine = DrawDummyItem;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[BRIDGE_FLAT];
 	obj->floor = BridgeFlatFloor;
@@ -1909,39 +1904,39 @@ static void ObjectObjects()
 		obj->collision = DrawBridgeCollision;
 		obj->floor = DrawBridgeFloor;
 		obj->ceiling = DrawBridgeCeiling;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 	}
 
 	obj = &objects[SMALL_SWITCH];
 	obj->control = SwitchControl;
 	obj->collision = SwitchCollision;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[PUSH_SWITCH];
 	obj->control = SwitchControl;
 	obj->collision = SwitchCollision;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[AIRLOCK_SWITCH];
 	obj->control = SwitchControl;
 	obj->collision = SwitchCollision;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[SWITCH_TYPE1];
 	obj->control = SwitchControl;
 	obj->collision = SwitchCollision;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[SWITCH_TYPE2];
 	obj->control = SwitchControl;
 	obj->collision = SwitchCollision2;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	for (lp = DOOR_TYPE1; lp <= DOOR_TYPE8; lp++)
 	{
@@ -1950,261 +1945,261 @@ static void ObjectObjects()
 		obj->control = DoorControl;
 		obj->collision = DoorCollision;
 		obj->draw_routine = DrawUnclippedItem;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 	}
 
 	obj = &objects[TRAPDOOR];
 	obj->control = TrapDoorControl;
 	obj->floor = TrapDoorFloor;
 	obj->ceiling = TrapDoorCeiling;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[TRAPDOOR2];
 	obj->control = TrapDoorControl;
 	obj->floor = TrapDoorFloor;
 	obj->ceiling = TrapDoorCeiling;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[PICKUP_ITEM1];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[PICKUP_ITEM2];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[KEY_ITEM1];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[KEY_ITEM2];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[KEY_ITEM3];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[KEY_ITEM4];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[PUZZLE_ITEM1];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[PUZZLE_ITEM2];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[PUZZLE_ITEM3];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[PUZZLE_ITEM4];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[PISTOLS_ITEM];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[SHOTGUN_ITEM];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[HARPOON_ITEM];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[ROCKET_GUN_ITEM];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[GRENADE_GUN_ITEM];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[MP5_ITEM];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[DESERTEAGLE_ITEM];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[UZI_ITEM];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[MAGNUM_ITEM];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[FLAREBOX_ITEM];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[PISTOLS_AMMO_ITEM];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[SHOTGUN_AMMO_ITEM];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[DESERTEAGLE_AMMO_ITEM];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[UZI_AMMO_ITEM];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[MAGNUM_AMMO_ITEM];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[HARPOON_AMMO_ITEM];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[MP5_AMMO_ITEM];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[ROCKET_AMMO_ITEM];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[GRENADE_AMMO_ITEM];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[MEDI_ITEM];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[BIGMEDI_ITEM];
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[ICON_PICKUP1_ITEM];
 	obj->control = AnimatingPickUp;
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[ICON_PICKUP2_ITEM];
 	obj->control = AnimatingPickUp;
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[ICON_PICKUP3_ITEM];
 	obj->control = AnimatingPickUp;
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[ICON_PICKUP4_ITEM];
 	obj->control = AnimatingPickUp;
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[SAVEGAME_CRYSTAL_ITEM];
 	obj->control = AnimatingPickUp;
 	obj->collision = PickUpCollision;
-	obj->save_position = 1;
-	obj->save_flags = 1;
+	obj->save_position = TRUE;
+	obj->save_flags = TRUE;
 
 	obj = &objects[KEY_HOLE1];
 	obj->collision = KeyHoleCollision;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[KEY_HOLE2];
 	obj->collision = KeyHoleCollision;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[KEY_HOLE3];
 	obj->collision = KeyHoleCollision;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[KEY_HOLE4];
 	obj->collision = KeyHoleCollision;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[DETONATOR];
 	obj->control = DetonatorControl;
 	obj->collision = DetonatorCollision;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[PUZZLE_HOLE1];
 	obj->control = ControlAnimating_1_4;
 	obj->collision = PuzzleHoleCollision;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[PUZZLE_HOLE2];
 	obj->control = ControlAnimating_1_4;
 	obj->collision = PuzzleHoleCollision;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[PUZZLE_HOLE3];
 	obj->control = ControlAnimating_1_4;
 	obj->collision = PuzzleHoleCollision;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[PUZZLE_HOLE4];
 	obj->control = ControlAnimating_1_4;
 	obj->collision = PuzzleHoleCollision;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	for (lp = PUZZLE_DONE1; lp <= PUZZLE_DONE4; lp++)
 	{
 		obj = &objects[lp];
 		obj->control = ControlAnimating_1_4;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 	}
 
 	for (lp = PLAYER_1; lp <= PLAYER_10; lp++)
@@ -2220,8 +2215,8 @@ static void ObjectObjects()
 		obj = &objects[lp];
 		obj->control = ControlAnimating_1_4;
 		obj->collision = ObjectCollision;
-		obj->save_flags = 1;
-		obj->save_anim = 1;
+		obj->save_flags = TRUE;
+		obj->save_anim = TRUE;
 	}
 
 	for (lp = SMOKE_EMITTER_WHITE; lp <= STEAM_EMITTER; lp++)
@@ -2229,20 +2224,20 @@ static void ObjectObjects()
 		obj = &objects[lp];
 		obj->control = ControlSmokeEmitter;
 		obj->draw_routine = DrawDummyItem;
-		obj->save_flags = 1;
+		obj->save_flags = TRUE;
 	}
 
 	obj = &objects[GHOST_GAS_EMITTER];
 	obj->control = ControlGhostGasEmitter;
 	obj->draw_routine = DrawDummyItem;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	for (lp = RED_LIGHT; lp <= WHITE_LIGHT; lp++)
 	{
 		obj = &objects[lp];
 		obj->control = ControlColouredLights;
 		obj->draw_routine = DrawDummyItem;
-		obj->save_flags = 1;
+		obj->save_flags = TRUE;
 	}
 
 	obj = &objects[BUBBLE_SPRITES];
@@ -2263,8 +2258,8 @@ static void ObjectObjects()
 		obj->initialise = LaserControl;
 		obj->control = LaserControl;
 		obj->draw_routine = S_DrawLaser;
-		obj->save_hitpoints = 1;
-		obj->save_flags = 1;
+		obj->save_hitpoints = TRUE;
+		obj->save_flags = TRUE;
 	}
 
 	obj = &objects[BODY_PART];
@@ -2287,27 +2282,27 @@ static void ObjectObjects()
 	obj = &objects[LARA_ALARM];
 	obj->control = ControlLaraAlarm;
 	obj->draw_routine = DrawDummyItem;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[CLOCK_CHIMES];
 	obj->control = ControlClockChimes;
 	obj->draw_routine = DrawDummyItem;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[FINAL_LEVEL];
 	obj->control = FinalLevelCounter;
 	obj->draw_routine = DrawDummyItem;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[CUT_SHOTGUN];
 	obj->control = ControlCutShotgun;
-	obj->save_flags = 1;
-	obj->save_anim = 1;
+	obj->save_flags = TRUE;
+	obj->save_anim = TRUE;
 
 	obj = &objects[EARTHQUAKE];
 	obj->control = EarthQuake;
 	obj->draw_routine = DrawDummyItem;
-	obj->save_flags = 1;
+	obj->save_flags = TRUE;
 
 	obj = &objects[GUNSHELL];
 	obj->control = ControlGunShell;

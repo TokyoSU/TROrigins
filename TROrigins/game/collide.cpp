@@ -1151,5 +1151,4 @@ void ItemPushLara(ITEM_INFO* item, ITEM_INFO* l, COLL_INFO* coll, long spaz, lon
 
 void AIPickupCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 {
-
 }

@@ -355,7 +355,7 @@ void T_DrawThisText(TEXTSTRING* string)
 	v = string->scaleV;
 	bW = 0;
 	bH = 0;
-	
+
 	if (string->flags & T_FLASH)
 	{
 		string->flashCount -= (short)camera.number_frames;

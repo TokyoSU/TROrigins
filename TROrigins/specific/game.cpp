@@ -86,8 +86,7 @@ long GameStats(long level_num, long type)
 		T_DrawText();
 		S_OutputPolyList();
 		S_DumpScreen();
-	}
-	while (!(input & IN_SELECT));
+	} while (!(input & IN_SELECT));
 
 	if (!reset_flag && type != 5)
 	{

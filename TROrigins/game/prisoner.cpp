@@ -392,7 +392,7 @@ void PrisonerControl(short item_number)
 
 			bob->maximum_turn = 2002;
 			tilt = angle / 2;
-			
+
 			if (item->ai_bits & GUARD)
 				item->goal_anim_state = BOB_STOP;
 			else if (bob->mood == ESCAPE_MOOD)

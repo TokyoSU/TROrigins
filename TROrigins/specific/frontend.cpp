@@ -94,14 +94,14 @@ void S_DrawScreenBox(long x, long y, long z, long w, long h, long sprnum, GOURAU
 
 	sx = x + w;
 	sy = y + h;
-	S_DrawScreenLine(x,			y - 1,	z, w + 1,	0,		15, 0, f);
-	S_DrawScreenLine(x + 1,		y,		z, w - 1,	0,		31, 0, f);
-	S_DrawScreenLine(sx,		y + 1,	z, 0,		h - 1,	15, 0, f);
-	S_DrawScreenLine(sx + 1,	y,		z, 0,		h + 1,	31, 0, f);
-	S_DrawScreenLine(x - 1,		y - 1,	z, 0,		h + 1,	15, 0, f);
-	S_DrawScreenLine(x,			y,		z, 0,		h - 1,	31, 0, f);
-	S_DrawScreenLine(x,			sy,		z, w - 1,	0,		15, 0, f);
-	S_DrawScreenLine(x - 1,		sy + 1, z, w + 1,	0,		31, 0, f);
+	S_DrawScreenLine(x, y - 1, z, w + 1, 0, 15, 0, f);
+	S_DrawScreenLine(x + 1, y, z, w - 1, 0, 31, 0, f);
+	S_DrawScreenLine(sx, y + 1, z, 0, h - 1, 15, 0, f);
+	S_DrawScreenLine(sx + 1, y, z, 0, h + 1, 31, 0, f);
+	S_DrawScreenLine(x - 1, y - 1, z, 0, h + 1, 15, 0, f);
+	S_DrawScreenLine(x, y, z, 0, h - 1, 31, 0, f);
+	S_DrawScreenLine(x, sy, z, w - 1, 0, 15, 0, f);
+	S_DrawScreenLine(x - 1, sy + 1, z, w + 1, 0, 31, 0, f);
 }
 
 void S_DrawScreenFBox(long x, long y, long z, long w, long h, long c, GOURAUD_FILL* grdptr, ushort f)

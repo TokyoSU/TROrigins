@@ -121,7 +121,7 @@ static void InsertPSXBar(long polytype, long x0, long y0, long x1, long y1, long
 
 	sort = sort3dptrbf;
 	info = info3dptrbf;
-	
+
 	surfacenumbf++;
 	sort3dptrbf += 3;
 	info3dptrbf += 6;
@@ -264,7 +264,7 @@ void S_DrawHealthBar(long percent)
 	InsertFlatRect(x0 - p * 2, y0 - p * 2, x1 + p * 2, y1 + p * 2, phd_znear + 50, 0xFFFFFFFF);
 	InsertFlatRect(x0 - p, y0 - p, x1 + p * 2, y1 + p * 2, phd_znear + 40, 0xFF404040);
 	InsertFlatRect(x0 - p, y0 - p, x1 + p, y1 + p, phd_znear + 30, 0);
-	
+
 	if (bar > 0)
 	{
 		if (PoisonFlag)

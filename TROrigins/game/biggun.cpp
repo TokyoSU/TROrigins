@@ -285,7 +285,6 @@ long BigGunControl(COLL_INFO* coll)
 				GunRotYAdd = 0;
 			}
 
-
 			if (input & IN_FORWARD && gun->RotX < 59)
 				gun->RotX++;
 			else if (input & IN_BACK && gun->RotX)

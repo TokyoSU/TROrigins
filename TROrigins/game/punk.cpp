@@ -52,7 +52,7 @@ static void TriggerPunkFlame(short item_number)
 	sptr->Yvel = -16 - (GetRandomControl() & 0xF);
 	sptr->Zvel = (GetRandomControl() & 0xFF) - 128;
 	sptr->Friction = 5;
-	
+
 	if (GetRandomControl() & 1)
 	{
 		sptr->Gravity = -16 - (GetRandomControl() & 0x1F);

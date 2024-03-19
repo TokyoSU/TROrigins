@@ -328,7 +328,7 @@ void TriggerElectricSparks(GAME_VECTOR* pos, long shield)
 	TrigDynamics[1].x = pos->x;
 	TrigDynamics[1].y = pos->y;
 	TrigDynamics[1].z = pos->z;
-	
+
 	sptr = &sparks[GetFreeSpark()];
 	sptr->On = 1;
 	sptr->sR = 255;
@@ -646,7 +646,7 @@ void TribeBossControl(short item_number)
 				g = (GetRandomControl() & 0x3F) + 128;
 				b = (GetRandomControl() & 0x3F) + 192;
 			}
-			
+
 			x = TrigDynamics[2].x;
 			y = TrigDynamics[2].y;
 			z = TrigDynamics[2].z;

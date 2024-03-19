@@ -139,7 +139,7 @@ void lara_as_swim(ITEM_INFO* item, COLL_INFO* coll)
 				item->fallspeed = 400;
 		}
 		else if (item->fallspeed > 200)
-				item->fallspeed = 200;
+			item->fallspeed = 200;
 
 		if (!(input & IN_JUMP))
 			item->goal_anim_state = AS_GLIDE;
@@ -323,7 +323,6 @@ long GetWaterDepth(long x, long y, long z, short room_number)
 			room_number = door;
 			r = &room[door];
 		}
-
 	} while (door != NO_ROOM);
 
 	if (r->flags & (ROOM_UNDERWATER | ROOM_SWAMP))

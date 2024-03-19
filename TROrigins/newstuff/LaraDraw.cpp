@@ -659,7 +659,7 @@ static void CalcLaraMatrices_I(short* frame1, short* frame2, long frac, long rat
 		phd_TranslateRel(bone[45], bone[46], bone[47]);
 		gar_RotYXZsuperpack(&rot, 0);
 		StoreMatrix(mx);
-		
+
 		phd_TranslateRel(bone[49], bone[50], bone[51]);
 		gar_RotYXZsuperpack(&rot, 0);
 		StoreMatrix(mx);

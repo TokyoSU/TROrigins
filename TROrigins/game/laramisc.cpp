@@ -426,7 +426,7 @@ void LaraInitialiseMeshes(long level_number)
 		lara.back_gun = ROCKET_GUN;
 	else if (start->gun_type == LG_GRENADE)
 		lara.back_gun = GRENADE_GUN;
-	else if(start->got_shotgun)
+	else if (start->got_shotgun)
 		lara.back_gun = SHOTGUN;
 	else if (start->got_mp5)
 		lara.back_gun = MP5;
@@ -736,7 +736,7 @@ void LaraControl(short item_number)
 		{
 			if (lara.water_status == LARA_WADE)
 				ExposureMeter--;
-			else 
+			else
 			{
 				ExposureMeter++;
 

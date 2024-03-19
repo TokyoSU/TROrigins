@@ -581,7 +581,7 @@ static long DoDynamics(long height, long fallspeed, long* ypos)
 		*ypos += fallspeed;
 
 		if (*ypos <= height - 80)
-				fallspeed += 6;
+			fallspeed += 6;
 		else
 		{
 			*ypos = height;
@@ -865,7 +865,7 @@ static long SkidooDynamics(ITEM_INFO* item)
 	item->pos.z_pos += (speed * phd_cos(quad->momentum_angle)) >> W2V_SHIFT;
 
 	slip = (100 * phd_sin(item->pos.x_rot)) >> W2V_SHIFT;
-	
+
 	if (abs(slip) > 50)
 	{
 		dont_exit_quad = 1;
@@ -1420,14 +1420,14 @@ long QuadBikeControl()
 
 	if (quad->Velocity || quad->Revs)
 	{
-		 quad->pitch = pitch;
+		quad->pitch = pitch;
 
-		 if (quad->pitch < -0x8000)
-			 quad->pitch = -0x8000;
-		 else if (quad->pitch > 0xA000)
-			 quad->pitch = 0xA000;
+		if (quad->pitch < -0x8000)
+			quad->pitch = -0x8000;
+		else if (quad->pitch > 0xA000)
+			quad->pitch = 0xA000;
 
-		 SoundEffect(SFX_QUAD_MOVE, &item->pos, (quad->pitch << 8) + 0x1000004);
+		SoundEffect(SFX_QUAD_MOVE, &item->pos, (quad->pitch << 8) + 0x1000004);
 	}
 	else
 	{

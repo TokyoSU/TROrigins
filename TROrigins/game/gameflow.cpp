@@ -179,7 +179,6 @@ long GF_DoLevelSequence(long level, long type)
 
 		if (gameflow.singlelevel >= 0)
 			break;
-
 	} while ((option & ~0xFF) == LEVELCOMPLETE);
 
 	return option;

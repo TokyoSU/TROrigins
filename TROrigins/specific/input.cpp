@@ -240,7 +240,7 @@ long S_UpdateInput()
 		if (key_pressed(DIK_SUBTRACT))
 			DecreaseScreenSize();
 	}
-	
+
 #if (DIRECT3D_VERSION >= 0x900)
 	if (key_pressed(DIK_F7))
 	{

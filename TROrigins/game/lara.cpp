@@ -146,7 +146,7 @@ void LaraAboveWater(ITEM_INFO* item, COLL_INFO* coll)
 	coll->enable_spaz = 1;
 	coll->enable_baddie_push = 1;
 
-	if (input & IN_LOOK && !lara.extra_anim	&& lara.look)
+	if (input & IN_LOOK && !lara.extra_anim && lara.look)
 		LookLeftRight();
 	else
 		ResetLook();
@@ -235,12 +235,10 @@ void LaraAboveWater(ITEM_INFO* item, COLL_INFO* coll)
 
 void lara_void_func(ITEM_INFO* item, COLL_INFO* coll)
 {
-
 }
 
 void extra_void_func(ITEM_INFO* item, COLL_INFO* coll)
 {
-
 }
 
 long LaraLandedBad(ITEM_INFO* item, COLL_INFO* coll)
@@ -548,7 +546,7 @@ long LaraDeflectEdge(ITEM_INFO* item, COLL_INFO* coll)
 		item->gravity_status = 0;
 		return 1;
 	}
-	
+
 	if (coll->coll_type == CT_LEFT)
 	{
 		ShiftItem(item, coll);
@@ -1723,7 +1721,7 @@ short TestMonkeyRight(ITEM_INFO* item, COLL_INFO* coll)
 		if (oct == 1 && (coll->coll_type == CT_FRONT || coll->coll_type == CT_RIGHT || coll->coll_type == CT_LEFT))
 			return 0;
 	}
-	
+
 	return 1;
 }
 
@@ -2532,7 +2530,7 @@ void lara_as_turn_r(ITEM_INFO* item, COLL_INFO* coll)
 		else
 			item->goal_anim_state = AS_FASTTURN;
 	}
-	
+
 	if (input & IN_FORWARD)
 	{
 		if (lara.water_status == LARA_WADE)
@@ -3822,7 +3820,7 @@ void lara_col_fallback(ITEM_INFO* item, COLL_INFO* coll)
 	coll->bad_ceiling = 192;
 	GetLaraCollisionInfo(item, coll);
 	LaraDeflectEdgeJump(item, coll);
-	
+
 	if (coll->mid_floor <= 0 && item->fallspeed > 0)
 	{
 		if (LaraLandedBad(item, coll))

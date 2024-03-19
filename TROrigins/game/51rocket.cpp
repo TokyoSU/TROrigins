@@ -55,7 +55,7 @@ static void Trigger51BlastFire(long x, long y, long z, long smoke, long end)
 		sptr->FadeToBlack = smoke != 0 ? 32 : 8;
 		sptr->Life = (!smoke ? 0 : 32) + (GetRandomControl() & 7) + 32;
 	}
-	
+
 	sptr->sLife = sptr->Life;
 	sptr->TransType = 2;
 	sptr->extras = 0;
@@ -88,7 +88,7 @@ static void Trigger51BlastFire(long x, long y, long z, long smoke, long end)
 		sptr->Width = (uchar)size;
 		sptr->sWidth = sptr->Width;
 		sptr->dWidth = sptr->Width;
-		
+
 		sptr->Height = sptr->Width;
 		sptr->sHeight = sptr->Height;
 		sptr->dHeight = sptr->Height;
@@ -98,7 +98,7 @@ static void Trigger51BlastFire(long x, long y, long z, long smoke, long end)
 		sptr->dWidth = (uchar)size;
 		sptr->Width = sptr->dWidth >> 1;
 		sptr->sWidth = sptr->Width;
-		
+
 		sptr->dHeight = sptr->dWidth;
 		sptr->Height = sptr->dHeight >> 1;
 		sptr->sHeight = sptr->Height;
@@ -146,7 +146,7 @@ static void Trigger51RocketSmoke(long x, long y, long z, long yv, long fire)
 	sptr->Yvel = short(yv + (GetRandomControl() & 0xF));
 	sptr->Zvel = (GetRandomControl() & 0xFF) - 128;
 	sptr->Friction = 4;
-	
+
 	if (GetRandomControl() & 1)
 	{
 		sptr->Flags = SF_ALTDEF | SF_ROTATE | SF_DEF | SF_SCALE;
@@ -173,7 +173,7 @@ static void Trigger51RocketSmoke(long x, long y, long z, long yv, long fire)
 	sptr->dWidth = (uchar)size;
 	sptr->Width = sptr->dWidth >> 2;
 	sptr->sWidth = sptr->Width;
-	
+
 	sptr->dHeight = sptr->dWidth;
 	sptr->Height = sptr->dHeight >> 2;
 	sptr->sHeight = sptr->Height;

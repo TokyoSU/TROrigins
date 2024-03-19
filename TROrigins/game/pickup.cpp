@@ -544,8 +544,8 @@ void DetonatorCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 	item->pos.x_rot = 0;
 	item->pos.y_rot = l->pos.y_rot;
 	item->pos.z_rot = 0;
-	
-	if (item->status==ITEM_DEACTIVATED || !(input & IN_ACTION) || lara.gun_status != LG_ARMLESS || l->gravity_status ||
+
+	if (item->status == ITEM_DEACTIVATED || !(input & IN_ACTION) || lara.gun_status != LG_ARMLESS || l->gravity_status ||
 		l->current_anim_state != AS_STOP || item->object_number == DETONATOR && !TestLaraPosition(PickUpBounds, item, l))
 	{
 		item->pos.x_rot = x_rot;
@@ -693,7 +693,7 @@ void SwitchCollision2(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 		l->goal_anim_state = AS_TREAD;
 		lara.gun_status = LG_HANDSBUSY;
 		item->status = ITEM_ACTIVE;
-		
+
 		if (item->current_anim_state == 1)
 			item->goal_anim_state = 0;
 		else

@@ -967,7 +967,6 @@ long Display_Inventory(long mode)
 		}
 
 		/*end control phase*/
-
 	} while (imo.status != RNG_DONE);
 
 	if (mode != INV_TITLE_MODE && mode != INV_LEVELSELECT_MODE)

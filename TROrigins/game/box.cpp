@@ -191,7 +191,6 @@ long SearchLOT(LOT_INFO* LOT, long expansion)
 	{
 		zone = ground_zone[-1][0];
 		search_zone = 0x2000;
-		
 	}
 	else
 	{
@@ -262,7 +261,6 @@ long SearchLOT(LOT_INFO* LOT, long expansion)
 				LOT->node[LOT->tail].next_expansion = (short)box_number;
 				LOT->tail = (short)box_number;
 			}
-
 		} while (!done);
 
 		LOT->head = node->next_expansion;
@@ -577,7 +575,6 @@ target_type CalculateTarget(PHD_VECTOR* target, ITEM_INFO* item, LOT_INFO* LOT)
 
 		if (box_number != 2047 && boxes[box_number].overlap_index & LOT->block_mask)
 			break;
-
 	} while (box_number != 2047);
 
 	if (prime_free & 3)

@@ -27,16 +27,16 @@ void HWR_LoadTexturePages(long nPages, uchar* src, uchar* palette);
 void HWR_SetCurrentTexture(DXTEXTURE* tex);
 
 #if (DIRECT3D_VERSION >= 0x900)
-extern HRESULT (*DrawPrimitive)(D3DPRIMITIVETYPE, LPVOID, ulong);
-extern HRESULT (*SetTextureStageState)(ulong, D3DTEXTURESTAGESTATETYPE, ulong);
-extern HRESULT (*SetSamplerState)(ulong, D3DSAMPLERSTATETYPE, ulong);
-extern HRESULT (*SetTexture)(ulong, TEXHANDLE);
+extern HRESULT(*DrawPrimitive)(D3DPRIMITIVETYPE, LPVOID, ulong);
+extern HRESULT(*SetTextureStageState)(ulong, D3DTEXTURESTAGESTATETYPE, ulong);
+extern HRESULT(*SetSamplerState)(ulong, D3DSAMPLERSTATETYPE, ulong);
+extern HRESULT(*SetTexture)(ulong, TEXHANDLE);
 #else
-extern HRESULT (*DrawPrimitive)(D3DPRIMITIVETYPE, D3DVERTEXTYPE, LPVOID, ulong, ulong);
+extern HRESULT(*DrawPrimitive)(D3DPRIMITIVETYPE, D3DVERTEXTYPE, LPVOID, ulong, ulong);
 #endif
-extern HRESULT (*SetRenderState)(D3DRENDERSTATETYPE, ulong);
-extern HRESULT (*BeginScene)();
-extern HRESULT (*EndScene)();
+extern HRESULT(*SetRenderState)(D3DRENDERSTATETYPE, ulong);
+extern HRESULT(*BeginScene)();
+extern HRESULT(*EndScene)();
 extern void (*DrawRoutine)(long, D3DTLVERTEX*, long, long);
 
 extern float GammaOption;

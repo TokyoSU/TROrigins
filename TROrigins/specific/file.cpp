@@ -191,7 +191,7 @@ long LoadRooms(HANDLE file)
 		MyReadFile(file, &r->maxceiling, sizeof(long), &read, 0);
 
 		MyReadFile(file, &num, sizeof(long), &read, 0);
-		r->data = (short*)game_malloc(sizeof(short)* num);
+		r->data = (short*)game_malloc(sizeof(short) * num);
 		MyReadFile(file, r->data, sizeof(short) * num, &read, 0);
 
 		MyReadFile(file, &nDoors, sizeof(short), &read, 0);
@@ -267,7 +267,7 @@ long LoadObjects(HANDLE file)
 	MyReadFile(file, &num, sizeof(long), &read, 0);
 	meshes = (short**)game_malloc(sizeof(short*) * num);
 	MyReadFile(file, meshes, sizeof(short*) * num, &read, 0);
-	
+
 	for (int i = 0; i < num; i++)
 		meshes[i] = mesh_base + (long)meshes[i] / 2;
 

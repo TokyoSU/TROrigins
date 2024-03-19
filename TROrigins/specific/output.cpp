@@ -307,7 +307,7 @@ static void DrawPickup(short obj_num)
 	phd_PushUnitMatrix();
 	phd_SetTrans(0, 0, 1024);
 	phd_RotYXZ(PickupY, rotx, rotz);
-	phd_PutPolygonsPickup(meshes[objects[obj_num].mesh_index], x + PickupX, y);	
+	phd_PutPolygonsPickup(meshes[objects[obj_num].mesh_index], x + PickupX, y);
 	phd_PopMatrix();
 }
 
@@ -491,7 +491,7 @@ long S_GetObjectBounds(short* box)
 	vtx[7][0] = xmin;
 	vtx[7][1] = ymax;
 	vtx[7][2] = zmax;
-	
+
 	xmin = 0x3FFFFFFF;
 	xmax = -0x3FFFFFFF;
 	ymin = 0x3FFFFFFF;

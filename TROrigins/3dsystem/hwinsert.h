@@ -35,7 +35,6 @@ void HWI_InsertAlphaSprite_Sorted(long x1, long y1, long z1, long shade1, long x
 	long x3, long y3, long z3, long shade3, long x4, long y4, long z4, long shade4,
 	long nSprite, long nDrawtype, long double_sided);
 
-
 long RoomZedClipper(long n, POINT_INFO* in, VERTEX_INFO* out);
 long RoomXYGUVClipper(long n, VERTEX_INFO* in);
 long XYGClipper(long n, VERTEX_INFO* in);

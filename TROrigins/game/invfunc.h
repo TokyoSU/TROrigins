@@ -88,7 +88,6 @@ enum INV_ORDER2	//for keys ring
 	IC4_POS
 };
 
-
 enum INV_ORDER3	//for options ring
 {
 	PAS_POS,

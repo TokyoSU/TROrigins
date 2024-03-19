@@ -1741,7 +1741,7 @@ void ControlSmokeEmitter(short item_number)
 	sptr->Yvel = -16 - (GetRandomControl() & 0xF);
 	sptr->Zvel = (GetRandomControl() & 0xFF) - 128;
 	sptr->Friction = 4;
-	
+
 	if (GetRandomControl() & 1)
 	{
 		sptr->Flags = SF_ALTDEF | SF_OUTSIDE | SF_ROTATE | SF_DEF | SF_SCALE;
@@ -2538,7 +2538,7 @@ void ControlColouredLights(short item_number)
 		{ 255, 0, 0 },		//RED_LIGHT
 		{ 0, 255, 0 },		//GREEN_LIGHT
 		{ 0, 0, 255 },		//BLUE_LIGHT
-		{ 255, 192, 0 },	//AMBER_LIGHT 
+		{ 255, 192, 0 },	//AMBER_LIGHT
 		{ 224, 224, 255 }	//WHITE_LIGHT
 	};
 

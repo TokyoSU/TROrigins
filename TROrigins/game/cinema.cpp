@@ -380,7 +380,7 @@ long DoCinematic(long nframes)
 	FX_INFO* fx;
 	static long framecount, delay = 0x8000;
 	short item_number, nex;
-	
+
 	for (framecount += delay * nframes; framecount > 0; framecount -= 0x10000)
 	{
 		if (S_UpdateInput())
@@ -466,7 +466,6 @@ long StartCinematic(long level_number)
 			nframes = TICKS_PER_FRAME;
 
 		ret = DoCinematic(nframes);
-
 	} while (!ret);
 
 	GnGameMode = GAMEMODE_NOT_IN_GAME;

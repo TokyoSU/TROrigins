@@ -265,7 +265,7 @@ void ControlRocket(short item_number)
 	item->pos.x_pos += (speed * phd_sin(item->pos.y_rot)) >> W2V_SHIFT;
 	item->pos.y_pos -= (item->speed * phd_sin(item->pos.x_rot)) >> W2V_SHIFT;
 	item->pos.z_pos += (speed * phd_cos(item->pos.y_rot)) >> W2V_SHIFT;
-	
+
 	room_number = item->room_number;
 	floor = GetFloor(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, &room_number);
 	item->floor = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
@@ -336,7 +336,7 @@ void ControlRocket(short item_number)
 
 			s = phd_sin(target->pos.y_rot);
 			c = phd_cos(target->pos.y_rot);
-			
+
 			nx = item->pos.x_pos - target->pos.x_pos;
 			nz = item->pos.z_pos - target->pos.z_pos;
 			nn = (c * nx - s * nz) >> W2V_SHIFT;
@@ -576,7 +576,7 @@ void ControlGrenade(short item_number)
 
 			if (item->pos.y_pos + rad < target->pos.y_pos + bounds[2] || item->pos.y_pos - rad > target->pos.y_pos + bounds[3])
 				continue;
-			
+
 			s = phd_sin(target->pos.y_rot);
 			c = phd_cos(target->pos.y_rot);
 
@@ -843,7 +843,7 @@ void FireRocket()
 
 	lara.has_fired = 1;
 	item_number = CreateItem();
-	
+
 	if (item_number == NO_ITEM)
 		return;
 

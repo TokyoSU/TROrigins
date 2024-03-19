@@ -636,7 +636,7 @@ void InitialiseNewWeapon()
 	lara.left_arm.flash_gun = 0;
 
 	lara.target = 0;
-	
+
 	switch (lara.gun_type)
 	{
 	case LG_PISTOLS:
@@ -779,7 +779,6 @@ void LaraGun()
 				{
 					lara.flare_control_left = 1;
 					lara.left_arm.frame_number = 95;
-					
 				}
 				else if (lara.left_arm.frame_number)
 				{

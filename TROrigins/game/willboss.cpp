@@ -72,7 +72,7 @@ static void TriggerPlasmaBallFlame(short fx_number, long type, long xv, long yv,
 	sptr->Xvel = short(2 * (xv + (GetRandomControl() & 0xFF)) - 256);
 	sptr->Yvel = (GetRandomControl() & 0x1FF) - 256;
 	sptr->Zvel = short(2 * (zv + (GetRandomControl() & 0xFF)) - 256);
-	
+
 	if (GetRandomControl() & 1)
 	{
 		sptr->Flags = SF_ALTDEF | SF_FX | SF_ROTATE | SF_DEF | SF_SCALE;

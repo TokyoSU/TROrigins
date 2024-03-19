@@ -293,8 +293,8 @@ long FindBucket(DXTEXTURE* TPage)
 	long nVtx, fullest;
 
 	if (nDrawnPoints <= 2700)	//HACK: this seems to be a useless artifical limit (not sure though),
-								//so instead of failing to draw, immediately go find fullest bucket, draw it, and use it.
-								//TODO: make sure it's actually a useless limit and remove it, otherwise raise it.
+		//so instead of failing to draw, immediately go find fullest bucket, draw it, and use it.
+		//TODO: make sure it's actually a useless limit and remove it, otherwise raise it.
 	{
 		for (int i = 0; i < MAX_BUCKETS; i++)
 		{
@@ -2067,7 +2067,7 @@ void HWI_InsertAlphaSprite_Sorted(long x1, long y1, long z1, long shade1, long x
 	blueEffect = bBlueEffect;
 	bBlueEffect = 0;
 	sprite = 0;	//new line: compiler complains that sprite is possibly uninitialized at the HWI_InsertClippedPoly_Textured call below
-				//which is not possible anyway, so 0 is fine
+	//which is not possible anyway, so 0 is fine
 
 	if (nSprite != -1)
 	{

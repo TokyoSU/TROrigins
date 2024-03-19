@@ -45,8 +45,7 @@ ulong SyncTicks(long skip)
 	{
 		UpdateTicks();
 		passed = double(ticks - last) / frequency;
-	}
-	while (passed < dskip);
+	} while (passed < dskip);
 
 	return (ulong)passed;
 }

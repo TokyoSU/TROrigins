@@ -22,7 +22,7 @@
 #endif
 
 static TEXTSTRING* pause_text;
-static REQUEST_INFO Pause_Requester = {0};
+static REQUEST_INFO Pause_Requester = { 0 };
 
 static const char* GetStupidText(long type)	//0-> Exit to Title?, 1-> Are you sure?, 2-> Yes, 3-> No, 4-> PAUSED
 {
@@ -191,7 +191,6 @@ static long DoPauseRequester()
 		{
 			page = 2;
 			break;
-			
 		}
 		else if (p == 2)
 		{
@@ -261,7 +260,6 @@ long S_Pause()
 		S_OutputPolyList();
 		SOUND_EndScene();
 		S_DumpScreen();
-
 	} while (!S_UpdateInput() && !(selected = DoPauseRequester()));
 
 	Remove_Requester(&Pause_Requester);

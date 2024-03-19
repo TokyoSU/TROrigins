@@ -104,7 +104,7 @@ static void TriggerShivaSmoke(long x, long y, long z, long yt)
 	sptr->dWidth = (GetRandomControl() & 0x1F) + 128;
 	sptr->Width = sptr->dWidth >> 2;
 	sptr->sWidth = sptr->Width >> 2;
-	
+
 	sptr->dHeight = sptr->dWidth + (GetRandomControl() & 0x1F) + 32;
 	sptr->Height = sptr->dHeight >> 3;
 	sptr->sHeight = sptr->Height;
@@ -169,7 +169,7 @@ void ShivaControl(short item_number)
 	torso_y = 0;
 	head_y = 0;
 	angle = 0;
-	
+
 	if (item->hit_points <= 0)
 	{
 		if (item->current_anim_state != SHIVA_DEATH)

@@ -45,7 +45,7 @@ static void TriggerFireHeadFlame(long x, long y, long z, long angle, long speed)
 	sptr->Zvel = short((GetRandomControl() & 0x7F) + ((speed * rcossin_tbl[angle + 1]) >> 11) - 64);
 	sptr->Friction = 4;
 	sptr->Flags = SF_ALTDEF | SF_DEF | SF_SCALE;
-	
+
 	if (GetRandomControl() & 1)
 	{
 		sptr->Flags |= SF_ROTATE;
@@ -162,7 +162,7 @@ void ControlFireHead(short item_number)
 		{
 			ymin = item->pos.y_pos - 1024;
 			ymax = item->pos.y_pos + 256;
-			
+
 			if (!item->pos.y_rot)
 			{
 				xmin = pos.x;

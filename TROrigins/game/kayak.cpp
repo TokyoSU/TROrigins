@@ -69,7 +69,6 @@ static long GetInKayak(short item_number, COLL_INFO* coll)
 
 	if (input & IN_ACTION && lara.gun_status == LG_UNARMED && !lara_item->gravity_status)
 	{
-
 		item = &items[item_number];
 		dx = lara_item->pos.x_pos - item->pos.x_pos;
 		dz = lara_item->pos.z_pos - item->pos.z_pos;
@@ -357,7 +356,7 @@ static void KayakUserInput(ITEM_INFO* item, ITEM_INFO* l, KAYAKINFO* kayak)
 
 				if (kayak->Rot < -0x1000000)
 					kayak->Rot = -0x1000000;
-				
+
 				kayak->Vel += 0x180000;
 			}
 			else if (kayak->Turn)
@@ -732,7 +731,7 @@ static long DoShift(ITEM_INFO* item, PHD_VECTOR* newPos, PHD_VECTOR* oldPos)
 	oZ = oldPos->z >> WALL_SHIFT;
 	sX = newPos->x & WALL_MASK;
 	sZ = newPos->z & WALL_MASK;
-	
+
 	if (nX == oX)
 	{
 		oldPos->x = 0;
@@ -916,7 +915,7 @@ static void KayakToBackground(ITEM_INFO* item, KAYAKINFO* kayak)
 	item->pos.z_rot = zRot;
 	oX = item->pos.x_pos;
 	oZ = item->pos.z_pos;
-	
+
 	h = TestHeight(item, 0, -640, &pos);
 
 	if (h < oldpos[7].y - 64)
@@ -1279,7 +1278,7 @@ long KayakControl()
 
 		KayakSplash(item, ofs - item->fallspeed, wh);
 	}
-	
+
 	if (lara.skidoo != NO_ITEM)
 	{
 		if (item->room_number != room_number)

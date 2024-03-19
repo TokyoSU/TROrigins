@@ -436,7 +436,7 @@ void AnimateItem(ITEM_INFO* item)
 					num = command[1] & 0x3FFF;
 					effect_routines[num](item);
 				}
-				
+
 				command += 2;
 				break;
 			}
@@ -549,7 +549,6 @@ FLOOR_INFO* GetFloor(long x, long y, long z, short* room_number)
 			*room_number = data;
 			r = &room[data];
 		}
-
 	} while (data != NO_ROOM);
 
 	if (y >= GetMaximumFloor(floor, x, z))
@@ -559,13 +558,12 @@ FLOOR_INFO* GetFloor(long x, long y, long z, short* room_number)
 			if (floor->pit_room == NO_ROOM)
 				return floor;
 
-			if(CheckNoColFloorTriangle(floor, x, z) == 1)
+			if (CheckNoColFloorTriangle(floor, x, z) == 1)
 				break;
 
 			*room_number = floor->pit_room;
 			r = &room[floor->pit_room];
 			floor = &r->floor[((z - r->z) >> WALL_SHIFT) + r->x_size * ((x - r->x) >> WALL_SHIFT)];
-
 		} while (y >= GetMaximumFloor(floor, x, z));
 	}
 	else if (y < GetMinimumCeiling(floor, x, z))
@@ -581,7 +579,6 @@ FLOOR_INFO* GetFloor(long x, long y, long z, short* room_number)
 			*room_number = floor->sky_room;
 			r = &room[floor->sky_room];
 			floor = &r->floor[((z - r->z) >> WALL_SHIFT) + r->x_size * ((x - r->x) >> WALL_SHIFT)];
-
 		} while (y < GetMinimumCeiling(floor, x, z));
 	}
 
@@ -633,7 +630,6 @@ long GetWaterHeight(long x, long y, long z, short room_number)
 			room_number = data;
 			r = &room[data];
 		}
-
 	} while (data != NO_ROOM);
 
 	if (r->flags & (ROOM_UNDERWATER | ROOM_SWAMP))
@@ -777,7 +773,6 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 
 				if (objects[item->object_number].floor)
 					objects[item->object_number].floor(item, x, y, z, &h);
-
 			} while (!(trigger & 0x8000));
 
 			break;
@@ -914,7 +909,6 @@ long GetHeight(FLOOR_INFO* floor, long x, long y, long z)
 		default:
 			S_ExitSystem("GetHeight(): Unknown type");
 		}
-
 	} while (!(type & 0x8000));
 
 	return h;
@@ -953,7 +947,6 @@ void RefreshCamera(short type, short* data)
 		}
 		else if (((trigger >> 10) & 0xF) == TO_TARGET && camera.type != LOOK_CAMERA && camera.type != COMBAT_CAMERA)
 			camera.item = &items[value];
-
 	} while (!(trigger & 0x8000));
 
 	if (camera.item && (!target_ok || (target_ok == 2 && camera.item->looked_at && camera.item != camera.last_item)))
@@ -1348,7 +1341,6 @@ void TestTriggers(short* data, long heavy)
 			ClearBodyBag();
 			break;
 		}
-
 	} while (!(trigger & 0x8000));
 
 	if (camera_item && (camera.type == FIXED_CAMERA || camera.type == HEAVY_CAMERA))
@@ -1597,7 +1589,6 @@ long GetCeiling(FLOOR_INFO* floor, long x, long y, long z)
 						if (objects[item->object_number].ceiling && !(item->flags & 0x8000))
 							objects[item->object_number].ceiling(item, x, y, z, &height);
 					}
-
 				} while (!(trigger & 0x8000));
 
 				break;

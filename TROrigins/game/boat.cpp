@@ -438,7 +438,7 @@ static long DoShift(ITEM_INFO* item, PHD_VECTOR* newPos, PHD_VECTOR* oldPos)
 			return newPos->x - item->pos.x_pos;
 		}
 	}
-	
+
 	if (nZ == oZ)
 	{
 		if (nX <= oX)
@@ -553,7 +553,7 @@ static void DoBoatShift(long item_number)
 	for (item_num = room[item->room_number].item_number; item_num != NO_ITEM; item_num = boat->next_item)
 	{
 		boat = &items[item_num];
-		
+
 		if (boat->object_number == BOAT && item_num != item_number && lara.skidoo != item_num)
 		{
 			x = boat->pos.z_pos - item->pos.z_pos;
@@ -1134,7 +1134,7 @@ void BoatControl(short item_number)
 	pos.z = -80;
 	GetJointAbsPosition(item, &pos, 2);
 	room_number = item->room_number;
-	floor=GetFloor(pos.x, pos.y, pos.z, &room_number);
+	floor = GetFloor(pos.x, pos.y, pos.z, &room_number);
 	wh = GetWaterHeight(pos.x, pos.y, pos.z, room_number);
 
 	if (!item->speed || wh >= pos.y || wh == NO_HEIGHT)

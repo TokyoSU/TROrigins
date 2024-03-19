@@ -48,7 +48,7 @@ LPDIRECT3DTEXTUREX DXTextureGetInterface(LPDIRECTDRAWSURFACEX surf)
 
 	if (SUCCEEDED(surf->QueryInterface(D3DTEXGUID, (LPVOID*)&tex)))
 		return tex;
-	
+
 	return 0;
 }
 
@@ -445,7 +445,7 @@ static void CopyTexture16(long w, long h, uchar* src, LPDDSURFACEDESCX desc, ulo
 	for (int i = 0; i < h; i++)
 	{
 		dest = (ulong*)((uchar*)desc->pBits + desc->Pitch * i);
-		
+
 		for (int j = 0; j < w; j++)
 		{
 			r = (*s >> 7) & 0xF8;

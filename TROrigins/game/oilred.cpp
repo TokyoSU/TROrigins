@@ -224,7 +224,7 @@ void OilRedControl(short item_number)
 
 			red->maximum_turn = 1820;
 			tilt = angle >> 1;
-			
+
 			if (item->ai_bits & GUARD)
 				item->goal_anim_state = OILRED_WAIT;
 			else if (near_cover && (lara.target == item || item->hit_status))

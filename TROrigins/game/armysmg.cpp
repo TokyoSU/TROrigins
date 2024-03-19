@@ -253,7 +253,7 @@ void ArmySMGControl(short item_number)
 			else if (Targetable(item, &info))
 				item->goal_anim_state = ARMY_SHOOT1;
 			else if (army->mood != BORED_MOOD || !info.ahead)
-					item->goal_anim_state = ARMY_STOP;
+				item->goal_anim_state = ARMY_STOP;
 
 			break;
 
@@ -289,7 +289,7 @@ void ArmySMGControl(short item_number)
 			{
 				torso_x = info.x_angle;
 				torso_y = info.angle;
-				
+
 				if (Targetable(item, &info))
 					item->goal_anim_state = item->current_anim_state == ARMY_AIM1 ? ARMY_SHOOT1 : ARMY_SHOOT3;
 				else

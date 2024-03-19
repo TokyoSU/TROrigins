@@ -329,7 +329,7 @@ void LizManControl(short item_number)
 				item->goal_anim_state = LIZMAN_PUNCH1;
 			else
 				item->goal_anim_state = LIZMAN_STOP;
-			
+
 			break;
 
 		case LIZMAN_AIM0:

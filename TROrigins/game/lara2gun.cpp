@@ -419,7 +419,7 @@ void PistolHandler(long weapon_type)
 	long r, g, b;
 
 	winfo = &weapons[weapon_type];
-	
+
 	if (input & IN_ACTION)
 		LaraTargetInfo(winfo);
 	else

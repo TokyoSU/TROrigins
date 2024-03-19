@@ -24,7 +24,6 @@ void InitialiseOilSMG(short item_number)
 	item->frame_number = anims[item->anim_number].frame_base;
 	item->current_anim_state = OILSMG_STOP;
 	item->goal_anim_state = OILSMG_STOP;
-	
 }
 
 void OilSMGControl(short item_number)

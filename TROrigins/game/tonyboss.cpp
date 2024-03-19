@@ -220,7 +220,7 @@ static void TriggerFireBallFlame(short fxNum, long type, long xv, long yv, long 
 	sptr->Yvel = (short)yv;
 	sptr->Zvel = short((GetRandomControl() & 0xFF) + zv - 128);
 	sptr->Friction = 5;
-	
+
 	if (GetRandomControl() & 1)
 	{
 		sptr->Flags = SF_ALTDEF | SF_FX | SF_ROTATE | SF_DEF | SF_SCALE;

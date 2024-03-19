@@ -162,7 +162,7 @@ static void CartToBaddieCollision(ITEM_INFO* cart)
 
 			if (!item->collidable || item->status == ITEM_INVISIBLE)
 				continue;
-			
+
 			obj = &objects[item->object_number];
 
 			if (obj->collision && (obj->intelligent || item->object_number == ANIMATING2))

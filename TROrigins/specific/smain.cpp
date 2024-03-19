@@ -242,7 +242,7 @@ void CheckCheatMode()
 				lara_item->flags |= IFL_INVISIBLE;
 			}
 		}
-		
+
 		//fallthrough
 
 	default:
@@ -406,7 +406,7 @@ long GameMain()
 	s = gameflow.firstOption;
 	title_loaded = 0;
 	lp = 1;
-	
+
 	while (lp)
 	{
 		level = s & 0xFF;

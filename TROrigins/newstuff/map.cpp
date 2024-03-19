@@ -60,7 +60,7 @@ static long GetRoomList(long x, long y, long z, long xSize, long ySize, long zSi
 	ROOM_INFO* r;
 	long lp, n, right, left, top, bottom, front, back;
 	long xMin, yMin, zMin, xMax, yMax, zMax;
-	
+
 	left = x - (xSize >> 1);
 	right = x + (xSize >> 1);
 	top = y - (ySize >> 1);

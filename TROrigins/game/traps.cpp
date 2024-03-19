@@ -89,7 +89,6 @@ void SpikeControl(short item_number)
 				SoundEffect(SFX_SHIVA_SWORD_2, &item->pos, SFX_ALWAYS);
 			else
 				SoundEffect(SFX_LARA_GETOUT, &item->pos, SFX_ALWAYS);
-
 		}
 
 		AnimateItem(item);
@@ -98,7 +97,7 @@ void SpikeControl(short item_number)
 
 void PropellerControl(short item_number)
 {
-	ITEM_INFO * item;
+	ITEM_INFO* item;
 
 	item = &items[item_number];
 
@@ -600,7 +599,7 @@ void TriggerPendulumFlame(short item_number)
 	sptr->Zvel = (GetRandomControl() & 0x3F) - 32;
 	sptr->Friction = 4;
 	sptr->Flags = SF_ATTACHEDNODE | SF_ALTDEF | SF_ITEM | SF_DEF | SF_SCALE;
-	
+
 	if (GetRandomControl() & 1)
 	{
 		sptr->Flags |= SF_ROTATE;

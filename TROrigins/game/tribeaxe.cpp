@@ -129,7 +129,7 @@ void TribeAxeControl(short item_number)
 						item->goal_anim_state = TRIBEAXE_WAIT2;
 				}
 			}
-			else if (axe->mood==ESCAPE_MOOD)
+			else if (axe->mood == ESCAPE_MOOD)
 				item->goal_anim_state = TRIBEAXE_RUN;
 			else if (info.ahead && info.distance < 0x718E4)
 			{

@@ -497,7 +497,7 @@ void MovableBlockCollision(short item_number, ITEM_INFO* l, COLL_INFO* coll)
 
 		return;
 	}
-	
+
 	if (l->current_anim_state == AS_PPREADY && l->frame_number == anims[ANIM_PPREADY].frame_base + 19 && TestLaraPosition(MovingBlockBounds, item, l))
 	{
 		if (input & IN_FORWARD)

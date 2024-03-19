@@ -87,7 +87,6 @@ ushort GetRandom(WATERTAB* wt, long lp)
 			if (wt[loop].random == ret)
 				break;
 		}
-
 	} while (loop != lp);
 
 	return ret;

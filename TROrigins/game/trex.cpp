@@ -266,7 +266,7 @@ void DinoControl(short item_number)
 					item->goal_anim_state = DINO_SNIFFMID;
 
 					if (item->item_flags[1] > 0)
-						item->item_flags[1] --;
+						item->item_flags[1]--;
 				}
 				else
 					item->goal_anim_state = DINO_SNIFFEND;

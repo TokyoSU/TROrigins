@@ -36,13 +36,13 @@ GOURAUD_OUTLINE req_main_gour2 =
 };
 
 GOURAUD_FILL req_bgnd_gour1 =
-{ 
+{
 	{
 	{0x80002000, 0x80002000, 0x80006000, 0x80002000},
 	{0x80002000, 0x80002000, 0x80002000, 0x80006000},
 	{0x80006000, 0x80002000, 0x80002000, 0x80002000},
 	{0x80002000, 0x80006000, 0x80002000, 0x80002000},
-	} 
+	}
 };
 
 GOURAUD_OUTLINE req_bgnd_gour2 =
@@ -131,7 +131,6 @@ INVENTORY_ITEM ibigmedi_option = { 0, BIGMEDI_OPTION, 20, 0, 0, 19, 1, 1, 0, 361
 INVENTORY_ITEM imedi_option = { 0, MEDI_OPTION, 26, 0, 0, 25, 1, 1, 0, 4032, 0, -7296, 0, 0, -4096, 0, 0, 0, 216, 0, 0xFFFFFFFF, 0xFFFFFFFF, MED_POS, 0, 0, 0, 0 };
 INVENTORY_ITEM sgcrystal_option = { 0, SAVEGAME_CRYSTAL_OPTION, 1, 0, 0, 0, 1, 1, 0, 7200, 0, -4352, 0, 0, 0, 0, 0, 0, 256, 0, 0xFFFFFFFF, 0xFFFFFFFF, SGC_POS, 0, 0, 0, 0 };
 
-
 /*Options ring items*/
 INVENTORY_ITEM ipassport_option = { 0, PASSPORT_CLOSED, 30, 0, 0, 14, 1, 1, 0, 4640, 0, -4320, 0, 0, 0, 0, 0, 0, 384, 0, 0x11, 0x11, PAS_POS, 0, 0, 0, 0 };
 INVENTORY_ITEM idetail_option = { 0, DETAIL_OPTION, 1, 0, 0, 0, 1, 1, 0, 4224, 0, -7232, 0, 0, 0, 0, -16, 0, 444, 0, 0xFFFFFFFF, 0xFFFFFFFF, DTL_POS, 0, 0, 0, 0 };
@@ -139,7 +138,6 @@ INVENTORY_ITEM isound_option = { 0, SOUND_OPTION, 1, 0, 0, 0, 1, 1, 0, 4832, 0, 
 INVENTORY_ITEM icontrol_option = { 0, CONTROL_OPTION, 1, 0, 0, 0, 1, 1, 0, 5504, 0, -2560, 5632, 5632, 13312, 0, 46, 0, 508, 0, 0xFFFFFFFF, 0xFFFFFFFF, CNT_POS, 0, 0, 0, 0 };
 INVENTORY_ITEM igamma_option = { 0, GAMMA_OPTION, 160, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, -176, 0, 256, 0, 0xFFFFFFF7, 0xFFFFFFF7, GAM_POS, 0, 0, 0, 0 };
 INVENTORY_ITEM iphoto_option = { 0, PHOTO_OPTION, 1, 0, 0, 0, 1, 1, 0, 4640, 0, -4320, 0, 0, 0, 0, 16, 0, 448, 0, 0xFFFFFFFF, 0xFFFFFFFF, PIC_POS, 0, 0, 0, 0 };
-
 
 /*Keys ring items*/
 INVENTORY_ITEM ikey1_option = { 0, KEY_OPTION1, 1, 0, 0, 0, 1, 1, 0, 7200, 0, -4352, 0, 0, 0, 0, 0, 0, 256, 0, 0xFFFFFFFF, 0xFFFFFFFF, KY1_POS, 0, 0, 0, 0 };
@@ -158,7 +156,6 @@ INVENTORY_ITEM icon1_option = { 0, ICON_PICKUP1_OPTION, 1, 0, 0, 0, 1, 1, 0, 720
 INVENTORY_ITEM icon2_option = { 0, ICON_PICKUP2_OPTION, 1, 0, 0, 0, 1, 1, 0, 7200, 0, -4352, 0, 0, 0, 0, 0, 0, 256, 0, 0xFFFFFFFF, 0xFFFFFFFF, IC2_POS, 0, 0, 0, 0 };
 INVENTORY_ITEM icon3_option = { 0, ICON_PICKUP3_OPTION, 1, 0, 0, 0, 1, 1, 0, 7200, 0, -4352, 0, 0, 0, 0, 0, 0, 256, 0, 0xFFFFFFFF, 0xFFFFFFFF, IC3_POS, 0, 0, 0, 0 };
 INVENTORY_ITEM icon4_option = { 0, ICON_PICKUP4_OPTION, 1, 0, 0, 0, 1, 1, 0, 7200, 0, -4352, 0, 0, 0, 0, 0, 0, 256, 0, 0xFFFFFFFF, 0xFFFFFFFF, IC4_POS, 0, 0, 0, 0 };
-
 
 /*Requesters*/
 REQUEST_INFO Load_Game_Requester = { 0, 1, 0, 5, 0, 0, 296, 18, 0, -32, 0, 50, Save_Game_Strings[0], Save_Game_Strings2[0] };
@@ -1815,19 +1812,19 @@ long Inv_GetItemOption(long item_number)
 	case PISTOLS_ITEM:
 	case PISTOLS_OPTION:
 		return PISTOLS_OPTION;
-		
+
 	case SHOTGUN_ITEM:
 	case SHOTGUN_OPTION:
 		return SHOTGUN_OPTION;
-		
+
 	case DESERTEAGLE_ITEM:
 	case DESERTEAGLE_OPTION:
 		return DESERTEAGLE_OPTION;
-		
+
 	case UZI_ITEM:
 	case UZI_OPTION:
 		return UZI_OPTION;
-		
+
 	case MAGNUM_ITEM:
 	case MAGNUM_OPTION:
 		return MAGNUM_OPTION;
@@ -1835,31 +1832,31 @@ long Inv_GetItemOption(long item_number)
 	case HARPOON_ITEM:
 	case HARPOON_OPTION:
 		return HARPOON_OPTION;
-		
+
 	case MP5_ITEM:
 	case MP5_OPTION:
 		return MP5_OPTION;
-		
+
 	case ROCKET_GUN_ITEM:
 	case ROCKET_OPTION:
 		return ROCKET_OPTION;
-		
+
 	case GRENADE_GUN_ITEM:
 	case GRENADE_OPTION:
 		return GRENADE_OPTION;
-		
+
 	case SHOTGUN_AMMO_ITEM:
 	case SHOTGUN_AMMO_OPTION:
 		return SHOTGUN_AMMO_OPTION;
-		
+
 	case DESERTEAGLE_AMMO_ITEM:
 	case DESERTEAGLE_AMMO_OPTION:
 		return DESERTEAGLE_AMMO_OPTION;
-		
+
 	case UZI_AMMO_ITEM:
 	case UZI_AMMO_OPTION:
 		return UZI_AMMO_OPTION;
-		
+
 	case MAGNUM_AMMO_ITEM:
 	case MAGNUM_AMMO_OPTION:
 		return MAGNUM_AMMO_OPTION;
@@ -1867,91 +1864,91 @@ long Inv_GetItemOption(long item_number)
 	case HARPOON_AMMO_ITEM:
 	case HARPOON_AMMO_OPTION:
 		return HARPOON_AMMO_OPTION;
-		
+
 	case MP5_AMMO_ITEM:
 	case MP5_AMMO_OPTION:
 		return MP5_AMMO_OPTION;
-		
+
 	case ROCKET_AMMO_ITEM:
 	case ROCKET_AMMO_OPTION:
 		return ROCKET_AMMO_OPTION;
-		
+
 	case GRENADE_AMMO_ITEM:
 	case GRENADE_AMMO_OPTION:
 		return GRENADE_AMMO_OPTION;
-		
+
 	case MEDI_ITEM:
 	case MEDI_OPTION:
 		return MEDI_OPTION;
-		
+
 	case BIGMEDI_ITEM:
 	case BIGMEDI_OPTION:
 		return BIGMEDI_OPTION;
-		
+
 	case FLAREBOX_ITEM:
 	case FLARE_ITEM:
 	case FLAREBOX_OPTION:
 		return FLAREBOX_OPTION;
-		
+
 	case PUZZLE_ITEM1:
 	case PUZZLE_OPTION1:
 		return PUZZLE_OPTION1;
-		
+
 	case PUZZLE_ITEM2:
 	case PUZZLE_OPTION2:
 		return PUZZLE_OPTION2;
-		
+
 	case PUZZLE_ITEM3:
 	case PUZZLE_OPTION3:
 		return PUZZLE_OPTION3;
-		
+
 	case PUZZLE_ITEM4:
 	case PUZZLE_OPTION4:
 		return PUZZLE_OPTION4;
-		
+
 	case KEY_ITEM1:
 	case KEY_OPTION1:
 		return KEY_OPTION1;
-		
+
 	case KEY_ITEM2:
 	case KEY_OPTION2:
 		return KEY_OPTION2;
-		
+
 	case KEY_ITEM3:
 	case KEY_OPTION3:
 		return KEY_OPTION3;
-		
+
 	case KEY_ITEM4:
 	case KEY_OPTION4:
 		return KEY_OPTION4;
-		
+
 	case PICKUP_ITEM1:
 	case PICKUP_OPTION1:
 		return PICKUP_OPTION1;
-		
+
 	case PICKUP_ITEM2:
 	case PICKUP_OPTION2:
 		return PICKUP_OPTION2;
-		
+
 	case ICON_PICKUP1_ITEM:
 	case ICON_PICKUP1_OPTION:
 		return ICON_PICKUP1_OPTION;
-		
+
 	case ICON_PICKUP2_ITEM:
 	case ICON_PICKUP2_OPTION:
 		return ICON_PICKUP2_OPTION;
-		
+
 	case ICON_PICKUP3_ITEM:
 	case ICON_PICKUP3_OPTION:
 		return ICON_PICKUP3_OPTION;
-		
+
 	case ICON_PICKUP4_ITEM:
 	case ICON_PICKUP4_OPTION:
 		return ICON_PICKUP4_OPTION;
 
 	case SAVEGAME_CRYSTAL_ITEM:
 	case SAVEGAME_CRYSTAL_OPTION:
-		
+
 		if (tomb3.psx_saving)
 			return SAVEGAME_CRYSTAL_OPTION;
 	}
@@ -2142,7 +2139,7 @@ static long Inv_AddItemIntern(OBJECT_TYPES weaponID, OBJECT_TYPES ammoID, INVENT
 		lara.mesh_ptrs[THIGH_L] = meshes[objects[animObjNum].mesh_index + THIGH_L];
 		lara.mesh_ptrs[THIGH_R] = meshes[objects[animObjNum].mesh_index + THIGH_R];
 	}
-	
+
 	GlobalItemReplace(weaponID, ammoID);
 	return 0;
 }

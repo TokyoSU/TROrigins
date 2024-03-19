@@ -170,7 +170,7 @@ void RemoveMonoScreen(long fade)
 	if (fade)
 	{
 		nLoadedPictures = 1;
-		
+
 		if (FadeMonoScreen(32))
 			bMonoScreen = 0;
 	}

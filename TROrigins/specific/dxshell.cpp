@@ -239,7 +239,7 @@ bool DXCreateZBuffer(DEVICEINFO* device, DXCONFIG* config)
 		App.ZBuffer = 0;
 		return 1;
 	}
-	
+
 	dinfopp = &device->DDInfo[config->nDD].D3DInfo;
 	memset(&desc, 0, sizeof(DDSURFACEDESCX));
 	desc.dwSize = sizeof(DDSURFACEDESCX);
@@ -706,7 +706,6 @@ bool DXStartRenderer(DEVICEINFO* device, DXCONFIG* config, bool createNew, bool 
 		return 0;
 	}
 
-
 	dm = &device->DDInfo[config->nDD].D3DInfo[config->nD3D].DisplayMode[config->nVMode];
 
 	if (!DXCreateViewPort(App.D3D, App.D3DDev, dm->w, dm->h, &App.D3DView))
@@ -918,10 +917,10 @@ static void DXEnumerateDisplayModes(DIRECT3DINFO* d3dinfo, long index)
 		pDM = &d3dinfo->DisplayMode[d3dinfo->nDisplayMode];
 
 		pDM->w = DM.Width;
-pDM->h = DM.Height;
-pDM->bpp = 32;
+		pDM->h = DM.Height;
+		pDM->bpp = 32;
 
-d3dinfo->nDisplayMode++;
+		d3dinfo->nDisplayMode++;
 	}
 }
 

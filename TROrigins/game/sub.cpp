@@ -514,7 +514,6 @@ static void UserInput(ITEM_INFO* item, ITEM_INFO* l, SUBINFO* sub)
 
 		if (sub->Vel < 0)
 			sub->Vel = 0;
-
 	}
 	else if (sub->Vel < 0)
 	{

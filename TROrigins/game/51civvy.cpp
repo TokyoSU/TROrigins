@@ -469,7 +469,7 @@ void CivvyControl(short item_number)
 				item->goal_anim_state = CIVVY_PUNCH0;
 			else
 				item->goal_anim_state = CIVVY_STOP;
-			
+
 			break;
 
 		case CIVVY_PUNCH1:

@@ -10,17 +10,17 @@
 #include "tomb3.h"
 
 #if (DIRECT3D_VERSION >= 0x900)
-HRESULT (*DrawPrimitive)(D3DPRIMITIVETYPE, LPVOID, ulong);
-HRESULT (*SetTextureStageState)(ulong, D3DTEXTURESTAGESTATETYPE, ulong);
-HRESULT (*SetSamplerState)(ulong, D3DSAMPLERSTATETYPE, ulong);
-HRESULT (*SetTexture)(ulong, TEXHANDLE);
+HRESULT(*DrawPrimitive)(D3DPRIMITIVETYPE, LPVOID, ulong);
+HRESULT(*SetTextureStageState)(ulong, D3DTEXTURESTAGESTATETYPE, ulong);
+HRESULT(*SetSamplerState)(ulong, D3DSAMPLERSTATETYPE, ulong);
+HRESULT(*SetTexture)(ulong, TEXHANDLE);
 #else
 HRESULT(*DrawPrimitive)(D3DPRIMITIVETYPE, D3DVERTEXTYPE, LPVOID, ulong, ulong);
 #endif
 
-HRESULT (*SetRenderState)(D3DRENDERSTATETYPE, ulong);
-HRESULT (*BeginScene)();
-HRESULT (*EndScene)();
+HRESULT(*SetRenderState)(D3DRENDERSTATETYPE, ulong);
+HRESULT(*BeginScene)();
+HRESULT(*EndScene)();
 void (*DrawRoutine)(long, D3DTLVERTEX*, long, long);
 
 float GammaOption = 3.0F;

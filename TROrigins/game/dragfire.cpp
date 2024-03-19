@@ -159,7 +159,7 @@ static void TriggerFlamethrowerSmoke(long x, long y, long z, long uw)
 	sptr->dWidth = (GetRandomControl() & 0x1F) + 128;
 	sptr->Width = sptr->dWidth >> 2;
 	sptr->sWidth = sptr->Width;
-	
+
 	sptr->dHeight = sptr->dWidth + (GetRandomControl() & 0x1F) + 32;
 	sptr->Height = sptr->dHeight >> 3;
 	sptr->sHeight = sptr->Height;

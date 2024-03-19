@@ -23,7 +23,6 @@ ulong phd_sqrt(ulong num)
 		}
 
 		base >>= 2;
-
 	} while (base);
 
 	return result;

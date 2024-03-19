@@ -102,7 +102,7 @@ void HybridControl(short item_number)
 			{
 				torso_x = info.x_angle;
 				torso_y = info.angle;
-				
+
 				if (info.angle < 0)
 					item->goal_anim_state = HYBRID_SLASH_LEFT;
 				else

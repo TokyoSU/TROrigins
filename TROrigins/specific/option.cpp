@@ -112,7 +112,7 @@ void do_detail_option(INVENTORY_ITEM* item)
 		dtext[DT_FILTER] = T_Print(w, -5, 0, GF_PCStrings[PCSTR_FILTERING]);
 		dtext[DT_DITHER] = T_Print(w, 15, 0, GF_PCStrings[PCSTR_DITHER]);
 		dtext[DT_GAMMA] = T_Print(w, 35, 0, GF_PCStrings[PCSTR_SKY]);
-		
+
 		T_AddBackground(dtext[DT_EMPTY], 240, 130, 0, 0, 48, 0, &req_bgnd_gour1, 0);
 		T_AddOutline(dtext[DT_EMPTY], 1, 15, &req_bgnd_gour2, 0);
 		T_CentreH(dtext[DT_EMPTY], 1);
@@ -451,8 +451,7 @@ void do_levelselect_option(INVENTORY_ITEM* item)
 					GlobeLevel--;
 				else
 					GlobeLevel = 5;
-			}
-			while (GlobeLevelComplete[GlobeLevel]);
+			} while (GlobeLevelComplete[GlobeLevel]);
 		}
 		else if (input & IN_RIGHT)
 		{
@@ -462,8 +461,7 @@ void do_levelselect_option(INVENTORY_ITEM* item)
 					GlobeLevel = 0;
 				else
 					GlobeLevel++;
-			}
-			while (GlobeLevelComplete[GlobeLevel]);
+			} while (GlobeLevelComplete[GlobeLevel]);
 		}
 	}
 
@@ -792,7 +790,7 @@ static void S_ShowControls()
 		btext[n++] = T_Print(x, y, 0, KeyboardButtons[layout[iconfig][13]]);
 		y += s;
 
-		for (int i = 0; i < NLAYOUTKEYS ; i++)
+		for (int i = 0; i < NLAYOUTKEYS; i++)
 			T_CentreV(btext[i], 1);
 
 		keychange = 0;

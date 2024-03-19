@@ -344,19 +344,15 @@ void HairControl(long in_cutscene)
 	}
 
 	wind += (GetRandomControl() & 7) - 3;
-
 	if (wind <= -2)
 		wind++;
 	else if (wind >= 9)
 		wind--;
-
 	dwind_angle = (dwind_angle + (((GetRandomControl() & 0x3F) - 32) << 1)) & 0x1FFE;
-
 	if (dwind_angle < 1024)
 		dwind_angle += (1024 - dwind_angle) << 1;
 	else if (dwind_angle > 3072)
 		dwind_angle -= (dwind_angle - 3072) << 1;
-
 	wind_angle = (wind_angle + ((dwind_angle - wind_angle) >> 3)) & 0x1FFE;
 	SmokeWindX = (wind * rcossin_tbl[wind_angle]) >> 12;
 	SmokeWindZ = (wind * rcossin_tbl[wind_angle + 1]) >> 12;

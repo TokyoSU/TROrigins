@@ -1673,8 +1673,10 @@ static void ObjectObjects()
 	obj->save_anim = TRUE;
 
 	obj = &objects[SNOW_EMITTER];
+	obj->initialise = InitialiseMiniSnowEffect;
 	obj->control = ControlMiniSnowEffect;
 	obj->draw_routine = DrawMiniSnowEffect;
+	obj->save_flags = TRUE;
 
 	obj = &objects[TONYFIREBALL];
 	obj->control = ControlTonyFireBall;

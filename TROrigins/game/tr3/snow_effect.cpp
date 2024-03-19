@@ -14,17 +14,16 @@
 #include "winmain.h"
 #include "items.h"
 #include "camera.h"
+#include "draw.h"
 
 // item->ocb = snowflakes spawning range.
+constexpr auto MAX_MINI_WEATHER = 128;
 
-#define MAX_MINI_WEATHER 512
-static SNOWFLAKE snowflakes_2[MAX_MINI_WEATHER];
-
-static int GetFreeSnowflake()
+static int GetFreeSnowflake(SNOWFLAKE* flake)
 {
 	for (int i = 0; i < MAX_MINI_WEATHER; i++)
 	{
-		auto* snow = &snowflakes_2[i];
+		auto* snow = &flake[i];
 		if (!snow->on)
 			return i;
 	}
@@ -47,7 +46,7 @@ static bool IsSnowBlocked(SNOWFLAKE* snow)
 	auto z = snow->z;
 	auto* floor = GetFloor(x, y, z, &current_room);
 	auto* r = &room[current_room];
-	if (r->flags & ROOM_UNDERWATER)
+	if ((r->flags & ROOM_UNDERWATER) || (r->flags & ROOM_SWAMP))
 		return true;
 	auto h = GetHeight(floor, x, y, z);
 	if (h == NO_HEIGHT || y > h)
@@ -59,10 +58,11 @@ static bool IsSnowBlocked(SNOWFLAKE* snow)
 }
 static bool CreateNewSnowflake(ITEM_INFO* item)
 {
-	int snowID = GetFreeSnowflake();
+	auto* snowData = static_cast<SNOWFLAKE*>(item->data);
+	int snowID = GetFreeSnowflake(snowData);
 	if (snowID == -1)
 		return false;
-	auto* snow = &snowflakes_2[snowID];
+	auto* snow = &snowData[snowID];
 	auto rad = GetRandomDraw() & (item->ocb != 0 ? item->ocb : 0xFFF);
 	auto angle = GetRandomDraw() & 0x1FFE;
 	snow->x = item->pos.x_pos + ((rad * rcossin_tbl[angle]) >> 12);
@@ -75,20 +75,27 @@ static bool CreateNewSnowflake(ITEM_INFO* item)
 	snow->on = TRUE;
 	snow->size = (GetRandomDraw() & 12); // NOTE: will clamp to 4 when drawing if the value is less than 4
 	snow->xv = (GetRandomDraw() & 7) - 4;
-	snow->yv = (GetRandomDraw() % 24 + 8) << 3;
+	snow->yv = (GetRandomDraw() % 16 + 8) << 3;
 	snow->zv = (GetRandomDraw() & 7) - 4;
 	snow->life = 1024 - (snow->yv << 1);
 	snow->color = UCHAR_MAX;
 	return true;
 }
 
+void InitialiseMiniSnowEffect(short item_number)
+{
+	auto* item = &items[item_number];
+	item->data = (SNOWFLAKE*)game_malloc(sizeof(SNOWFLAKE) * MAX_MINI_WEATHER);
+}
+
 void ControlMiniSnowEffect(short item_number)
 {
 	auto* item = &items[item_number];
+	auto* snowData = static_cast<SNOWFLAKE*>(item->data);
 	for (int i = 0; i < MAX_MINI_WEATHER; i++)
 	{
 		CreateNewSnowflake(item);
-		auto* snow = &snowflakes_2[i];
+		auto* snow = &snowData[i];
 		auto ox = snow->x;
 		auto oy = snow->y;
 		auto oz = snow->z;
@@ -96,7 +103,7 @@ void ControlMiniSnowEffect(short item_number)
 		if (!snow->stopped)
 		{
 			snow->x += snow->xv;
-			snow->y += (snow->yv & 0xFF) >> 4;
+			snow->y += (snow->yv & 0xFF) >> 3;
 			snow->z += snow->zv;
 			UpdateSnowRoom(snow, 16);
 			if (IsSnowBlocked(snow))
@@ -116,13 +123,25 @@ void ControlMiniSnowEffect(short item_number)
 			continue;
 		}
 
+		if (room[snow->room_number].flags & ROOM_NOT_INSIDE)
+		{
+			if (snow->xv < SmokeWindX << 1)
+				snow->xv++;
+			else if (snow->xv > SmokeWindX << 1)
+				snow->xv--;
+			if (snow->zv < SmokeWindZ << 1)
+				snow->zv++;
+			else if (snow->zv > SmokeWindZ << 1)
+				snow->zv--;
+		}
+
 		snow->life--;
 		if (snow->life <= 0)
 			snow->life = 0;
 		if (snow->stopped)
 		{
 			snow->life = 1;
-			snow->color--;
+			snow->color -= 3;
 			if (snow->color <= 0)
 				snow->color = 0;
 			if (snow->color == 0)
@@ -146,6 +165,7 @@ void DrawMiniSnowEffect(ITEM_INFO* item)
 #else
 	auto* dm = &App.lpDeviceInfo->DDInfo[App.lpDXConfig->nDD].D3DInfo[App.lpDXConfig->nD3D].DisplayMode[App.lpDXConfig->nVMode];
 #endif
+	auto* snowData = static_cast<SNOWFLAKE*>(item->data);
 	auto* sprite = &phdspriteinfo[objects[DEFAULT_SPRITES].mesh_index + ST_SNOWFLAKE];
 	auto u1 = (sprite->offset << 8) & 0xFF00;
 	auto v1 = sprite->offset & 0xFF00;
@@ -158,7 +178,7 @@ void DrawMiniSnowEffect(ITEM_INFO* item)
 	phd_TranslateAbs(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
 	for (int i = 0; i < MAX_MINI_WEATHER; i++)
 	{
-		auto* snow = &snowflakes_2[i];
+		auto* snow = &snowData[i];
 		if (!snow->on)
 			continue;
 		// If the snow is no more near the camera just don't draw it.
@@ -191,7 +211,7 @@ void DrawMiniSnowEffect(ITEM_INFO* item)
 			pos.x - size, pos.y + size, pos.z, c, // down-left
 			true
 		);
-		tex.drawtype = 1;
+		tex.drawtype = 2;
 		tex.tpage = sprite->tpage;
 		tex.u1 = u1;
 		tex.v1 = v1;

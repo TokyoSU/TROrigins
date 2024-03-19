@@ -560,6 +560,37 @@ enum sfx_types
 	SFX_WATERONLY = 0x8000
 };
 
+enum sprite_types
+{
+	ST_FIRE0,
+	ST_FIRE1,
+	ST_FIRE2,
+	ST_FIRE3,
+	ST_WATSPLASH0,
+	ST_WATSPLASH1,
+	ST_WATSPLASH2,
+	ST_WATSPLASH3,
+	ST_WATSPLASHBORDER,
+	ST_WATSPLASHORIG,
+	ST_PIRAHNA,
+	ST_FISH,
+	ST_FISH2,
+	ST_UNK0,
+	ST_UNK1,
+	ST_UNK2,
+	ST_UNK3,
+	ST_LENSFLARE,
+	ST_WATERFALL0,
+	ST_WATERFALL1,
+	ST_WATERFALL2,
+	ST_WATERFALL3,
+	ST_WATERFALL4,
+	ST_WATERFALL5,
+	ST_WATERFALL6,
+	ST_WATERFALL7,
+	ST_SNOWFLAKE
+};
+
 /*structs*/
 #if (DIRECT3D_VERSION >= 0x900)
 struct D3DTLVERTEX
@@ -698,6 +729,7 @@ struct ITEM_INFO
 	short flags;
 	short shade;
 	short shadeB;
+	short ocb;
 	short carried_item;
 	short after_death;
 	ushort fired_weapon;
@@ -2027,6 +2059,7 @@ struct SNOWFLAKE
 	char zv;
 	uchar on;
 	uchar size;
+	uchar color;
 };
 
 struct RES_TXT

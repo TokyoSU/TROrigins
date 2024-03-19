@@ -549,7 +549,7 @@ long LoadItems(HANDLE file)
 		MyReadFile(file, &item->pos.y_rot, sizeof(short), &read, 0);
 
 		MyReadFile(file, &item->shade, sizeof(short), &read, 0);
-		MyReadFile(file, &item->shadeB, sizeof(short), &read, 0);
+		MyReadFile(file, &item->ocb, sizeof(short), &read, 0);
 		MyReadFile(file, &item->flags, sizeof(short), &read, 0);
 
 		if (item->object_number < 0 || item->object_number > NUMBER_OBJECTS)

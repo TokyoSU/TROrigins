@@ -240,7 +240,7 @@ long S_Pause()
 	S_CDVolume(0);
 	TempVideoAdjust(HiResFlag, 1.0);
 	VidSizeLocked = 1;
-	S_SetupAboveWater(0);
+	S_SetupAboveWater(FALSE);
 	CreateMonoScreen();
 	selected = 0;
 

@@ -963,7 +963,7 @@ void TriggerGunSmoke(long x, long y, long z, long xv, long yv, long zv, long ini
 	sptr->Life = (GetRandomControl() & 3) + 40;
 	sptr->sLife = sptr->Life;
 
-	if ((weapon == LG_PISTOLS || weapon == LG_MAGNUMS || weapon == LG_DESERTEAGLE || weapon == LG_UZIS) && sptr->dR > 64)
+	if ((weapon == LG_PISTOLS || weapon == LG_AUTOPISTOLS || weapon == LG_DESERTEAGLE || weapon == LG_UZIS) && sptr->dR > 64)
 	{
 		sptr->dR = 64;
 		sptr->dG = 64;
@@ -2085,7 +2085,7 @@ void TriggerGunShell(short lr, long objNum, long weapon)
 	{
 		switch (weapon)
 		{
-		case LG_MAGNUMS:
+		case LG_AUTOPISTOLS:
 		case LG_PISTOLS:
 			pos.x = 8;
 			pos.y = 48;
@@ -2123,7 +2123,7 @@ void TriggerGunShell(short lr, long objNum, long weapon)
 	{
 		switch (weapon)
 		{
-		case LG_MAGNUMS:
+		case LG_AUTOPISTOLS:
 		case LG_PISTOLS:
 			pos.x = -12;
 			pos.y = 48;

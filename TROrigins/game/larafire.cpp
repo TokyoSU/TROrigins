@@ -68,7 +68,7 @@ WEAPON_INFO weapons[NUM_WEAPONS] =
 		SFX_LARA_SHOTGUN
 	},
 	{
-		-10920, 10920, -10920, 10920,		//LG_MAGNUMS
+		-10920, 10920, -10920, 10920,		//LG_AUTOPISTOLS
 		-30940, 10920, -14560, 14560,
 		-10920, 30940, -14560, 14560,
 		1820,
@@ -225,8 +225,8 @@ long WeaponObject(long weapon_type)
 	case LG_UZIS:
 		return UZI;
 
-	case LG_MAGNUMS:
-		return MAGNUMS;
+	case LG_AUTOPISTOLS:
+		return AUTOPISTOLS;
 
 	case LG_SHOTGUN:
 		return SHOTGUN;
@@ -272,8 +272,8 @@ long FireWeapon(long weapon_type, ITEM_INFO* target, ITEM_INFO* source, short* a
 		if (savegame.bonus_flag)
 			ammo->ammo = 10000;
 		break;
-	case LG_MAGNUMS:
-		ammo = &lara.magnums;
+	case LG_AUTOPISTOLS:
+		ammo = &lara.autopistols;
 		if (savegame.bonus_flag)
 			ammo->ammo = 10000;
 		break;
@@ -640,7 +640,7 @@ void InitialiseNewWeapon()
 	switch (lara.gun_type)
 	{
 	case LG_PISTOLS:
-	case LG_MAGNUMS:
+	case LG_AUTOPISTOLS:
 	case LG_UZIS:
 		lara.right_arm.frame_base = objects[PISTOLS].frame_base;
 		lara.left_arm.frame_base = objects[PISTOLS].frame_base;
@@ -816,7 +816,7 @@ void LaraGun()
 		switch (lara.gun_type)
 		{
 		case LG_PISTOLS:
-		case LG_MAGNUMS:
+		case LG_AUTOPISTOLS:
 		case LG_DESERTEAGLE:
 		case LG_UZIS:
 
@@ -855,7 +855,7 @@ void LaraGun()
 		switch (lara.gun_type)
 		{
 		case LG_PISTOLS:
-		case LG_MAGNUMS:
+		case LG_AUTOPISTOLS:
 		case LG_DESERTEAGLE:
 		case LG_UZIS:
 			undraw_pistols(lara.gun_type);
@@ -890,8 +890,8 @@ void LaraGun()
 		{
 			switch (lara.gun_type)
 			{
-			case LG_MAGNUMS:
-				ammo = &lara.magnums;
+			case LG_AUTOPISTOLS:
+				ammo = &lara.autopistols;
 				break;
 
 			case LG_DESERTEAGLE:
@@ -944,7 +944,7 @@ void LaraGun()
 		switch (lara.gun_type)
 		{
 		case LG_PISTOLS:
-		case LG_MAGNUMS:
+		case LG_AUTOPISTOLS:
 		case LG_UZIS:
 			PistolHandler(lara.gun_type);
 			break;

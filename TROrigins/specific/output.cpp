@@ -26,6 +26,7 @@
 #include "litesrc.h"
 #include "draweffects.h"
 #include "tomb3.h"
+#include <invfunc.h>
 
 static short shadow[6 + (3 * 8)] =
 {
@@ -105,16 +106,16 @@ void S_PrintShadow(short size, short* box, ITEM_INFO* item)
 	phd_PopMatrix();
 }
 
-void S_SetupAboveWater(long underwater)
+void S_SetupAboveWater(BOOL underwater)
 {
 	water_effect = underwater;
 	bBlueEffect = underwater;
 }
 
-void S_SetupBelowWater(long underwater)
+void S_SetupBelowWater(BOOL underwater)
 {
-	water_effect = !underwater;
-	bBlueEffect = 1;
+	water_effect = underwater;
+	bBlueEffect = underwater;
 }
 
 long GetFixedScale(long unit)	//some things require fixed scale to look proper all the time. mostly effects, like snow and rain etc.
@@ -148,45 +149,45 @@ struct display_rots
 
 display_rots rots[64] =
 {
-	{PICKUP_ITEM1, 0, 0},
-	{PICKUP_ITEM2, 0, 0},
+	{PICKUP_OPTION1, 0, 0},
+	{PICKUP_OPTION2, 0, 0},
 
-	{KEY_ITEM1, 0, 0},
-	{KEY_ITEM2, 0, 0},
-	{KEY_ITEM3, 0, 0},
-	{KEY_ITEM4, 0, 0},
+	{KEY_OPTION1, 0, 0},
+	{KEY_OPTION2, 0, 0},
+	{KEY_OPTION3, 0, 0},
+	{KEY_OPTION4, 0, 0},
 
-	{PUZZLE_ITEM1, 0, 0},
-	{PUZZLE_ITEM2, 0, 0},
-	{PUZZLE_ITEM3, 0, 0},
-	{PUZZLE_ITEM4, 0, 0},
+	{PUZZLE_OPTION1, 0, 0},
+	{PUZZLE_OPTION2, 0, 0},
+	{PUZZLE_OPTION3, 0, 0},
+	{PUZZLE_OPTION4, 0, 0},
 
-	{PISTOLS_ITEM, 0, 0},
-	{SHOTGUN_ITEM, 0x5000, -0x2000},
-	{HARPOON_ITEM, -0x3000, 0},
-	{ROCKET_GUN_ITEM, 0x1000, -0x2000},
-	{GRENADE_GUN_ITEM, -0x3000, 0},
-	{MP5_ITEM, -0x3000, 0},
-	{DESERTEAGLE_ITEM, -0x2500, -0x2000},
-	{UZI_ITEM, 0x4000, 0},
-	{MAGNUM_ITEM, 0x4000, 0},
-	{FLAREBOX_ITEM, 0, 0},
+	{PISTOLS_OPTION, 0, 0},
+	{SHOTGUN_OPTION, 0x5000, -0x2000},
+	{HARPOON_OPTION, -0x3000, 0},
+	{ROCKET_OPTION, 0x1000, -0x2000},
+	{GRENADE_OPTION, -0x3000, 0},
+	{MP5_OPTION, -0x3000, 0},
+	{DESERTEAGLE_OPTION, -0x2500, -0x2000},
+	{UZI_OPTION, 0x4000, 0},
+	{AUTOPISTOLS_OPTION, 0x4000, 0},
+	{FLAREBOX_OPTION, 0, 0},
 
-	{SHOTGUN_AMMO_ITEM, 0xE38, 0},
-	{DESERTEAGLE_AMMO_ITEM, 0x1000, 0},
-	{UZI_AMMO_ITEM, -0x2000, 0},
-	{HARPOON_AMMO_ITEM, 0xE38, 0},
-	{MP5_AMMO_ITEM, 0x1000, 0},
-	{ROCKET_AMMO_ITEM, 0, 0},
-	{GRENADE_AMMO_ITEM, 0, 0},
+	{SHOTGUN_AMMO_OPTION, 0xE38, 0},
+	{DESERTEAGLE_AMMO_OPTION, 0x1000, 0},
+	{UZI_AMMO_OPTION, -0x2000, 0},
+	{HARPOON_AMMO_OPTION, 0xE38, 0},
+	{MP5_AMMO_OPTION, 0x1000, 0},
+	{ROCKET_AMMO_OPTION, 0, 0},
+	{GRENADE_AMMO_OPTION, 0, 0},
 
-	{MEDI_ITEM, 0, 0},
-	{BIGMEDI_ITEM, 0, 0},
+	{MEDI_OPTION, 0, 0},
+	{BIGMEDI_OPTION, 0, 0},
 
-	{ICON_PICKUP1_ITEM, 0, 0},
-	{ICON_PICKUP2_ITEM, 0, 0},
-	{ICON_PICKUP3_ITEM, 0, 0},
-	{ICON_PICKUP4_ITEM, 0, 0},
+	{ICON_PICKUP1_OPTION, 0, 0},
+	{ICON_PICKUP2_OPTION, 0, 0},
+	{ICON_PICKUP3_OPTION, 0, 0},
+	{ICON_PICKUP4_OPTION, 0, 0},
 };
 
 static void GetRots(short obj_num, short& x, short& z)
@@ -296,18 +297,36 @@ static void phd_PutPolygonsPickup(short* objptr, float x, float y)
 static void DrawPickup(short obj_num)
 {
 	float x, y;
-	short rotx, rotz;
+	short rotx, rotz, obj_num_inv;
 
 	x = float(phd_winxmin + phd_winxmax - GetFixedScale(75));
 	y = float(phd_winymax + phd_winymin - GetFixedScale(75));
-	GetRots(obj_num, rotx, rotz);
+	obj_num_inv = (short)Inv_GetItemOption(obj_num);
+	GetRots(obj_num_inv, rotx, rotz);
+
+	auto* obj = &objects[obj_num_inv];
+	auto* meshptr = &meshes[obj->mesh_index];
+	auto* bone = &bones[obj->bone_index];
+	short* frame = &obj->frame_base[0];
 
 	phd_LookAt(0, -1024, 0, 0, 0, 0, 0);
-
 	phd_PushUnitMatrix();
 	phd_SetTrans(0, 0, 1024);
 	phd_RotYXZ(PickupY, rotx, rotz);
-	phd_PutPolygonsPickup(meshes[objects[obj_num].mesh_index], x + PickupX, y);
+	phd_TranslateRel(frame[6], frame[7], frame[8]);
+	short* rot = frame + 9;
+	gar_RotYXZsuperpack(&rot, 0);
+	phd_PutPolygonsPickup(*meshptr++, x + PickupX, y);
+	for (int i = 0; i < obj->nmeshes - 1; i++, bone += 4, meshptr++)
+	{
+		if (bone[0] & 1)
+			phd_PopMatrix();
+		if (bone[0] & 2)
+			phd_PushMatrix();
+		phd_TranslateRel(bone[1], bone[2], bone[3]);
+		gar_RotYXZsuperpack(&rot, 0);
+		phd_PutPolygonsPickup(*meshptr, x + PickupX, y);
+	}
 	phd_PopMatrix();
 }
 

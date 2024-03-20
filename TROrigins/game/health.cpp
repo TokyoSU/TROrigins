@@ -367,8 +367,8 @@ void DrawAmmoInfo()
 			wsprintf(txt, "%5d", lara.uzis.ammo);
 			break;
 
-		case LG_MAGNUMS:
-			wsprintf(txt, "%5d", lara.magnums.ammo);
+		case LG_AUTOPISTOLS:
+			wsprintf(txt, "%5d", lara.autopistols.ammo);
 			break;
 
 		case LG_SHOTGUN:

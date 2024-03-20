@@ -16,7 +16,7 @@ static PISTOL_DEF PistolTable[NUM_WEAPONS]
 	{ 0, 0, 0, 0 }, // UNARMED
 	{ PISTOLS, 4, 5, 13, 24 }, // PISTOLS
 	{ 0, 0, 0, 0, 0 }, // SHOTGUN
-	{ MAGNUMS, 4, 5, 13, 24 }, // MAGNUMS
+	{ PISTOLS, 4, 5, 13, 24 }, // AUTOPISTOLS
 	{ UZI, 4, 5, 13, 24 }, // UZI
 	{ DESERTEAGLE, 7, 8, 15, 29 }, // DESERTEAGLE
 	{ 0, 0, 0, 0, 0 }, // MP5
@@ -218,7 +218,7 @@ void AnimatePistols(long weapon_type)
 		switch (SmokeWeapon)
 		{
 		case LG_PISTOLS:
-		case LG_MAGNUMS:
+		case LG_AUTOPISTOLS:
 			pos.x = 4;
 			pos.y = 128;
 			pos.z = 40;
@@ -246,7 +246,7 @@ void AnimatePistols(long weapon_type)
 		switch (SmokeWeapon)
 		{
 		case LG_PISTOLS:
-		case LG_MAGNUMS:
+		case LG_AUTOPISTOLS:
 			pos.x = -16;
 			pos.y = 128;
 			pos.z = 40;

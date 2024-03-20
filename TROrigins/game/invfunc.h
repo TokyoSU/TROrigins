@@ -54,7 +54,7 @@ enum INV_ORDER	//for main ring
 	MAP_POS,
 	PISTOL_POS,
 	SHOTGUN_POS,
-	MAGNUM_POS,
+	AUTOPISTOLS_POS,
 	UZIS_POS,
 	DESERTEAGLE_POS,
 	MP5_POS,
@@ -123,7 +123,7 @@ extern INVENTORY_ITEM icompass_option;
 extern INVENTORY_ITEM ipistols_option;
 extern INVENTORY_ITEM ishotgun_option;
 extern INVENTORY_ITEM ideserteagle_option;
-extern INVENTORY_ITEM imagnum_option;
+extern INVENTORY_ITEM iautopistols_option;
 extern INVENTORY_ITEM iuzi_option;
 extern INVENTORY_ITEM imp5_option;
 extern INVENTORY_ITEM irocket_option;
@@ -133,7 +133,7 @@ extern INVENTORY_ITEM iflare_option;
 extern INVENTORY_ITEM igunammo_option;
 extern INVENTORY_ITEM ishotgunammo_option;
 extern INVENTORY_ITEM ideserteagleammo_option;
-extern INVENTORY_ITEM imagnumammo_option;
+extern INVENTORY_ITEM iautopistolsammo_option;
 extern INVENTORY_ITEM iuziammo_option;
 extern INVENTORY_ITEM imp5ammo_option;
 extern INVENTORY_ITEM irocketammo_option;

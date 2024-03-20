@@ -31,6 +31,7 @@ void DrawRooms(short current_room);
 long DrawPhaseGame();
 void DrawAnimatingItem(ITEM_INFO* item);
 void DrawDummyItem(ITEM_INFO* item);
+void DrawPickupSprite2D(ITEM_INFO* item);
 
 extern long box_lines[12][2];
 extern short null_rotations[12];

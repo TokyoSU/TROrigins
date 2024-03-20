@@ -1057,7 +1057,7 @@ void do_control_option(INVENTORY_ITEM* item)
 
 		for (c = 0; c < 256; c++)
 		{
-			if (key_pressed(c))
+			if (GET_KEY(c))
 				break;
 		}
 
@@ -1087,7 +1087,7 @@ void do_control_option(INVENTORY_ITEM* item)
 
 	case 3:
 
-		if (!key_pressed(layout[iconfig][keychange]))
+		if (!GET_KEY(layout[iconfig][keychange]))
 		{
 			sel = 0;
 
@@ -1487,7 +1487,7 @@ void do_inventory_options(INVENTORY_ITEM* item)
 	case PISTOLS_OPTION:
 	case SHOTGUN_OPTION:
 	case DESERTEAGLE_OPTION:
-	case MAGNUM_OPTION:
+	case AUTOPISTOLS_OPTION:
 	case UZI_OPTION:
 	case HARPOON_OPTION:
 	case MP5_OPTION:

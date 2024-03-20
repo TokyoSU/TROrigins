@@ -113,7 +113,7 @@ long GF_LoadScriptFile(const char* name)
 	iflare_option.itemText = GF_GameStrings[GT_FLARE];
 	ishotgun_option.itemText = GF_GameStrings[GT_SHOTGUN];
 	ideserteagle_option.itemText = GF_GameStrings[GT_DESERTEAGLE];
-	imagnum_option.itemText = GF_GameStrings[GT_MAGNUM];
+	iautopistols_option.itemText = GF_GameStrings[GT_MAGNUM];
 	iuzi_option.itemText = GF_GameStrings[GT_UZIS];
 	iharpoon_option.itemText = GF_GameStrings[GT_HARPOON];
 	imp5_option.itemText = GF_GameStrings[GT_MP5];
@@ -122,7 +122,7 @@ long GF_LoadScriptFile(const char* name)
 	igunammo_option.itemText = GF_GameStrings[GT_PISTOLCLIPS];
 	ishotgunammo_option.itemText = GF_GameStrings[GT_SHOTGUNSHELLS];
 	ideserteagleammo_option.itemText = GF_GameStrings[GT_DESERTEAGLECLIPS];
-	imagnumammo_option.itemText = GF_GameStrings[GT_MAGNUMCLIPS];
+	iautopistolsammo_option.itemText = GF_GameStrings[GT_MAGNUMCLIPS];
 	iuziammo_option.itemText = GF_GameStrings[GT_UZICLIPS];
 	iharpoonammo_option.itemText = GF_GameStrings[GT_HARPOONBOLTS];
 	imp5ammo_option.itemText = GF_GameStrings[GT_MP5CLIPS];
@@ -241,7 +241,7 @@ void GF_ModifyInventory(long level, long type)
 
 	GF_ModifyItemInInventory(type, &start->got_shotgun, &lara.shotgun.ammo, SHOTGUN_ITEM, SHOTGUN_AMMO_ITEM, ADDINV_SHOTGUN, ADDINV_SHOTGUN_AMMO, SHOTGUN_AMMO);
 	GF_ModifyItemInInventory(type, &start->got_uzis, &lara.uzis.ammo, UZI_ITEM, UZI_AMMO_ITEM, ADDINV_UZIS, ADDINV_UZI_AMMO, UZIS_AMMO);
-	GF_ModifyItemInInventory(type, &start->got_magnums, &lara.magnums.ammo, MAGNUM_ITEM, MAGNUM_AMMO_ITEM, ADDINV_MAGNUMS, ADDINV_MAGNUM_AMMO, MAGNUMS_AMMO);
+	GF_ModifyItemInInventory(type, &start->got_autopistols, &lara.autopistols.ammo, AUTOPISTOLS_ITEM, AUTOPISTOLS_AMMO_ITEM, ADDINV_AUTOPISTOLS, ADDINV_AUTOPISTOLS_AMMO, AUTOPISTOLS_AMMO);
 	GF_ModifyItemInInventory(type, &start->got_deserteagle, &lara.deserteagle.ammo, DESERTEAGLE_ITEM, DESERTEAGLE_AMMO_ITEM, ADDINV_DESERTEAGLE, ADDINV_DESERTEAGLE_AMMO, DESERTEAGLE_AMMO);
 	GF_ModifyItemInInventory(type, &start->got_mp5, &lara.mp5.ammo, MP5_ITEM, MP5_AMMO_ITEM, ADDINV_MP5, ADDINV_MP5_AMMO, MP5_AMMO);
 	GF_ModifyItemInInventory(type, &start->got_grenade, &lara.grenade.ammo, GRENADE_GUN_ITEM, GRENADE_AMMO_ITEM, ADDINV_GRENADE, ADDINV_GRENADE_AMMO, GRENADE_AMMO);

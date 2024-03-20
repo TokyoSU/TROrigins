@@ -91,9 +91,11 @@
 #include "demo.h"
 #include "camera.h"
 #include "footprnt.h"
-#include "../newstuff/map.h"
+#include "map.h"
 #include "tomb3.h"
 #include "tr3/snow_effect.h"
+#include "tr3/rain_emitter.h"
+#include "tr3/leaves_emitter.h"
 
 short IsRoomOutsideNo;
 char* OutsideRoomTable;
@@ -1672,11 +1674,20 @@ static void ObjectObjects()
 	obj->save_flags = TRUE;
 	obj->save_anim = TRUE;
 
+	obj = &objects[LEAVES_EMITTER];
+	obj->initialise = InitialiseLeavesEmitter;
+	obj->control = ControlLeavesEmitter;
+	obj->draw_routine = DrawLeavesEmitter;
+
+	obj = &objects[RAIN_EMITTER];
+	obj->initialise = InitialiseRainEmitter;
+	obj->control = ControlRainEmitter;
+	obj->draw_routine = DrawRainEmitter;
+
 	obj = &objects[SNOW_EMITTER];
-	obj->initialise = InitialiseMiniSnowEffect;
-	obj->control = ControlMiniSnowEffect;
-	obj->draw_routine = DrawMiniSnowEffect;
-	obj->save_flags = TRUE;
+	obj->initialise = InitialiseSnowEmitter;
+	obj->control = ControlSnowEmitter;
+	obj->draw_routine = DrawSnowEmitter;
 
 	obj = &objects[TONYFIREBALL];
 	obj->control = ControlTonyFireBall;
@@ -2055,8 +2066,9 @@ static void ObjectObjects()
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
-	obj = &objects[MAGNUM_ITEM];
+	obj = &objects[AUTOPISTOLS_ITEM];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
@@ -2085,8 +2097,9 @@ static void ObjectObjects()
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
-	obj = &objects[MAGNUM_AMMO_ITEM];
+	obj = &objects[AUTOPISTOLS_AMMO_ITEM];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 

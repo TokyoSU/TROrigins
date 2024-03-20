@@ -426,7 +426,7 @@ void FindClosestShieldPoint(long x, long y, long z, ITEM_INFO* item)
 	switch (lara.gun_type)
 	{
 	case LG_PISTOLS:
-	case LG_MAGNUMS:
+	case LG_AUTOPISTOLS:
 	case LG_UZIS:
 		c = 144;
 		break;

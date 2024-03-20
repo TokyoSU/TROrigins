@@ -432,6 +432,12 @@
     <ClCompile Include="game\tr3\snow_effect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="game\tr3\leaves_emitter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\tr3\rain_emitter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="tomb3\pch.h">
@@ -858,6 +864,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="game\tr3\snow_effect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\tr3\leaves_emitter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\tr3\rain_emitter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

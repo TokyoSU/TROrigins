@@ -218,7 +218,7 @@ static void CalcLaraMatricesN(short* frame, long* bone, long flag)
 		break;
 
 	case LG_PISTOLS:
-	case LG_MAGNUMS:
+	case LG_AUTOPISTOLS:
 	case LG_UZIS:
 		phd_PushMatrix();
 		phd_TranslateRel(bone[29], bone[30], bone[31]);
@@ -586,7 +586,7 @@ static void CalcLaraMatrices_I(short* frame1, short* frame2, long frac, long rat
 		break;
 
 	case LG_PISTOLS:
-	case LG_MAGNUMS:
+	case LG_AUTOPISTOLS:
 	case LG_UZIS:
 		phd_PushMatrix_I();
 		phd_TranslateRel_I(bone[29], bone[30], bone[31]);

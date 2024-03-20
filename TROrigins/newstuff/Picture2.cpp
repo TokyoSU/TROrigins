@@ -80,29 +80,25 @@ void CreateMonoScreen()
 
 static void DrawMono(long col, float z)
 {
-	col = 0xFF - col;
-
+	col = 255 - col;
 	if (tomb3.psx_contrast)
 		col >>= 1;
+	col = RGBA(col, col, col, 255);
 
-	col = RGBA(col, col, col, 0xFF);
-
-	HWR_EnableAlphaBlend(0);
-	HWR_EnableColorAddition(0);
+	HWR_EnableAlphaBlend(FALSE);
+	HWR_EnableColorAddition(FALSE);
 	DrawTile(0, 0, phd_winxmax, phd_winymax, CurPicTexIndices[0], 0, 0, 256, 256, col, col, col, col, f_zfar);
 }
 
 static void DrawMonoAlpha(long col, long* indices, float z)
 {
 	col = 255 - col;
-
 	if (tomb3.psx_contrast)
 		col >>= 1;
+	col = RGBA(col, col, col, 255);
 
-	col = RGBA(col, col, col, 0xFF);
-
-	HWR_EnableAlphaBlend(0);
-	HWR_EnableColorAddition(0);
+	HWR_EnableAlphaBlend(FALSE);
+	HWR_EnableColorAddition(FALSE);
 	DrawTile(0, 0, phd_winxmax, phd_winymax, indices[0], 0, 0, 256, 256, col, col, col, col, f_zfar);
 }
 
@@ -118,8 +114,7 @@ void DrawMonoScreen(long r, long g, long b)
 			g <<= 1;	//compensate for PSX contrast
 			b <<= 1;
 		}
-
-		col = RGBA(r, g, b, 0xFF);
+		col = RGBA(r, g, b, 255);
 
 		HWR_EnableAlphaBlend(0);
 		HWR_EnableColorAddition(0);

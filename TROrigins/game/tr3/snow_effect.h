@@ -1,6 +1,6 @@
 #pragma once
 #include "types.h"
 
-extern void InitialiseMiniSnowEffect(short item_number);
-extern void ControlMiniSnowEffect(short item_number);
-extern void DrawMiniSnowEffect(ITEM_INFO* item);
+extern void InitialiseSnowEmitter(short item_number);
+extern void ControlSnowEmitter(short item_number);
+extern void DrawSnowEmitter(ITEM_INFO* item);

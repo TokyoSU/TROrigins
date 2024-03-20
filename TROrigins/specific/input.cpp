@@ -70,28 +70,28 @@ long Key(long number)
 
 	key = layout[1][number];
 
-	if (key_pressed(key))
+	if (GET_KEY(key))
 		return 1;
 
 	switch (key)
 	{
 	case DIK_RCONTROL:
-		return key_pressed(DIK_LCONTROL);
+		return GET_KEY(DIK_LCONTROL);
 
 	case DIK_LCONTROL:
-		return key_pressed(DIK_RCONTROL);
+		return GET_KEY(DIK_RCONTROL);
 
 	case DIK_RSHIFT:
-		return key_pressed(DIK_LSHIFT);
+		return GET_KEY(DIK_LSHIFT);
 
 	case DIK_LSHIFT:
-		return key_pressed(DIK_RSHIFT);
+		return GET_KEY(DIK_RSHIFT);
 
 	case DIK_RMENU:
-		return key_pressed(DIK_LMENU);
+		return GET_KEY(DIK_LMENU);
 
 	case DIK_LMENU:
-		return key_pressed(DIK_RMENU);
+		return GET_KEY(DIK_RMENU);
 	}
 
 	if (conflict[number])
@@ -99,28 +99,28 @@ long Key(long number)
 
 	key = layout[0][number];
 
-	if (key_pressed(key))
+	if (GET_KEY(key))
 		return 1;
 
 	switch (key)
 	{
 	case DIK_RCONTROL:
-		return key_pressed(DIK_LCONTROL);
+		return GET_KEY(DIK_LCONTROL);
 
 	case DIK_LCONTROL:
-		return key_pressed(DIK_RCONTROL);
+		return GET_KEY(DIK_RCONTROL);
 
 	case DIK_RSHIFT:
-		return key_pressed(DIK_LSHIFT);
+		return GET_KEY(DIK_LSHIFT);
 
 	case DIK_LSHIFT:
-		return key_pressed(DIK_RSHIFT);
+		return GET_KEY(DIK_RSHIFT);
 
 	case DIK_RMENU:
-		return key_pressed(DIK_LMENU);
+		return GET_KEY(DIK_LMENU);
 
 	case DIK_LMENU:
-		return key_pressed(DIK_RMENU);
+		return GET_KEY(DIK_RMENU);
 	}
 
 	return 0;
@@ -197,7 +197,7 @@ long S_UpdateInput()
 			linput = (linput & ~IN_RIGHT) | IN_RSTEP;
 	}
 
-	if (key_pressed(DIK_MULTIPLY))
+	if (GET_KEY(DIK_MULTIPLY))
 	{
 		farz -= 50;
 
@@ -207,7 +207,7 @@ long S_UpdateInput()
 		distanceFogValue = farz - 0x2000;
 	}
 
-	if (key_pressed(DIK_DIVIDE))
+	if (GET_KEY(DIK_DIVIDE))
 	{
 		farz += 50;
 
@@ -223,10 +223,10 @@ long S_UpdateInput()
 	if (linput & IN_FORWARD && linput & IN_BACK)
 		linput |= IN_ROLL;
 
-	if (key_pressed(DIK_RETURN) || linput & IN_ACTION)
+	if (GET_KEY(DIK_RETURN) || linput & IN_ACTION)
 		linput |= IN_SELECT;
 
-	if (key_pressed(DIK_ESCAPE))
+	if (GET_KEY(DIK_ESCAPE))
 		linput |= IN_DESELECT;
 
 	if ((linput & (IN_RIGHT | IN_LEFT)) == (IN_RIGHT | IN_LEFT))
@@ -234,15 +234,15 @@ long S_UpdateInput()
 
 	if (GnGameMode == GAMEMODE_IN_GAME && !nLoadedPictures)
 	{
-		if (key_pressed(DIK_ADD))
+		if (GET_KEY(DIK_ADD))
 			IncreaseScreenSize();
 
-		if (key_pressed(DIK_SUBTRACT))
+		if (GET_KEY(DIK_SUBTRACT))
 			DecreaseScreenSize();
 	}
 
 #if (DIRECT3D_VERSION >= 0x900)
-	if (key_pressed(DIK_F7))
+	if (GET_KEY(DIK_F7))
 	{
 		if (!F7_debounce)
 		{
@@ -256,24 +256,24 @@ long S_UpdateInput()
 		F7_debounce = 0;
 #endif
 
-	if (key_pressed(DIK_1) && Inv_RequestItem(PISTOLS_OPTION))
+	if (GET_KEY(DIK_1) && Inv_RequestItem(PISTOLS_OPTION))
 		lara.request_gun_type = LG_PISTOLS;
-	else if (key_pressed(DIK_2) && Inv_RequestItem(SHOTGUN_OPTION))
+	else if (GET_KEY(DIK_2) && Inv_RequestItem(SHOTGUN_OPTION))
 		lara.request_gun_type = LG_SHOTGUN;
-	else if (key_pressed(DIK_3) && Inv_RequestItem(DESERTEAGLE_OPTION))
+	else if (GET_KEY(DIK_3) && Inv_RequestItem(DESERTEAGLE_OPTION))
 		lara.request_gun_type = LG_DESERTEAGLE;
-	else if (key_pressed(DIK_4) && Inv_RequestItem(UZI_OPTION))
+	else if (GET_KEY(DIK_4) && Inv_RequestItem(UZI_OPTION))
 		lara.request_gun_type = LG_UZIS;
-	else if (key_pressed(DIK_5) && Inv_RequestItem(HARPOON_OPTION))
+	else if (GET_KEY(DIK_5) && Inv_RequestItem(HARPOON_OPTION))
 		lara.request_gun_type = LG_HARPOON;
-	else if (key_pressed(DIK_6) && Inv_RequestItem(MP5_OPTION))
+	else if (GET_KEY(DIK_6) && Inv_RequestItem(MP5_OPTION))
 		lara.request_gun_type = LG_MP5;
-	else if (key_pressed(DIK_7) && Inv_RequestItem(ROCKET_OPTION))
+	else if (GET_KEY(DIK_7) && Inv_RequestItem(ROCKET_OPTION))
 		lara.request_gun_type = LG_ROCKET;
-	else if (key_pressed(DIK_8) && Inv_RequestItem(GRENADE_OPTION))
+	else if (GET_KEY(DIK_8) && Inv_RequestItem(GRENADE_OPTION))
 		lara.request_gun_type = LG_GRENADE;
 
-	if (key_pressed(DIK_0) && Inv_RequestItem(MEDI_OPTION))
+	if (GET_KEY(DIK_0) && Inv_RequestItem(MEDI_OPTION))
 	{
 		if (!med_debounce)
 		{
@@ -281,7 +281,7 @@ long S_UpdateInput()
 			med_debounce = 15;
 		}
 	}
-	else if (key_pressed(DIK_9) && Inv_RequestItem(BIGMEDI_OPTION))
+	else if (GET_KEY(DIK_9) && Inv_RequestItem(BIGMEDI_OPTION))
 	{
 		if (!med_debounce)
 		{
@@ -305,12 +305,12 @@ long S_UpdateInput()
 
 	if (!gameflow.loadsave_disabled && !pictureFading)
 	{
-		if (key_pressed(DIK_F5))
+		if (GET_KEY(DIK_F5))
 		{
 			if (!tomb3.psx_saving)
 				linput |= IN_SAVE;
 		}
-		else if (key_pressed(DIK_F6))
+		else if (GET_KEY(DIK_F6))
 			linput |= IN_LOAD;
 	}
 

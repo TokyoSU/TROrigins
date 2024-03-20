@@ -243,8 +243,8 @@ void LaraCheatGetStuff()
 	if (objects[UZI_ITEM].loaded)
 		Inv_AddItem(UZI_ITEM);
 
-	if (objects[MAGNUM_ITEM].loaded)
-		Inv_AddItem(MAGNUM_ITEM);
+	if (objects[AUTOPISTOLS_ITEM].loaded)
+		Inv_AddItem(AUTOPISTOLS_ITEM);
 
 	if (objects[DESERTEAGLE_ITEM].loaded)
 		Inv_AddItem(DESERTEAGLE_ITEM);
@@ -297,7 +297,7 @@ void LaraCheatGetStuff()
 	lara.deserteagle.ammo = 1000;
 	lara.uzis.ammo = 1000;
 	lara.shotgun.ammo = 1000 * 6;
-	lara.magnums.ammo = 1000;
+	lara.autopistols.ammo = 1000;
 	lara.harpoon.ammo = 1000;
 	lara.rocket.ammo = 1000;
 	lara.grenade.ammo = 1000;
@@ -309,13 +309,13 @@ void LaraCheatyBits()
 #ifdef _DEBUG
 	uchar s;
 
-	if (key_pressed(DIK_F1))
+	if (GET_KEY(DIK_F1))
 	{
 		LaraCheatGetStuff();
 		lara_item->hit_points = 1000;
 	}
 
-	if (key_pressed(DIK_F2))
+	if (GET_KEY(DIK_F2))
 #else
 	if (tomb3.dozy && key_pressed(DIK_D) && key_pressed(DIK_O) && key_pressed(DIK_Z) && key_pressed(DIK_Y))
 #endif
@@ -345,10 +345,10 @@ void LaraCheatyBits()
 	}
 
 #ifdef _DEBUG
-	if (key_pressed(DIK_F3) && !pictureFading)
+	if (GET_KEY(DIK_F3) && !pictureFading)
 		FinishLevelCheat = 1;
 
-	if (key_pressed(DIK_F4))
+	if (GET_KEY(DIK_F4))
 	{
 		s = 0;
 
@@ -999,9 +999,9 @@ void UseItem(short object_number)
 		lara.request_gun_type = LG_UZIS;
 		break;
 
-	case MAGNUM_ITEM:
-	case MAGNUM_OPTION:
-		lara.request_gun_type = LG_MAGNUMS;
+	case AUTOPISTOLS_ITEM:
+	case AUTOPISTOLS_OPTION:
+		lara.request_gun_type = LG_AUTOPISTOLS;
 		break;
 
 	case HARPOON_ITEM:
@@ -1250,7 +1250,7 @@ void InitialiseLaraInventory(long level)
 		Inv_AddItem(PISTOLS_ITEM);
 
 	InitialiseLaraWeapon(SHOTGUN_ITEM, SHOTGUN_AMMO_ITEM, SHOTGUN_AMMO, &start->got_shotgun, &start->shotgun_ammo, &lara.shotgun.ammo);
-	InitialiseLaraWeapon(MAGNUM_ITEM, MAGNUM_AMMO_ITEM, MAGNUMS_AMMO, &start->got_magnums, &start->magnum_ammo, &lara.magnums.ammo);
+	InitialiseLaraWeapon(AUTOPISTOLS_ITEM, AUTOPISTOLS_AMMO_ITEM, AUTOPISTOLS_AMMO, &start->got_autopistols, &start->autopistols_ammo, &lara.autopistols.ammo);
 	InitialiseLaraWeapon(UZI_ITEM, UZI_AMMO_ITEM, UZIS_AMMO, &start->got_uzis, &start->uzi_ammo, &lara.uzis.ammo);
 	InitialiseLaraWeapon(DESERTEAGLE_ITEM, DESERTEAGLE_AMMO_ITEM, DESERTEAGLE_AMMO, &start->got_deserteagle, &start->deserteagle_ammo, &lara.deserteagle.ammo);
 	InitialiseLaraWeapon(MP5_ITEM, MP5_AMMO_ITEM, MP5_AMMO, &start->got_mp5, &start->mp5_ammo, &lara.mp5.ammo);

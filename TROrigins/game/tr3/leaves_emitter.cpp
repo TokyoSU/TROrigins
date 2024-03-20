@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "snow_effect.h"
+#include "leaves_emitter.h"
 #include "3d_gen.h"
 #include "effect2.h"
 #include "control.h"
@@ -16,39 +16,40 @@
 #include "camera.h"
 #include "draw.h"
 
-/// item->ocb = snowflakes spawning range in block.
+/// item->ocb = leaves spawning range in block.
 
-constexpr auto MAX_MINI_WEATHER = 128;
-static int GetFreeSnowflake(SNOWFLAKE* flake)
+constexpr auto MAX_MINI_WEATHER = 64;
+
+static int GetFreeLeave(SNOWFLAKE* flake)
 {
 	for (int i = 0; i < MAX_MINI_WEATHER; i++)
 	{
-		auto* snow = &flake[i];
-		if (!snow->on)
+		auto* leave = &flake[i];
+		if (!leave->on)
 			return i;
 	}
 	return -1;
 }
 
-static inline SNOWFLAKE* GetSnowflakeList(ITEM_INFO* item)
+static inline SNOWFLAKE* GetLeaveList(ITEM_INFO* item)
 {
 	return static_cast<SNOWFLAKE*>(item->data);
 }
 
-static void UpdateSnowRoom(SNOWFLAKE* snow, long height)
+static void UpdateLeaveRoom(SNOWFLAKE* leave, long height)
 {
-	short new_room = snow->room_number;
-	GetFloor(snow->x, snow->y + height, snow->z, &new_room);
-	if (new_room != snow->room_number)
-		snow->room_number = new_room;
+	short new_room = leave->room_number;
+	GetFloor(leave->x, leave->y + height, leave->z, &new_room);
+	if (new_room != leave->room_number)
+		leave->room_number = new_room;
 }
 
-static bool IsSnowBlocked(SNOWFLAKE* snow)
+static bool IsLeaveBlocked(SNOWFLAKE* leave)
 {
-	auto current_room = snow->room_number;
-	auto x = snow->x;
-	auto y = snow->y;
-	auto z = snow->z;
+	auto current_room = leave->room_number;
+	auto x = leave->x;
+	auto y = leave->y;
+	auto z = leave->z;
 	auto* floor = GetFloor(x, y, z, &current_room);
 	auto* r = &room[current_room];
 	if ((r->flags & ROOM_UNDERWATER) || (r->flags & ROOM_SWAMP))
@@ -61,112 +62,122 @@ static bool IsSnowBlocked(SNOWFLAKE* snow)
 		return true;
 	return false;
 }
-static bool CreateNewSnowflake(ITEM_INFO* item)
+
+static void SpawnAtTheCeiling(SNOWFLAKE* leave)
 {
-	auto* snowflakeList = GetSnowflakeList(item);
-	int snowID = GetFreeSnowflake(snowflakeList);
-	if (snowID == -1)
+	auto current_room = leave->room_number;
+	auto* floor = GetFloor(leave->x, leave->y, leave->z, &current_room);
+	auto c = GetCeiling(floor, leave->x, leave->y, leave->z);
+	leave->y = c+1;
+}
+
+static bool CreateNewLeave(ITEM_INFO* item)
+{
+	auto* leaveList = GetLeaveList(item);
+	int leaveID = GetFreeLeave(leaveList);
+	if (leaveID == -1)
 		return false;
-	auto* snow = &snowflakeList[snowID];
-	auto rad = GetRandomDraw() & (item->ocb > 0 ? (item->ocb-1) : (SECTOR(4)-1));
+	auto* leave = &leaveList[leaveID];
+	auto rad = GetRandomDraw() & (item->ocb > 0 ? (item->ocb - 1) : (SECTOR(4) - 1));
 	auto angle = GetRandomDraw() & 0x1FFE;
-	snow->x = item->pos.x_pos + ((rad * rcossin_tbl[angle]) >> 12);
-	snow->y = item->pos.y_pos - (GetRandomDraw() & 0xFF);
-	snow->z = item->pos.z_pos + ((rad * rcossin_tbl[angle + 1]) >> 12);
-	snow->room_number = item->room_number;
-	if (IsSnowBlocked(snow)) // NOTE: it will update the room_number !
+	leave->x = item->pos.x_pos + ((rad * rcossin_tbl[angle]) >> 12);
+	SpawnAtTheCeiling(leave);
+	leave->z = item->pos.z_pos + ((rad * rcossin_tbl[angle + 1]) >> 12);
+	leave->room_number = item->room_number;
+	if (IsLeaveBlocked(leave)) // NOTE: it will update the room_number !
 		return false;
-	snow->stopped = FALSE;
-	snow->on = TRUE;
-	snow->size = (GetRandomDraw() & 12); // NOTE: will clamp to 4 when drawing if the value is less than 4
-	snow->xv = (GetRandomDraw() & 7) - 4;
-	snow->yv = (GetRandomDraw() % 16 + 8) << 3;
-	snow->zv = (GetRandomDraw() & 7) - 4;
-	snow->life = 1024 - (snow->yv << 1);
-	snow->color = UCHAR_MAX;
+	leave->stopped = FALSE;
+	leave->on = TRUE;
+	leave->size = (GetRandomDraw() & 12); // NOTE: will clamp to 4 when drawing if the value is less than 4
+	leave->xv = (GetRandomDraw() & 7) - 4;
+	leave->yv = (GetRandomDraw() % 16 + 8) << 3;
+	leave->zv = (GetRandomDraw() & 7) - 4;
+	leave->life = 1024 - (leave->yv << 1);
+	leave->color = UCHAR_MAX;
 	return true;
 }
 
-void InitialiseSnowEmitter(short item_number)
+void InitialiseLeavesEmitter(short item_number)
 {
 	auto* item = &items[item_number];
 	item->data = (SNOWFLAKE*)game_malloc(sizeof(SNOWFLAKE) * MAX_MINI_WEATHER);
-	auto* snowflakeList = GetSnowflakeList(item);
+	auto* leaveList = GetLeaveList(item);
 	for (int i = 0; i < MAX_MINI_WEATHER; i++) // WARM it !
-		ControlSnowEmitter(item_number);
+		ControlLeavesEmitter(item_number);
 }
 
-void ControlSnowEmitter(short item_number)
+void ControlLeavesEmitter(short item_number)
 {
 	auto* item = &items[item_number];
-	auto* snowflakeList = GetSnowflakeList(item);
+	auto* leaveList = GetLeaveList(item);
 	for (int i = 0; i < MAX_MINI_WEATHER; i++)
 	{
-		CreateNewSnowflake(item);
-		auto* snow = &snowflakeList[i];
-		auto ox = snow->x;
-		auto oy = snow->y;
-		auto oz = snow->z;
+		CreateNewLeave(item);
+		auto* leave = &leaveList[i];
+		auto ox = leave->x;
+		auto oy = leave->y;
+		auto oz = leave->z;
 
-		if (!snow->stopped)
+		if (!leave->stopped)
 		{
-			snow->x += snow->xv;
-			snow->y += (snow->yv & 0xFF) >> 3;
-			snow->z += snow->zv;
-			UpdateSnowRoom(snow, 16);
-			if (IsSnowBlocked(snow))
+			leave->x += leave->xv;
+			leave->y += (leave->yv & 0xFF) >> 3;
+			leave->z += leave->zv;
+			UpdateLeaveRoom(leave, 16);
+			if (IsLeaveBlocked(leave))
 			{
-				snow->stopped = TRUE;
-				snow->x = ox;
-				snow->y = oy;
-				snow->z = oz;
-				if (snow->yv > 16)
-					snow->yv = 0;
+				leave->stopped = TRUE;
+				leave->x = ox;
+				leave->y = oy;
+				leave->z = oz;
+				if (leave->yv > 16)
+					leave->yv = 0;
 			}
 		}
 
-		if (snow->life <= 0)
+		if (leave->life <= 0)
 		{
-			snow->on = FALSE;
+			leave->on = FALSE;
 			continue;
 		}
 
 		// Does room is outside and not underwater ?
-		if ((room[snow->room_number].flags & ROOM_NOT_INSIDE) && !(room[snow->room_number].flags & ROOM_UNDERWATER))
+		if ((room[leave->room_number].flags & ROOM_NOT_INSIDE) && !(room[leave->room_number].flags & ROOM_UNDERWATER))
 		{
-			if (snow->xv < SmokeWindX << 1)
-				snow->xv++;
-			else if (snow->xv > SmokeWindX << 1)
-				snow->xv--;
-			if (snow->zv < SmokeWindZ << 1)
-				snow->zv++;
-			else if (snow->zv > SmokeWindZ << 1)
-				snow->zv--;
+			if (leave->xv < SmokeWindX << 1)
+				leave->xv++;
+			else if (leave->xv > SmokeWindX << 1)
+				leave->xv--;
+			if (leave->zv < SmokeWindZ << 1)
+				leave->zv++;
+			else if (leave->zv > SmokeWindZ << 1)
+				leave->zv--;
 		}
 
-		snow->life--;
-		if (snow->life <= 0)
-			snow->life = 0;
-		if (snow->stopped)
+		leave->life--;
+		if (leave->life <= 0)
+			leave->life = 0;
+		if (leave->stopped)
 		{
-			snow->life = 1; // Don't let the snow die until color is full black (or transparent if alphablend enabled)
-			snow->color -= 3;
-			if (snow->color <= 0)
-				snow->color = 0;
-			if (snow->color == 0)
-				snow->on = FALSE;
+			leave->life = 1; // Don't let the leave die until color is full black (or transparent if alphablend enabled)
+			leave->color -= 3;
+			if (leave->color <= 0)
+				leave->color = 0;
+			if (leave->color == 0)
+				leave->on = FALSE;
 		}
 
-		if ((snow->yv & 7) != 7)
-			snow->yv++;
+		if ((leave->yv & 7) != 7)
+			leave->yv++;
 	}
 }
 
-void DrawSnowEmitter(ITEM_INFO* item)
+void DrawLeavesEmitter(ITEM_INFO* item)
 {
 	PHDTEXTURESTRUCT tex = {};
 	PHD_VECTOR pos = {};
 	PHD_VBUF v[4] = {};
+
 	bool oldBlueEffect = bBlueEffect;
 	bBlueEffect = false;
 #if (DIRECT3D_VERSION >= 0x900)
@@ -174,10 +185,10 @@ void DrawSnowEmitter(ITEM_INFO* item)
 #else
 	auto* dm = &App.lpDeviceInfo->DDInfo[App.lpDXConfig->nDD].D3DInfo[App.lpDXConfig->nD3D].DisplayMode[App.lpDXConfig->nVMode];
 #endif
-	auto* snowflakeList = GetSnowflakeList(item);
+	auto* snowflakeList = GetLeaveList(item);
 
-	// Get the snowflake mesh (sprite)
-	auto* sprite = &phdspriteinfo[objects[DEFAULT_SPRITES].mesh_index + ST_SNOWFLAKE];
+	// Get the leave mesh (sprite)
+	auto* sprite = &phdspriteinfo[objects[DEFAULT_SPRITES].mesh_index + ST_LEAVE];
 	auto u1 = (sprite->offset << 8) & 0xFF00;
 	auto v1 = sprite->offset & 0xFF00;
 	auto u2 = ushort(u1 + sprite->width - App.nUVAdd);
@@ -212,7 +223,7 @@ void DrawSnowEmitter(ITEM_INFO* item)
 		else if (size > 16)
 			size = 16;
 		size = (size * 0x2AAB) >> 15; // this scales it down to about a third of the size
-		size = GetFixedScale(size)<<1;
+		size = GetFixedScale(size) << 1;
 
 		auto c = RGB_MAKE(snow->color, snow->color, snow->color);
 		setXYZ4(v, // this drawing is based on the center of the texture.

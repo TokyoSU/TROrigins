@@ -1436,3 +1436,14 @@ void DrawAnimatingItem(ITEM_INFO* item)
 void DrawDummyItem(ITEM_INFO* item)
 {
 }
+
+void DrawPickupSprite2D(ITEM_INFO* item)
+{
+	auto* item_sprite = &objects[ITEM_SPRITES];
+	if (item->ocb > 0)
+	{
+		S_DrawSprite(SPR_ABS | SPR_SHADE, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item_sprite->mesh_index + (item->ocb - 1), item->shade, 0);
+		return;
+	}
+	DrawAnimatingItem(item);
+}

@@ -204,7 +204,7 @@ void CheckCheatMode()
 					Inv_AddItem(MP5_ITEM);
 					Inv_AddItem(SHOTGUN_ITEM);
 					Inv_AddItem(UZI_ITEM);
-					Inv_AddItem(MAGNUM_ITEM);
+					Inv_AddItem(AUTOPISTOLS_ITEM);
 					Inv_AddItem(DESERTEAGLE_ITEM);
 					Inv_AddItem(PISTOLS_ITEM);
 					Inv_AddItem(ROCKET_GUN_ITEM);
@@ -214,7 +214,7 @@ void CheckCheatMode()
 					lara.uzis.ammo = 1000;
 					lara.shotgun.ammo = 1000;
 					lara.harpoon.ammo = 1000;
-					lara.magnums.ammo = 1000;
+					lara.autopistols.ammo = 1000;
 					lara.rocket.ammo = 1000;
 					lara.grenade.ammo = 1000;
 					lara.mp5.ammo = 1000;

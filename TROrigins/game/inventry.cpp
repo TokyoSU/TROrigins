@@ -192,7 +192,7 @@ void DrawInventoryItem(INVENTORY_ITEM* item)
 				switch (sp->shape)
 				{
 				case 1:
-					S_DrawScreenSprite(x + sp->x, y + sp->y, sp->z, sp->param1, sp->param2, static_objects[ALPHABET].mesh_number + sp->sprnum, 0x200000, 0);
+					S_DrawScreenSprite(x + sp->x, y + sp->y, sp->z, sp->param1, sp->param2, objects[ALPHABET].mesh_index + sp->sprnum, 0x200000, 0);
 					break;
 
 				case 2:
@@ -305,12 +305,11 @@ void Construct_Inventory()
 	INVENTORY_ITEM* item;
 	float scale;
 
-	S_SetupAboveWater(0);
-
+	S_SetupAboveWater(FALSE);
 	if (Inventory_Mode != INV_TITLE_MODE)
 		TempVideoAdjust(HiResFlag, 1.0);
 
-	memset(Inventory_ExtraData, 0, sizeof(Inventory_ExtraData));
+	ZeroMemory(Inventory_ExtraData, sizeof(Inventory_ExtraData));
 	phd_right = phd_winxmax;
 	phd_left = 0;
 	phd_top = 0;
@@ -723,7 +722,7 @@ long Display_Inventory(long mode)
 
 				if (item->object_number == MAP_OPTION)
 					SoundEffect(SFX_MENU_STOPWATCH, NULL, SFX_ALWAYS);
-				else if ((item->object_number >= PISTOLS_OPTION && item->object_number <= GRENADE_OPTION) || item->object_number == MAGNUM_OPTION)
+				else if ((item->object_number >= PISTOLS_OPTION && item->object_number <= GRENADE_OPTION) || item->object_number == AUTOPISTOLS_OPTION)
 					SoundEffect(SFX_MENU_GUNS, NULL, SFX_ALWAYS);
 				else
 					SoundEffect(SFX_MENU_CHOOSE, NULL, SFX_ALWAYS);
@@ -1028,7 +1027,7 @@ long Display_Inventory(long mode)
 	case PISTOLS_OPTION:
 	case SHOTGUN_OPTION:
 	case DESERTEAGLE_OPTION:
-	case MAGNUM_OPTION:
+	case AUTOPISTOLS_OPTION:
 	case UZI_OPTION:
 	case HARPOON_OPTION:
 	case MP5_OPTION:

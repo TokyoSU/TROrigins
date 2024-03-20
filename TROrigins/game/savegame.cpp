@@ -203,7 +203,7 @@ void CreateStartInfo(long level)
 		pInfo->got_pistols = FALSE;
 
 	CreateWeaponStartInfo(SHOTGUN_ITEM, SHOTGUN_AMMO_ITEM, SHOTGUN_AMMO, &pInfo->got_shotgun, &pInfo->shotgun_ammo, &lara.shotgun.ammo);
-	CreateWeaponStartInfo(MAGNUM_ITEM, MAGNUM_AMMO_ITEM, MAGNUMS_AMMO, &pInfo->got_magnums, &pInfo->magnum_ammo, &lara.magnums.ammo);
+	CreateWeaponStartInfo(AUTOPISTOLS_ITEM, AUTOPISTOLS_AMMO_ITEM, AUTOPISTOLS_AMMO, &pInfo->got_autopistols, &pInfo->autopistols_ammo, &lara.autopistols.ammo);
 	CreateWeaponStartInfo(UZI_ITEM, UZI_AMMO_ITEM, UZIS_AMMO, &pInfo->got_uzis, &pInfo->uzi_ammo, &lara.uzis.ammo);
 	CreateWeaponStartInfo(DESERTEAGLE_ITEM, DESERTEAGLE_AMMO_ITEM, DESERTEAGLE_AMMO, &pInfo->got_deserteagle, &pInfo->deserteagle_ammo, &lara.deserteagle.ammo);
 	CreateWeaponStartInfo(MP5_ITEM, MP5_AMMO_ITEM, MP5_AMMO, &pInfo->got_mp5, &pInfo->mp5_ammo, &lara.mp5.ammo);

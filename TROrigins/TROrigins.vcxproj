@@ -110,6 +110,8 @@
     <ClCompile Include="game\text.cpp" />
     <ClCompile Include="game\tiger.cpp" />
     <ClCompile Include="game\tonyboss.cpp" />
+    <ClCompile Include="game\tr3\leaves_emitter.cpp" />
+    <ClCompile Include="game\tr3\rain_emitter.cpp" />
     <ClCompile Include="game\tr3\snow_effect.cpp" />
     <ClCompile Include="game\train.cpp" />
     <ClCompile Include="game\traps.cpp" />
@@ -256,6 +258,8 @@
     <ClInclude Include="game\text.h" />
     <ClInclude Include="game\tiger.h" />
     <ClInclude Include="game\tonyboss.h" />
+    <ClInclude Include="game\tr3\leaves_emitter.h" />
+    <ClInclude Include="game\tr3\rain_emitter.h" />
     <ClInclude Include="game\tr3\snow_effect.h" />
     <ClInclude Include="game\train.h" />
     <ClInclude Include="game\traps.h" />

@@ -6,12 +6,6 @@ typedef unsigned char uchar;
 typedef unsigned short ushort;
 typedef unsigned long ulong;
 
-#define SQUARE(x) ((x)*(x))
-#define	TRIGMULT2(a, b)	(((a) * (b)) >> W2V_SHIFT)
-#define	TRIGMULT3(a, b, c)	(TRIGMULT2((TRIGMULT2(a, b)), c))
-#define key_pressed(x) (keymap[x] & 0x80)
-#define RGBA(r, g, b, a)	((a << 24) | (r << 16) | (g << 8) | (b))
-
 //S_DrawSprite flags
 #define SPR_RGB(r, g, b)	((r) | ((g) << 8) | ((b) << 16))
 #define SPR_ABS				0x1000000
@@ -110,11 +104,21 @@ typedef unsigned long ulong;
 #define SHOTGUN_AMMO 12
 #define DESERTEAGLE_AMMO 10
 #define UZIS_AMMO 40
-#define MAGNUMS_AMMO 30
+#define AUTOPISTOLS_AMMO 30
 #define MP5_AMMO 60
 #define GRENADE_AMMO 2
 #define ROCKET_AMMO 1
 #define HARPOON_AMMO 3
+
+/*functions*/
+
+#define SQUARE(x) ((x) * (x))
+#define CLICK(x) ((x) * (WALL_SIZE / 4))
+#define SECTOR(x) ((x) * WALL_SIZE)
+#define TRIGMULT2(a, b) (((a) * (b)) >> W2V_SHIFT)
+#define TRIGMULT3(a, b, c) (TRIGMULT2((TRIGMULT2(a, b)), c))
+#define GET_KEY(x) (keymap[x] & 0x80)
+#define RGBA(r, g, b, a) ((a << 24) | (r << 16) | (g << 8) | (b))
 
 /*enums*/
 enum texture_flags
@@ -422,7 +426,7 @@ enum lara_gun_types
 	LG_UNARMED,
 	LG_PISTOLS,
 	LG_SHOTGUN,
-	LG_MAGNUMS,
+	LG_AUTOPISTOLS,
 	LG_UZIS,
 	LG_DESERTEAGLE,
 	LG_MP5,
@@ -588,7 +592,8 @@ enum sprite_types
 	ST_WATERFALL5,
 	ST_WATERFALL6,
 	ST_WATERFALL7,
-	ST_SNOWFLAKE
+	ST_SNOWFLAKE,
+	ST_LEAVE,
 };
 
 /*structs*/
@@ -855,7 +860,7 @@ struct LARA_INFO
 	LARA_ARM right_arm;
 	AMMO_INFO pistols;
 	AMMO_INFO shotgun;
-	AMMO_INFO magnums;
+	AMMO_INFO autopistols;
 	AMMO_INFO uzis;
 	AMMO_INFO deserteagle;
 	AMMO_INFO mp5;
@@ -1119,7 +1124,7 @@ struct START_INFO
 {
 	ushort pistol_ammo;
 	ushort shotgun_ammo;
-	ushort magnum_ammo;
+	ushort autopistols_ammo;
 	ushort uzi_ammo;
 	ushort deserteagle_ammo;
 	ushort mp5_ammo;
@@ -1138,7 +1143,7 @@ struct START_INFO
 	ushort got_pistols;
 	ushort got_shotgun;
 	ushort got_deserteagle;
-	ushort got_magnums;
+	ushort got_autopistols;
 	ushort got_uzis;
 	ushort got_mp5;
 	ushort got_grenade;
@@ -2040,10 +2045,12 @@ struct RAINDROP
 	long x;
 	long y;
 	long z;
+	short room_number;
+	short life;
 	char xv;
 	uchar yv;
 	char zv;
-	uchar life;
+	uchar on;
 };
 
 struct SNOWFLAKE
@@ -2055,7 +2062,7 @@ struct SNOWFLAKE
 	short room_number;
 	short life;
 	char xv;
-	char yv;
+	uchar yv;
 	char zv;
 	uchar on;
 	uchar size;

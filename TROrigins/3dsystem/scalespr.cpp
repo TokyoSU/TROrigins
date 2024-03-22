@@ -138,33 +138,30 @@ void S_DrawScreenSprite(long x, long y, long z, long scaleH, long scaleV, short 
 {
 	PHDSPRITESTRUCT* sprite;
 	long x1, x2, y1, y2;
-
 	sprite = &phdspriteinfo[sprnum];
 	x1 = x + ((scaleH * (sprite->x1 >> 3)) >> 16);
 	x2 = x + ((scaleH * (sprite->x2 >> 3)) >> 16);
 	y1 = y + ((scaleV * (sprite->y1 >> 3)) >> 16);
 	y2 = y + ((scaleV * (sprite->y2 >> 3)) >> 16);
-
 	if (x2 >= 0 && y2 >= 0 && x1 < phd_winwidth && y1 < phd_winheight)
 		InsertSprite(z << 3, x1, y1, x2, y2, sprnum, shade, -1, DT_POLY_WGT, 0);
 }
+
 
 void S_DrawSprite(ulong flags, long x, long y, long z, short sprnum, short shade, short scale)
 {
 	PHDSPRITESTRUCT* sprite;
 	long xv, yv, zv, zop, x1, y1, x2, y2, r, g, b, c;
 
-	if (flags & SPR_ABS)
+	if (CHK_ANY(flags, SPR_ABS))
 	{
 		x -= w2v_matrix[M03];
 		y -= w2v_matrix[M13];
 		z -= w2v_matrix[M23];
-
 		if (x < -phd_viewdist || x > phd_viewdist || y < -phd_viewdist || y > phd_viewdist || z < -phd_viewdist || z > phd_viewdist)
 			return;
 
 		zv = x * w2v_matrix[M20] + y * w2v_matrix[M21] + z * w2v_matrix[M22];
-
 		if (zv < phd_znear || zv >= phd_zfar)
 			return;
 
@@ -174,7 +171,6 @@ void S_DrawSprite(ulong flags, long x, long y, long z, short sprnum, short shade
 	else if (x | y | z)
 	{
 		zv = x * phd_mxptr[M20] + y * phd_mxptr[M21] + z * phd_mxptr[M22] + phd_mxptr[M23];
-
 		if (zv < phd_znear || zv > phd_zfar)
 			return;
 
@@ -184,7 +180,6 @@ void S_DrawSprite(ulong flags, long x, long y, long z, short sprnum, short shade
 	else
 	{
 		zv = phd_mxptr[M23];
-
 		if (zv < phd_znear || zv > phd_zfar)
 			return;
 
@@ -199,12 +194,12 @@ void S_DrawSprite(ulong flags, long x, long y, long z, short sprnum, short shade
 	x2 = sprite->x2;
 	y2 = sprite->y2;
 
-	if (flags & SPR_SCALE)
+	if (CHK_ANY(flags, SPR_SCALE))
 	{
-		x1 = (scale * x1) << 6;
-		y1 = (scale * y1) << 6;
-		x2 = (scale * x2) << 6;
-		y2 = (scale * y2) << 6;
+		x1 = (scale * x1) << (W2V_SHIFT - 8);
+		y1 = (scale * y1) << (W2V_SHIFT - 8);
+		x2 = (scale * x2) << (W2V_SHIFT - 8);
+		y2 = (scale * y2) << (W2V_SHIFT - 8);
 	}
 	else
 	{
@@ -215,41 +210,39 @@ void S_DrawSprite(ulong flags, long x, long y, long z, short sprnum, short shade
 	}
 
 	x1 = phd_centerx + (x1 + xv) / zop;
-
 	if (x1 >= phd_winwidth)
 		return;
 
 	y1 = phd_centery + (y1 + yv) / zop;
-
 	if (y1 >= phd_winheight)
 		return;
 
 	x2 = phd_centerx + (x2 + xv) / zop;
-
 	if (x2 < 0)
 		return;
 
 	y2 = phd_centery + (y2 + yv) / zop;
-
 	if (y2 < 0)
 		return;
 
-	if (flags & SPR_SHADE)
+	if (CHK_ANY(flags, SPR_SHADE))
 	{
-		if (zv > distanceFogValue << W2V_SHIFT)
+		auto depth = zv >> W2V_SHIFT;
+		if (depth > distanceFogValue)
 		{
-			shade += short((zv >> W2V_SHIFT) - distanceFogValue);
-
-			if (shade > 8191)
+			shade += (short)(depth - distanceFogValue);
+			if (shade > 0x1FFF)
 				return;
 		}
 	}
 	else
-		shade = 4096;
-
-	if (flags & 0xFFFFFF)
 	{
-		c = flags & 0xFFFFFF;
+		shade = 0x1000;
+	}
+
+	if (CHK_ANY(flags, SPR_USE_RGB))
+	{
+		c = flags & SPR_USE_RGB;
 		r = RGB_GETBLUE(c);
 		g = RGB_GETGREEN(c);
 		b = RGB_GETRED(c);

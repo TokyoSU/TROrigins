@@ -1,6 +1,7 @@
 #pragma once
 #include "../global/types.h"
 
+CREATURE_INFO* GetCreatureInfo(ITEM_INFO* item);
 void AlertNearbyGuards(ITEM_INFO* item);
 void InitialiseCreature(short item_number);
 long CreatureActive(short item_number);

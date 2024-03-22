@@ -7,7 +7,7 @@
 #include "camera.h"
 
 static SOUND_SLOT LaSlot[32];
-short sample_lut[370];
+short sample_lut[NumSamples];
 SAMPLE_INFO* sample_infos;
 long num_sample_infos;
 long sound_active;

@@ -777,11 +777,10 @@ void DartsControl(short item_number)
 	short room_num;
 
 	item = &items[item_number];
-
 	if (item->touch_bits)
 	{
 		lara_item->hit_points -= 25;
-		lara_item->hit_status = 1;
+		lara_item->hit_status = TRUE;
 		lara.poisoned += 160;
 		DoBloodSplat(item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, lara_item->speed, lara_item->pos.y_rot, lara_item->room_number);
 		KillItem(item_number);
@@ -801,7 +800,6 @@ void DartsControl(short item_number)
 			ItemNewRoom(item_number, room_num);
 
 		item->floor = GetHeight(floor, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos);
-
 		if (item->pos.y_pos >= item->floor)
 		{
 			for (int i = 0; i < 4; i++)
@@ -820,45 +818,68 @@ void DartEmitterControl(short item_number)
 	short num;
 
 	item = &items[item_number];
+	if (!TriggerActive(item))
+		return;
 
-	if (item->active)
+	if (item->timer > 0)
 	{
-		if (item->timer > 0)
-		{
-			item->timer--;
-			return;
-		}
-
-		item->timer = 24;
+		item->timer--;
+		return;
+	}
+	else
+	{
+		item->timer = 64;
 	}
 
 	num = CreateItem();
-
 	if (num == NO_ITEM)
 		return;
 
 	x = 0;
 	z = 0;
 	dart = &items[num];
-	dart->object_number = DARTS;
+	if (item->object_number == DART_EMITTER || item->object_number == HOMING_DART_EMITTER)
+		dart->object_number = DARTS;
+	else
+		dart->object_number = TR1_DART;
 	dart->room_number = item->room_number;
 
-	if (!item->pos.y_rot)
-		z = 512;
-	else if (item->pos.y_rot == 0x4000)
-		x = 512;
-	else if (item->pos.y_rot == -0x4000)
-		x = -512;
-	else if (item->pos.y_rot == -0x8000)
-		z = -512;
+	if (item->object_number == TR1_DART_EMITTER)
+	{
+		if (item->pos.y_rot == 0)
+			z = -512;
+		else if (item->pos.y_rot == 0x4000)
+			x = -512;
+		else if (item->pos.y_rot == -0x4000)
+			x = 512;
+		else if (item->pos.y_rot == -0x8000)
+			z = 512;
+	}
+	else
+	{
+		if (item->pos.y_rot == 0)
+			z = 512;
+		else if (item->pos.y_rot == 0x4000)
+			x = 512;
+		else if (item->pos.y_rot == -0x4000)
+			x = -512;
+		else if (item->pos.y_rot == -0x8000)
+			z = -512;
+	}
 
 	dart->pos.x_pos = item->pos.x_pos + x;
 	dart->pos.y_pos = item->pos.y_pos - 512;
 	dart->pos.z_pos = item->pos.z_pos + z;
 	InitialiseItem(num);
 	dart->pos.x_rot = 0;
-	dart->pos.y_rot = item->pos.y_rot + 0x8000;
-	dart->speed = 256;
+	if (item->object_number == DART_EMITTER || item->object_number == HOMING_DART_EMITTER)
+		dart->pos.y_rot = item->pos.y_rot + 0x8000;
+	else
+		dart->pos.y_rot = item->pos.y_rot;
+	if (item->object_number == TR1_DART_EMITTER)
+		dart->speed = 128;
+	else
+		dart->speed = 256;
 	xLimit = 0;
 	zLimit = 0;
 
@@ -869,24 +890,28 @@ void DartEmitterControl(short item_number)
 
 	for (int i = 0; i < 5; i++)
 	{
-		rnd = -GetRandomControl();
-
-		if (z >= 0)
-			zv = zLimit & rnd;
+		if (item->object_number == TR1_DART_EMITTER)
+		{
+			TriggerDartSmoke(dart->pos.x_pos, dart->pos.y_pos, dart->pos.z_pos, xLimit, zLimit, 0);
+		}
 		else
-			zv = -(zLimit & rnd);
-
-		if (x >= 0)
-			xv = xLimit & rnd;
-		else
-			xv = -(xLimit & rnd);
-
-		TriggerDartSmoke(dart->pos.x_pos, dart->pos.y_pos, dart->pos.z_pos, xv, zv, 0);
+		{
+			rnd = -GetRandomControl();
+			if (z >= 0)
+				zv = zLimit & rnd;
+			else
+				zv = -(zLimit & rnd);
+			if (x >= 0)
+				xv = xLimit & rnd;
+			else
+				xv = -(xLimit & rnd);
+			TriggerDartSmoke(dart->pos.x_pos, dart->pos.y_pos, dart->pos.z_pos, xv, zv, 0);
+		}
 	}
 
 	AddActiveItem(num);
 	dart->status = ITEM_ACTIVE;
-	SoundEffect(SFX_BLOWPIPE_NATIVE_BLOW, &dart->pos, SFX_DEFAULT);
+	SoundEffect(item->object_number == TR1_DART_EMITTER ? SFX_DART_SPITT : SFX_BLOWPIPE_NATIVE_BLOW, &dart->pos, SFX_DEFAULT);
 }
 
 void FallingCeiling(short item_number)
@@ -896,7 +921,6 @@ void FallingCeiling(short item_number)
 	short room_number;
 
 	item = &items[item_number];
-
 	if (!item->current_anim_state)
 	{
 		item->gravity_status = 1;

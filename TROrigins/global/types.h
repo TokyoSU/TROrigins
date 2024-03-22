@@ -8,6 +8,7 @@ typedef unsigned long ulong;
 
 //S_DrawSprite flags
 #define SPR_RGB(r, g, b)	((r) | ((g) << 8) | ((b) << 16))
+#define SPR_USE_RGB         0x00FFFFFF
 #define SPR_ABS				0x1000000
 #define SPR_SEMITRANS		0x2000000
 #define SPR_SCALE			0x4000000
@@ -15,6 +16,7 @@ typedef unsigned long ulong;
 #define SPR_TINT			0x10000000
 #define SPR_BLEND_ADD		0x20000000
 #define SPR_BLEND_SUB		0x40000000
+
 
 /********************DX defs********************/
 #if (DIRECT3D_VERSION >= 0x900)
@@ -74,31 +76,32 @@ typedef unsigned long ulong;
 #define WALL_SHIFT		10
 #define WALL_SIZE		(1 << WALL_SHIFT)
 #define WALL_MASK		(WALL_SIZE - 1)
+
 #define MAX_LOT			20		//was 5
 #define MAX_NONLOT		20		//was 12
-
 #define MAX_BUCKETS		6
 #define BUCKET_EXTRA	32
 #define BUCKET_VERTS	(256 + BUCKET_EXTRA)
-
-#define MAX_TLVERTICES	0x12000	//*8
-#define MAX_SORTLISTS	0x17700	//*8
+#define MAX_TLVERTICES	73728	//*8
+#define MAX_SORTLISTS	96000	//*8
 #define MAX_VBUF		12000	//*8
 #define MAX_VINFO		320		//*8
 #define MAX_TPAGES		128		//*4
 #define MAX_TINFOS		0x4000	//*4
-
 #define MAX_STATICS		256		//was 50
 #define MAX_ITEMS		1024	//was 256
-#define NLAYOUTKEYS		15
-#define MAX_WEATHER	256
+#define MAX_WEATHER     256
 #define MAX_WEATHER_ALIVE 16 // was 8
+#define NLAYOUTKEYS		15
 
 #define MALLOC_SIZE	15000000	// 15 MB (was around 3.6 MB)
 
 #define FRAMES_PER_SECOND	30
 #define TICKS_PER_FRAME		2
 #define TICKS_PER_SECOND	(FRAMES_PER_SECOND * TICKS_PER_FRAME)
+
+#define CHK_ALL(a,b)	(((a)&(b))==(b))
+#define CHK_ANY(a,b)	(((a)&(b))!=0)
 
 #define PISTOL_AMMO 1000
 #define SHOTGUN_AMMO 12
@@ -540,13 +543,18 @@ enum item_status
 
 enum item_flags
 {
-	IFL_TRIGGERED = 0x20,
-	IFL_SWITCH_ONESHOT = 0x40,	//oneshot for switch items
-	IFL_ANTITRIGGER_ONESHOT = 0x80,	//oneshot for antitriggers
-	IFL_INVISIBLE = 0x100,	//also used as oneshot for everything else
-	IFL_CODEBITS = 0x3E00,
-	IFL_REVERSE = 0x4000,
-	IFL_CLEARBODY = 0x8000
+	IFL_TRIGGERED = 1 << 5,
+	IFL_SWITCH_ONESHOT = 1 << 6,	// oneshot for switch items
+	IFL_ANTITRIGGER_ONESHOT = 1 << 7,	// oneshot for antitriggers
+	IFL_INVISIBLE = 1 << 8,	// also used as oneshot for everything else
+	IFL_CODEBITS_1 = 1 << 9, // Codebits Button in the ocb panel from TombEditor
+	IFL_CODEBITS_2 = 1 << 10,
+	IFL_CODEBITS_3 = 1 << 11,
+	IFL_CODEBITS_4 = 1 << 12,
+	IFL_CODEBITS_5 = 1 << 13,
+	IFL_CODEBITS = IFL_CODEBITS_1|IFL_CODEBITS_2|IFL_CODEBITS_3|IFL_CODEBITS_4|IFL_CODEBITS_5, // if all activated, trigger it from level start.
+	IFL_REVERSE = 1 << 14,
+	IFL_CLEARBODY = 1 << 15
 };
 
 enum sfx_options

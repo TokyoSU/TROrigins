@@ -644,12 +644,11 @@ long LoadSamples(HANDLE file)
 	long header[11];	//sample file header
 
 	sound_active = 0;
-
 	if (!DS_IsSoundEnabled())
 		return 1;
 
 	DS_FreeAllSamples();
-	MyReadFile(file, sample_lut, sizeof(short) * 370, &read, 0);
+	MyReadFile(file, sample_lut, sizeof(short) * NumSamples, &read, 0);
 	MyReadFile(file, &num_sample_infos, sizeof(long), &read, 0);
 
 	if (!num_sample_infos)

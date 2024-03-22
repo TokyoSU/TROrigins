@@ -77,21 +77,24 @@ static bool CreateNewLeave(ITEM_INFO* item)
 	int leaveID = GetFreeLeave(leaveList);
 	if (leaveID == -1)
 		return false;
+	if ((GetRandomControl() & 0x1FF) != 0)
+		return false;
 	auto* leave = &leaveList[leaveID];
-	auto rad = GetRandomDraw() & (item->ocb > 0 ? (item->ocb - 1) : (SECTOR(4) - 1));
-	auto angle = GetRandomDraw() & 0x1FFE;
-	leave->x = item->pos.x_pos + ((rad * rcossin_tbl[angle]) >> 12);
+	auto radius = (item->ocb > 0 ? SECTOR(item->ocb) : SECTOR(4) - 1);
+	auto radRand = GetRandomControl() & radius;
+	auto angle = GetRandomControl() & 0x1FFE;
+	leave->x = item->pos.x_pos + ((radRand * rcossin_tbl[angle]) >> 12);
 	SpawnAtTheCeiling(leave);
-	leave->z = item->pos.z_pos + ((rad * rcossin_tbl[angle + 1]) >> 12);
+	leave->z = item->pos.z_pos + ((radRand * rcossin_tbl[angle + 1]) >> 12);
 	leave->room_number = item->room_number;
 	if (IsLeaveBlocked(leave)) // NOTE: it will update the room_number !
 		return false;
 	leave->stopped = FALSE;
 	leave->on = TRUE;
-	leave->size = (GetRandomDraw() & 12); // NOTE: will clamp to 4 when drawing if the value is less than 4
-	leave->xv = (GetRandomDraw() & 7) - 4;
-	leave->yv = (GetRandomDraw() % 16 + 8) << 3;
-	leave->zv = (GetRandomDraw() & 7) - 4;
+	leave->size = (GetRandomControl() & 12); // NOTE: will clamp to 4 when drawing if the value is less than 4
+	leave->xv = (GetRandomControl() & 7) - 4;
+	leave->yv = (GetRandomControl() % 16 + 8) << 3;
+	leave->zv = (GetRandomControl() & 7) - 4;
 	leave->life = 1024 - (leave->yv << 1);
 	leave->color = UCHAR_MAX;
 	return true;
@@ -234,7 +237,7 @@ void DrawLeavesEmitter(ITEM_INFO* item)
 			true
 		);
 		ZeroMemory(&tex, sizeof(tex));
-		tex.drawtype = 2;
+		tex.drawtype = 1;
 		tex.tpage = sprite->tpage;
 		tex.u1 = u1;
 		tex.v1 = v1;

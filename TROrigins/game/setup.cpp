@@ -1580,6 +1580,11 @@ static void TrapObjects()
 	obj->draw_routine = DrawDummyItem;
 	obj->save_flags = TRUE;
 
+	obj = &objects[TR1_DART_EMITTER];
+	obj->control = DartEmitterControl;
+	obj->collision = ObjectCollision;
+	obj->save_flags = TRUE;
+
 	obj = &objects[HOMING_DART_EMITTER];
 	obj->control = DartEmitterControl;
 	obj->draw_routine = DrawDummyItem;
@@ -1631,6 +1636,12 @@ static void TrapObjects()
 	obj->control = DartsControl;
 	obj->collision = ObjectCollision;
 	obj->draw_routine = S_DrawDarts;
+	obj->radius = 128;
+	obj->shadow_size = 128;
+
+	obj = &objects[TR1_DART];
+	obj->control = DartsControl;
+	obj->collision = ObjectCollision;
 	obj->shadow_size = 128;
 
 	obj = &objects[FLAME_EMITTER];
@@ -1677,17 +1688,17 @@ static void ObjectObjects()
 	obj = &objects[LEAVES_EMITTER];
 	obj->initialise = InitialiseLeavesEmitter;
 	obj->control = ControlLeavesEmitter;
-	obj->draw_routine = DrawLeavesEmitter;
+	obj->draw_routine = DrawDummyItem;
 
 	obj = &objects[RAIN_EMITTER];
 	obj->initialise = InitialiseRainEmitter;
 	obj->control = ControlRainEmitter;
-	obj->draw_routine = DrawRainEmitter;
+	obj->draw_routine = DrawDummyItem;
 
 	obj = &objects[SNOW_EMITTER];
 	obj->initialise = InitialiseSnowEmitter;
 	obj->control = ControlSnowEmitter;
-	obj->draw_routine = DrawSnowEmitter;
+	obj->draw_routine = DrawDummyItem;
 
 	obj = &objects[TONYFIREBALL];
 	obj->control = ControlTonyFireBall;
@@ -1978,91 +1989,109 @@ static void ObjectObjects()
 
 	obj = &objects[PICKUP_ITEM1];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[PICKUP_ITEM2];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[KEY_ITEM1];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[KEY_ITEM2];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[KEY_ITEM3];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[KEY_ITEM4];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[PUZZLE_ITEM1];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[PUZZLE_ITEM2];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[PUZZLE_ITEM3];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[PUZZLE_ITEM4];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[PISTOLS_ITEM];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[SHOTGUN_ITEM];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[HARPOON_ITEM];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[ROCKET_GUN_ITEM];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[GRENADE_GUN_ITEM];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[MP5_ITEM];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[DESERTEAGLE_ITEM];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[UZI_ITEM];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
@@ -2074,26 +2103,31 @@ static void ObjectObjects()
 
 	obj = &objects[FLAREBOX_ITEM];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[PISTOLS_AMMO_ITEM];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[SHOTGUN_AMMO_ITEM];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[DESERTEAGLE_AMMO_ITEM];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[UZI_AMMO_ITEM];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
@@ -2105,61 +2139,72 @@ static void ObjectObjects()
 
 	obj = &objects[HARPOON_AMMO_ITEM];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[MP5_AMMO_ITEM];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[ROCKET_AMMO_ITEM];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[GRENADE_AMMO_ITEM];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[MEDI_ITEM];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[BIGMEDI_ITEM];
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[ICON_PICKUP1_ITEM];
 	obj->control = AnimatingPickUp;
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[ICON_PICKUP2_ITEM];
 	obj->control = AnimatingPickUp;
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[ICON_PICKUP3_ITEM];
 	obj->control = AnimatingPickUp;
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[ICON_PICKUP4_ITEM];
 	obj->control = AnimatingPickUp;
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 
 	obj = &objects[SAVEGAME_CRYSTAL_ITEM];
 	obj->control = AnimatingPickUp;
 	obj->collision = PickUpCollision;
+	obj->draw_routine = DrawPickupSprite2D;
 	obj->save_position = TRUE;
 	obj->save_flags = TRUE;
 

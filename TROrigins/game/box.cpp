@@ -19,6 +19,11 @@ short* overlap;
 short* ground_zone[4][2];
 short* fly_zone[2];
 
+CREATURE_INFO* GetCreatureInfo(ITEM_INFO* item)
+{
+	return static_cast<CREATURE_INFO*>(item->data);
+}
+
 void AlertNearbyGuards(ITEM_INFO* item)
 {
 	ITEM_INFO* target;

@@ -22,6 +22,7 @@
 #include "input.h"
 #include "camera.h"
 #include "savegame.h"
+#include "box.h"
 
 WEAPON_INFO weapons[NUM_WEAPONS] =
 {
@@ -79,9 +80,8 @@ WEAPON_INFO weapons[NUM_WEAPONS] =
 		9,
 		3,
 		0,
-		SFX_LARA_FIRE
+		SFX_AUTOPISTOLS_FIRE
 	},
-
 	{
 		-10920, 10920, -10920, 10920,		//LG_UZIS
 		-30940, 10920, -14560, 14560,
@@ -303,7 +303,7 @@ long FireWeapon(long weapon_type, ITEM_INFO* target, ITEM_INFO* source, short* a
 	ammo->ammo--;
 	wep = &weapons[weapon_type];
 	view.x_pos = source->pos.x_pos;
-	view.y_pos = source->pos.y_pos - wep->gun_height;
+	view.y_pos = lara.IsDucked ? source->pos.y_pos - wep->gun_height / 3 : source->pos.y_pos - wep->gun_height;
 	view.z_pos = source->pos.z_pos;
 	view.x_rot = short(wep->shot_accuracy * (GetRandomControl() - 0x4000) / 0x10000 + angles[1]);
 	view.y_rot = short(wep->shot_accuracy * (GetRandomControl() - 0x4000) / 0x10000 + angles[0]);
@@ -409,8 +409,12 @@ void HitTarget(ITEM_INFO* item, GAME_VECTOR* hitpos, long damage)
 	item->hit_points -= (short)damage;
 	item->hit_status = 1;
 
-	if (item->data)
-		((CREATURE_INFO*)item->data)->hurt_by_lara = 1;
+	auto* obj = &objects[item->object_number];
+	if (item->data != NULL && obj->intelligent)
+	{
+		auto* creature = GetCreatureInfo(item);
+		creature->hurt_by_lara = TRUE;
+	}
 
 	if (hitpos && item->object_number != TRIBEBOSS)
 	{
@@ -511,7 +515,7 @@ void LaraTargetInfo(WEAPON_INFO* winfo)
 	}
 
 	start.x = lara_item->pos.x_pos;
-	start.y = lara_item->pos.y_pos - 650;
+	start.y = lara.IsDucked ? lara_item->pos.y_pos - winfo->gun_height / 3 : lara_item->pos.y_pos - winfo->gun_height;
 	start.z = lara_item->pos.z_pos;
 	start.room_number = lara_item->room_number;
 	find_target_point(lara.target, &target);
@@ -567,7 +571,7 @@ void LaraGetNewTarget(WEAPON_INFO* winfo)
 	item = NULL;
 	bestitem = NULL;
 	start.x = lara_item->pos.x_pos;
-	start.y = lara_item->pos.y_pos - winfo->gun_height;
+	start.y = lara.IsDucked ? lara_item->pos.y_pos - winfo->gun_height / 3 : lara_item->pos.y_pos - winfo->gun_height;
 	start.z = lara_item->pos.z_pos;
 	start.room_number = lara_item->room_number;
 	bestyrot = 0x7FFF;

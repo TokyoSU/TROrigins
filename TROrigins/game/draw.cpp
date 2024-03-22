@@ -23,6 +23,8 @@
 #include "../newstuff/LaraDraw.h"
 #include "tomb3.h"
 #include "tr3/snow_effect.h"
+#include "tr3/rain_emitter.h"
+#include "tr3/leaves_emitter.h"
 
 static uchar EnemyWeapon[16] = { 0, 1, 129, 0, 1, 1,  1 };
 static long bound_list[128];
@@ -886,6 +888,29 @@ void PrintObjects(short room_number)
 	r->right = 0;
 }
 
+static void PrintEffects(short room_number)
+{
+	for (int i = 0; i < level_items; i++)
+	{
+		auto* item = &items[i];
+		if (item != NULL && item->status != ITEM_INVISIBLE)
+		{
+			switch (item->object_number)
+			{
+			case LEAVES_EMITTER:
+				DrawLeavesEmitter(item);
+				break;
+			case SNOW_EMITTER:
+				DrawSnowEmitter(item);
+				break;
+			case RAIN_EMITTER:
+				DrawRainEmitter(item);
+				break;
+			}
+		}
+	}
+}
+
 static void PutPolyLara(ITEM_INFO* item, char mesh, long clip)
 {
 	if (item->mesh_bits & (1 << mesh))
@@ -1164,6 +1189,9 @@ void DrawRooms(short current_room)
 		if (fx)
 			DoRain();
 
+		for (int i = 0; i < number_draw_rooms; i++)
+			PrintEffects(draw_rooms[i]);
+
 		S_DrawFootPrints();
 
 		if (tomb3.gold)
@@ -1440,9 +1468,9 @@ void DrawDummyItem(ITEM_INFO* item)
 void DrawPickupSprite2D(ITEM_INFO* item)
 {
 	auto* item_sprite = &objects[ITEM_SPRITES];
-	if (item->ocb > 0)
+	if (CHK_ANY(item->flags, IFL_CODEBITS_1)) // Does button 1 of the ocb panel is active ?
 	{
-		S_DrawSprite(SPR_ABS | SPR_SHADE, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item_sprite->mesh_index + (item->ocb - 1), item->shade, 0);
+		S_DrawSprite(SPR_ABS | SPR_SHADE | SPR_SCALE, item->pos.x_pos, item->pos.y_pos, item->pos.z_pos, item_sprite->mesh_index + item->ocb, item->shade, 192);
 		return;
 	}
 	DrawAnimatingItem(item);

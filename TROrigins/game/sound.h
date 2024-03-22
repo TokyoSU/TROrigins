@@ -379,11 +379,12 @@ enum sound_effect_names
 	SFX_TONY_BOSS_SHOOT_2,
 	SFX_TONY_BOSS_SHOOT_3,
 	SFX_TONY_BOSS_ATTACK,
+	SFX_AUTOPISTOLS_FIRE,
 
 	NumSamples
 };
 
-extern short sample_lut[370];
+extern short sample_lut[NumSamples];
 extern SAMPLE_INFO* sample_infos;
 extern long num_sample_infos;
 extern long sound_active;
